@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Veyr Autistic Monkey</title>
+
+    <title>R</title>
+
     <link
       rel="icon"
       type="image/ico"
@@ -21,10 +23,10 @@
     <link rel="stylesheet" href="Loader.css" />
     <link rel="stylesheet" href="Login_Screen.css" />
     
-
     <script src="Loader_Login.js"></script>
     <script src="/Bureau/Bureau.js"></script>
   </head>
+
   <body>
     <div id="loader">
       <img
@@ -32,16 +34,19 @@
         alt="Windows XP Logo"
         id="logo"
       />
+
       <div id="progress-bar">
         <div class="progress-block"></div>
         <div class="progress-block"></div>
         <div class="progress-block"></div>
       </div>
+
       <img
         src="/Assets/Images/Microsoft logo démarrage.png"
         alt="Logo Microsoft en bas à droite sur l'écran de démarrage"
         id="Copyright"
       />
+
       <img
         src="/Assets/Images/Copyright.png"
         alt="Copyright de microsoft corporation sur l'écran de démarrage"
@@ -54,13 +59,22 @@
 
       <div id="content">
         <div id="left-panel">
-          <img src="/Assets/Images/White writting Windows XP logo.png" alt="Windows XP Logo" id="xp-logo" />
+          <img
+            src="/Assets/Images/White writting Windows XP logo.png"
+            alt="Windows XP Logo"
+            id="xp-logo"
+          />
+
           <p>To begin, click your user name</p>
         </div>
 
         <div id="user-list">
           <div class="user" id="guest-user" onclick="loginAsGuest()">
-            <img src="/Assets/Images/Flower PP.png" alt="Guest" />
+            <img
+              src="/Assets/Images/Flower PP.png"
+              alt="Guest"
+            />
+
             <div class="user-text">
               <span>Visitor</span>
             </div>
@@ -73,16 +87,47 @@
           <img
             id="Power"
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
-            alt="Turn off computer button" 
+            alt="Turn off computer button"
             onclick="turnOffComputer()"
           />
-          <p id="shutdown-p" onclick="turnOffComputer()">Turn off computer</p>
+
+          <p id="shutdown-p" onclick="turnOffComputer()">
+            Turn off computer
+          </p>
         </div>
+
         <p id="right-text">
-          After you log on, you can add or change accounts. </br>
+          After you log on, you can add or change accounts.<br />
           Just go to Control Panel and click User Accounts.
         </p>
       </div>
     </div>
+
+    <!-- RAUTATIENTORI title animation -->
+    <script>
+      const titleText = "RAUTATIENTORI";
+      let titleIndex = 1;
+
+      function animateTitle() {
+        document.title = titleText.substring(0, titleIndex);
+
+        titleIndex++;
+
+        if (titleIndex > titleText.length) {
+          titleIndex = 1;
+        }
+
+        // Faster when the tab is active,
+        // slower when the tab is inactive.
+        const delay =
+          document.visibilityState === "visible"
+            ? 100
+            : 300;
+
+        setTimeout(animateTitle, delay);
+      }
+
+      animateTitle();
+    </script>
   </body>
 </html>
