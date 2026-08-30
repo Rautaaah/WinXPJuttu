@@ -129,3 +129,200 @@ width: 15%;
 bottom: 5%;
 left: 3%;
 }
+/* =========================================================
+   ROSE WINDOWS XP LOGIN THEME
+   COLOR ONLY — DOES NOT TOUCH EXISTING ANIMATIONS
+   ========================================================= */
+
+/* Main login background */
+#login-screen {
+    background-color: #d9578f !important;
+
+    background-image:
+        radial-gradient(
+            circle at 18% 20%,
+            rgba(255, 255, 255, 0.72) 0%,
+            rgba(255, 220, 235, 0.35) 18%,
+            rgba(255, 255, 255, 0) 58%
+        ),
+        linear-gradient(
+            135deg,
+            #f08ab3 0%,
+            #df6799 28%,
+            #cf4d84 55%,
+            #bd3c72 100%
+        ) !important;
+
+    background-size: 100% 100%, 100% 100% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+
+/* =========================================================
+   TOP + BOTTOM XP BARS
+   ========================================================= */
+
+#top-bar,
+#bottom-bar {
+    background:
+        linear-gradient(
+            to bottom,
+            #8f174b 0%,
+            #b82e68 8%,
+            #d94d86 45%,
+            #c83c78 75%,
+            #9d1d53 100%
+        ) !important;
+}
+
+
+/* =========================================================
+   TOP BAR HIGHLIGHT
+   ========================================================= */
+
+#top-bar {
+    border-bottom: 3px solid !important;
+
+    border-image:
+        linear-gradient(
+            to right,
+            #b92e68,
+            #ffd1e2 40%,
+            #8c1748
+        ) 1 !important;
+}
+
+
+/* =========================================================
+   CENTER DIVIDER
+   ========================================================= */
+
+#content::after {
+    background:
+        linear-gradient(
+            to bottom,
+            #c3487d 0%,
+            #f29abb 25%,
+            #e77da7 50%,
+            #f29abb 75%,
+            #c3487d 100%
+        ) !important;
+}
+
+
+/* =========================================================
+   SELECTED USER HIGHLIGHT
+   Keeps the existing selection animation/behavior.
+   Only changes the colors.
+   ========================================================= */
+
+.user.selected::before {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.72) 0%,
+            rgba(255, 235, 244, 0.38) 40%,
+            rgba(255, 255, 255, 0) 100%
+        ) !important;
+}
+
+.user.selected::after {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(173, 28, 88, 0.95) 0%,
+            rgba(214, 67, 125, 0.82) 55%,
+            rgba(255, 255, 255, 0) 100%
+        ) !important;
+}
+
+
+/* =========================================================
+   XP BLUE TEXT -> ROSE
+   ========================================================= */
+
+.user p {
+    color: #8f174b !important;
+}
+
+.loaded p {
+    color: #8f174b !important;
+}
+
+
+/* =========================================================
+   BOTTOM BAR
+   ========================================================= */
+
+#bottom-bar {
+    border-top: 3px solid !important;
+
+    border-image:
+        linear-gradient(
+            to right,
+            #8d1748,
+            #f0a0bd 40%,
+            #9c2057
+        ) 1 !important;
+}
+
+
+/* =========================================================
+   WELCOME TEXT SHADOW
+   Does not affect the animation itself.
+   ========================================================= */
+
+#left-panel p {
+    text-shadow: 2px 3px #9b2859;
+}
+
+
+/* =========================================================
+   USER ICON HOVER
+   ========================================================= */
+
+.user img {
+    box-shadow:
+        1px 1px 2px rgba(46, 46, 46, 1),
+        0 0 0 1px rgba(255, 180, 207, 0.15);
+}
+
+
+/* =========================================================
+   POWER BUTTON AREA
+   ========================================================= */
+
+#shutdown-p:hover {
+    color: #ffe5ef;
+}
+
+
+/* =========================================================
+   GENERAL ROSE GLOW
+   ========================================================= */
+
+#login-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            ellipse at 30% 35%,
+            rgba(255, 255, 255, 0.13),
+            transparent 48%
+        );
+
+    z-index: 0;
+}
+
+
+/* Keep actual login content above the glow */
+#top-bar,
+#content,
+#bottom-bar {
+    position: relative;
+    z-index: 1;
+}
