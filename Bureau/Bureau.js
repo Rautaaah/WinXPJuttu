@@ -1,19 +1,9 @@
-/* =========================================================
-   WINDOWS XP ROSE / GLASS EDITION
-   Bureau/Bureau.js
-   ========================================================= */
-
-/* -------------------------
-   GLOBALS
-------------------------- */
-
 let startMenuHTML = "";
 let openWindowHTML = "";
 let openLogOffHTML = "";
 let turnOffComputerHTML = "";
 
 let zIndexCounter = 1;
-
 const savedZ = localStorage.getItem("zIndexCounter");
 if (savedZ !== null) {
   zIndexCounter = parseInt(savedZ, 10);
@@ -29,18 +19,9 @@ let recentlyClosedStartMenu = false;
 let hoverTooltipMouseEnterHandler = null;
 let hoverTooltipMouseLeaveHandler = null;
 
-
-/* =========================================================
-   LOAD HTML
-========================================================= */
-
 async function loadHTML(filePath) {
   const res = await fetch(filePath);
-
-  if (!res.ok) {
-    throw new Error(`Loading error : ${filePath}`);
-  }
-
+  if (!res.ok) throw new Error(`Loading error : ${filePath}`);
   return await res.text();
 }
 
@@ -56,326 +37,75 @@ loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html").then(
   (html) => (openLogOffHTML = html)
 );
 
-loadHTML(
-  "/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html"
-).then((html) => (turnOffComputerHTML = html));
-
-
-/* =========================================================
-   ROSE / GLASS GLOBAL STYLE
-   This fixes the blue colors that were being inserted
-   directly by JavaScript.
-========================================================= */
-
-function injectRoseTheme() {
-  if (document.getElementById("rose-glass-js-theme")) return;
-
-  const style = document.createElement("style");
-  style.id = "rose-glass-js-theme";
-
-  style.textContent = `
-    /* =========================================
-       DESKTOP SELECTION BOX
-    ========================================= */
-
-    #desktop-selection-box {
-      position: fixed !important;
-      display: none;
-      pointer-events: none;
-      z-index: 999998;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(255, 130, 185, 0.20),
-          rgba(255, 80, 150, 0.10)
-        ) !important;
-
-      border:
-        1px solid rgba(255, 145, 200, 0.95) !important;
-
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.15) inset,
-        0 0 12px rgba(255, 70, 150, 0.20) !important;
-
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-    }
-
-
-    /* =========================================
-       TASKBAR
-    ========================================= */
-
-    #taskbar {
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(255, 184, 215, 0.96) 0%,
-          rgba(246, 132, 179, 0.96) 45%,
-          rgba(220, 91, 145, 0.98) 100%
-        ) !important;
-
-      border-top:
-        1px solid rgba(255, 235, 245, 0.85) !important;
-
-      box-shadow:
-        0 -1px 0 rgba(255,255,255,0.30) inset,
-        0 -3px 15px rgba(180, 35, 100, 0.15),
-        0 0 15px rgba(255, 90, 160, 0.12) !important;
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-
-    /* =========================================
-       TASKBAR ITEMS
-    ========================================= */
-
-    .taskbar-item {
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(255, 215, 232, 0.72),
-          rgba(235, 117, 169, 0.78)
-        ) !important;
-
-      border:
-        1px solid rgba(255,255,255,0.30) !important;
-
-      box-shadow:
-        0 1px 0 rgba(255,255,255,0.35) inset,
-        0 0 5px rgba(120, 20, 70, 0.15) !important;
-
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-
-    /* Active taskbar item */
-    .taskbar-item.active,
-    .taskbar-item:active {
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(230, 91, 148, 0.98),
-          rgba(190, 55, 112, 0.98)
-        ) !important;
-    }
-
-
-    /* =========================================
-       WINDOWS
-    ========================================= */
-
-    .window {
-      border-color: rgba(135, 35, 80, 0.75) !important;
-
-      box-shadow:
-        0 10px 30px rgba(80, 10, 40, 0.25),
-        0 0 0 1px rgba(255,255,255,0.20) inset !important;
-
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-
-    /* =========================================
-       WINDOW TOP BARS
-    ========================================= */
-
-    .window-header-background {
-      background:
-        linear-gradient(
-          to bottom,
-          rgb(255, 193, 220) 0%,
-          rgb(255, 165, 201) 5%,
-          rgb(244, 126, 174) 18%,
-          rgb(232, 103, 157) 50%,
-          rgb(220, 88, 143) 80%,
-          rgb(199, 66, 123) 100%
-        ) !important;
-
-      border-color:
-        rgba(255,255,255,0.40) !important;
-
-      box-shadow:
-        0 1px 0 rgba(255,255,255,0.35) inset,
-        0 -1px 0 rgba(130,20,70,0.20) inset !important;
-    }
-
-
-    /* =========================================
-       WINDOW CONTENT GLASS
-    ========================================= */
-
-    .window-content {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(255,255,255,0.78),
-          rgba(255,235,244,0.72)
-        ) !important;
-    }
-
-
-    /* =========================================
-       INACTIVE WINDOW
-    ========================================= */
-
-    .window.window-inactive .window-header-background {
-      background:
-        linear-gradient(
-          to bottom,
-          rgb(221, 168, 192) 0%,
-          rgb(210, 139, 170) 25%,
-          rgb(193, 112, 148) 60%,
-          rgb(180, 94, 135) 100%
-        ) !important;
-    }
-
-
-    /* =========================================
-       BUTTONS
-    ========================================= */
-
-    .header-button,
-    .header_button {
-      filter:
-        hue-rotate(300deg)
-        saturate(1.15);
-    }
-
-
-    /* =========================================
-       DESKTOP FOOTER
-       LIGHTER VERSION OF ROSE
-    ========================================= */
-
-    #Desktop_Footer {
-      background:
-        linear-gradient(
-          to bottom,
-          rgb(255, 207, 228) 0%,
-          rgb(255, 184, 213) 45%,
-          rgb(242, 151, 190) 100%
-        ) !important;
-
-      border-top:
-        1px solid rgba(255,255,255,0.70) !important;
-
-      box-shadow:
-        0 -2px 10px rgba(180,40,100,0.15),
-        0 1px 0 rgba(255,255,255,0.30) inset !important;
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-
-    /* =========================================
-       START MENU GLASS
-    ========================================= */
-
-    #StartMenu {
-      box-shadow:
-        0 15px 35px rgba(70, 10, 40, 0.30),
-        0 0 0 1px rgba(255,255,255,0.20) inset !important;
-
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-  `;
-
-  document.head.appendChild(style);
-}
-
-
-/* =========================================================
-   SOUND
-========================================================= */
+loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html").then(
+  (html) => (turnOffComputerHTML = html)
+);
 
 function playSoundOnPage(path, defaultSoundPath, onLoadCallback) {
-  if (!window.location.pathname.endsWith(path)) return;
+  if (window.location.pathname.endsWith(path)) {
+    window.addEventListener("load", function () {
+      let soundPath = defaultSoundPath;
 
-  window.addEventListener("load", function () {
-    let soundPath = defaultSoundPath;
+      if (
+        path === "/Bureau/Bureau.html" &&
+        localStorage.getItem("fromSwitchUser") === "1"
+      ) {
+        soundPath = "/Assets/Sounds/Resume_Users.mp3";
+        localStorage.removeItem("fromSwitchUser");
+      }
 
-    if (
-      path === "/Bureau/Bureau.html" &&
-      localStorage.getItem("fromSwitchUser") === "1"
-    ) {
-      soundPath = "/Assets/Sounds/Resume_Users.mp3";
-      localStorage.removeItem("fromSwitchUser");
-    }
+      const guestUser = document.getElementById("guest-user");
 
-    const guestUser = document.getElementById("guest-user");
+      if (guestUser && guestUser.querySelector("#loaded")) {
+        soundPath = "/Assets/Sounds/Resume_Users.mp3";
+      }
 
-    if (guestUser && guestUser.querySelector("#loaded")) {
-      soundPath = "/Assets/Sounds/Resume_Users.mp3";
-    }
+      const audio = new Audio(soundPath);
 
-    const audio = new Audio(soundPath);
+      audio.play().catch((error) =>
+        console.error("Audio error:", error)
+      );
 
-    audio
-      .play()
-      .catch((error) => console.error("Audio error:", error));
-
-    if (typeof onLoadCallback === "function") {
-      onLoadCallback();
-    }
-  });
+      if (typeof onLoadCallback === "function") {
+        onLoadCallback();
+      }
+    });
+  }
 }
 
-
-/* =========================================================
-   IMPORTANT:
-   LINKEDIN REMOVED
-========================================================= */
-
+/*
+ * Windows XP startup sound
+ *
+ * LinkedIn startup opening has been completely removed.
+ */
 playSoundOnPage(
   "/Bureau/Bureau.html",
   "/Assets/Sounds/windows-xp-startup.mp3"
 );
-
-
-/* Other sounds */
 
 playSoundOnPage(
   "/Start_Menu/Log_Off/Transition/Switch_User.html",
   "/Assets/Sounds/Switch_Users.mp3"
 );
 
-
-/* =========================================================
-   DOM READY
-========================================================= */
-
 document.addEventListener("DOMContentLoaded", () => {
-  injectRoseTheme();
-
   updateTaskbarVisibility();
 
-  setupDesktopSelection();
-  setupDesktopGrid();
-
   function updateClock() {
-    const clock = document.getElementById("footer-time");
-
-    if (!clock) return;
-
     const now = new Date().toLocaleTimeString([], {
       hour12: true,
       hour: "2-digit",
       minute: "2-digit",
     });
 
-    clock.textContent = now;
+    const footerTime = document.getElementById("footer-time");
+
+    if (footerTime) {
+      footerTime.textContent = now;
+    }
   }
 
   updateClock();
-
   setInterval(updateClock, 52000);
 
   const startBtn = document.getElementById("start-button");
@@ -406,471 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-/* =========================================================
-   DESKTOP SELECTION BOX
-========================================================= */
-
-function setupDesktopSelection() {
-  if (document.getElementById("desktop-selection-box")) return;
-
-  const desktop =
-    document.getElementById("desktop") ||
-    document.body;
-
-  const selectionBox = document.createElement("div");
-
-  selectionBox.id = "desktop-selection-box";
-
-  document.body.appendChild(selectionBox);
-
-  let selecting = false;
-  let startX = 0;
-  let startY = 0;
-
-  function getDesktopRect() {
-    const rect = desktop.getBoundingClientRect();
-
-    return {
-      left: rect.left,
-      top: rect.top,
-      right: rect.right,
-      bottom: rect.bottom,
-    };
-  }
-
-  desktop.addEventListener("mousedown", (event) => {
-    if (event.button !== 0) return;
-
-    /*
-      Don't start selection when clicking:
-      - icons
-      - windows
-      - taskbar
-      - buttons
-      - menus
-    */
-
-    if (
-      event.target.closest(
-        ".window, .taskbar-item, .footer__start_menu, #StartMenu, img, button, a, input, textarea"
-      )
-    ) {
-      return;
-    }
-
-    selecting = true;
-
-    const rect = getDesktopRect();
-
-    startX = Math.max(rect.left, event.clientX);
-    startY = Math.max(rect.top, event.clientY);
-
-    selectionBox.style.display = "block";
-    selectionBox.style.left = `${startX}px`;
-    selectionBox.style.top = `${startY}px`;
-    selectionBox.style.width = "0px";
-    selectionBox.style.height = "0px";
-
-    document.body.style.userSelect = "none";
-  });
-
-  document.addEventListener("mousemove", (event) => {
-    if (!selecting) return;
-
-    const rect = getDesktopRect();
-
-    const currentX = Math.max(
-      rect.left,
-      Math.min(rect.right, event.clientX)
-    );
-
-    const currentY = Math.max(
-      rect.top,
-      Math.min(rect.bottom, event.clientY)
-    );
-
-    const left = Math.min(startX, currentX);
-    const top = Math.min(startY, currentY);
-
-    const width = Math.abs(currentX - startX);
-    const height = Math.abs(currentY - startY);
-
-    selectionBox.style.left = `${left}px`;
-    selectionBox.style.top = `${top}px`;
-    selectionBox.style.width = `${width}px`;
-    selectionBox.style.height = `${height}px`;
-  });
-
-  document.addEventListener("mouseup", () => {
-    if (!selecting) return;
-
-    selecting = false;
-
-    selectionBox.style.display = "none";
-
-    document.body.style.userSelect = "";
-  });
-}
-
-
-/* =========================================================
-   DESKTOP GRID SYSTEM
-========================================================= */
-
-const DESKTOP_GRID = {
-  cellWidth: 80,
-  cellHeight: 80,
-  startX: 15,
-  startY: 15,
-};
-
-
-/*
-  Find desktop icons.
-  This supports common XP-style icon structures.
-*/
-
-function getDesktopIcons() {
-  const desktop = document.getElementById("desktop");
-
-  if (!desktop) return [];
-
-  return Array.from(
-    desktop.querySelectorAll(
-      ".desktop-icon, .icon, .desktop__icon, [data-desktop-icon]"
-    )
-  ).filter((icon) => {
-    return !icon.closest(".window");
-  });
-}
-
-
-/*
-  Snap an icon to the closest grid position.
-*/
-
-function snapIconToGrid(icon) {
-  if (!icon) return;
-
-  const desktop =
-    document.getElementById("desktop") ||
-    document.body;
-
-  const desktopRect = desktop.getBoundingClientRect();
-
-  const iconRect = icon.getBoundingClientRect();
-
-  let x =
-    iconRect.left -
-    desktopRect.left;
-
-  let y =
-    iconRect.top -
-    desktopRect.top;
-
-  const gridX =
-    DESKTOP_GRID.startX +
-    Math.round(
-      (x - DESKTOP_GRID.startX) /
-        DESKTOP_GRID.cellWidth
-    ) *
-      DESKTOP_GRID.cellWidth;
-
-  const gridY =
-    DESKTOP_GRID.startY +
-    Math.round(
-      (y - DESKTOP_GRID.startY) /
-        DESKTOP_GRID.cellHeight
-    ) *
-      DESKTOP_GRID.cellHeight;
-
-  icon.style.position = "absolute";
-  icon.style.left = `${Math.max(0, gridX)}px`;
-  icon.style.top = `${Math.max(0, gridY)}px`;
-}
-
-
-/*
-  Snap all existing icons.
-*/
-
-function snapAllDesktopIcons() {
-  const icons = getDesktopIcons();
-
-  icons.forEach((icon) => {
-    snapIconToGrid(icon);
-  });
-}
-
-
-/*
-  Automatically watch for newly-created icons.
-*/
-
-function setupDesktopGrid() {
-  const desktop = document.getElementById("desktop");
-
-  if (!desktop) return;
-
-  /*
-    Don't immediately move every existing icon.
-    Their existing positions should be preserved.
-  */
-
-  const observer = new MutationObserver((mutations) => {
-    let foundNewIcon = false;
-
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (!(node instanceof HTMLElement)) return;
-
-        if (
-          node.matches?.(
-            ".desktop-icon, .icon, .desktop__icon, [data-desktop-icon]"
-          )
-        ) {
-          foundNewIcon = true;
-        }
-      });
-    });
-
-    if (foundNewIcon) {
-      setTimeout(() => {
-        setupIconDragging();
-      }, 50);
-    }
-  });
-
-  observer.observe(desktop, {
-    childList: true,
-    subtree: true,
-  });
-
-  setupIconDragging();
-}
-
-
-/*
-  Custom grid-aware icon dragging.
-*/
-
-function setupIconDragging() {
-  const icons = getDesktopIcons();
-
-  icons.forEach((icon) => {
-    if (icon.dataset.gridDragReady === "true") {
-      return;
-    }
-
-    icon.dataset.gridDragReady = "true";
-
-    let dragging = false;
-    let moved = false;
-
-    let startMouseX = 0;
-    let startMouseY = 0;
-
-    let originalLeft = 0;
-    let originalTop = 0;
-
-    let offsetX = 0;
-    let offsetY = 0;
-
-    icon.addEventListener("mousedown", (event) => {
-      if (event.button !== 0) return;
-
-      /*
-        Ignore buttons/links inside icons.
-      */
-
-      if (
-        event.target.closest(
-          "button, a, input, textarea"
-        )
-      ) {
-        return;
-      }
-
-      const desktop =
-        document.getElementById("desktop");
-
-      if (!desktop) return;
-
-      const desktopRect =
-        desktop.getBoundingClientRect();
-
-      const iconRect =
-        icon.getBoundingClientRect();
-
-      startMouseX = event.clientX;
-      startMouseY = event.clientY;
-
-      originalLeft =
-        iconRect.left -
-        desktopRect.left;
-
-      originalTop =
-        iconRect.top -
-        desktopRect.top;
-
-      offsetX =
-        event.clientX -
-        iconRect.left;
-
-      offsetY =
-        event.clientY -
-        iconRect.top;
-
-      dragging = true;
-      moved = false;
-
-      icon.style.zIndex = "1000";
-
-      document.body.style.userSelect = "none";
-
-      event.preventDefault();
-      event.stopPropagation();
-    });
-
-    const moveHandler = (event) => {
-      if (!dragging) return;
-
-      const dx =
-        event.clientX -
-        startMouseX;
-
-      const dy =
-        event.clientY -
-        startMouseY;
-
-      /*
-        Small movement = normal click.
-      */
-
-      if (
-        !moved &&
-        Math.abs(dx) < 4 &&
-        Math.abs(dy) < 4
-      ) {
-        return;
-      }
-
-      moved = true;
-
-      const desktop =
-        document.getElementById("desktop");
-
-      if (!desktop) return;
-
-      const desktopRect =
-        desktop.getBoundingClientRect();
-
-      let x =
-        event.clientX -
-        desktopRect.left -
-        offsetX;
-
-      let y =
-        event.clientY -
-        desktopRect.top -
-        offsetY;
-
-      /*
-        Snap while dragging.
-
-        This gives the "grid frame" effect.
-      */
-
-      x =
-        DESKTOP_GRID.startX +
-        Math.round(
-          (x - DESKTOP_GRID.startX) /
-            DESKTOP_GRID.cellWidth
-        ) *
-          DESKTOP_GRID.cellWidth;
-
-      y =
-        DESKTOP_GRID.startY +
-        Math.round(
-          (y - DESKTOP_GRID.startY) /
-            DESKTOP_GRID.cellHeight
-        ) *
-          DESKTOP_GRID.cellHeight;
-
-      icon.style.position = "absolute";
-      icon.style.left = `${Math.max(0, x)}px`;
-      icon.style.top = `${Math.max(0, y)}px`;
-    };
-
-    const upHandler = () => {
-      if (!dragging) return;
-
-      dragging = false;
-
-      document.body.style.userSelect = "";
-
-      /*
-        Final snap.
-      */
-
-      if (moved) {
-        snapIconToGrid(icon);
-      }
-
-      icon.style.zIndex = "";
-
-      /*
-        Prevent the click event after a drag.
-      */
-
-      if (moved) {
-        icon.dataset.justDragged = "true";
-
-        setTimeout(() => {
-          delete icon.dataset.justDragged;
-        }, 100);
-      }
-    };
-
-    document.addEventListener(
-      "mousemove",
-      moveHandler
-    );
-
-    document.addEventListener(
-      "mouseup",
-      upHandler
-    );
-
-    icon.addEventListener(
-      "click",
-      (event) => {
-        if (
-          icon.dataset.justDragged === "true"
-        ) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-      },
-      true
-    );
-  });
-}
-
-
-/* =========================================================
-   START MENU OUTSIDE CLICK
-========================================================= */
-
 document.addEventListener("click", function (event) {
-  const menu =
-    document.getElementById("StartMenu");
-
-  const startMenuBtn =
-    document.querySelector(
-      ".footer__start_menu"
-    );
+  const menu = document.getElementById("StartMenu");
+  const startMenuBtn = document.querySelector(".footer__start_menu");
 
   if (
     menu &&
@@ -881,11 +149,6 @@ document.addEventListener("click", function (event) {
     menu.remove();
   }
 });
-
-
-/* =========================================================
-   OPEN WINDOW
-========================================================= */
 
 function openWindow(appName) {
   let windowTooltipContainer = null;
@@ -908,68 +171,40 @@ function openWindow(appName) {
     `/Open_Windows/${appName}/${appName}.css`
   );
 
-  injectRoseTheme();
+  const taskbar = document.getElementById("taskbar");
 
-  let taskbar =
-    document.getElementById("taskbar");
+  if (document.getElementById(`window-${appName}`)) return;
 
-  if (
-    document.getElementById(
-      `window-${appName}`
-    )
-  ) {
-    return;
-  }
+  const windowElement = document.createElement("div");
 
-  let windowElement =
-    document.createElement("div");
-
-  windowElement.id =
-    `window-${appName}`;
-
+  windowElement.id = `window-${appName}`;
   windowElement.classList.add("window");
 
-  const personalizedHTML =
-    openWindowHTML.replace(
-      /\$\{appName\}/g,
-      appName
-    );
+  const personalizedHTML = openWindowHTML.replace(
+    /\$\{appName\}/g,
+    appName
+  );
 
-  windowElement.innerHTML =
-    personalizedHTML;
-
-
-  /* Minesweeper */
+  windowElement.innerHTML = personalizedHTML;
 
   if (appName === "Minesweeper") {
-    const maximazeButton =
-      windowElement.querySelector(
-        ".header-button--maximaze"
-      );
+    const maximazeButton = windowElement.querySelector(
+      ".header-button--maximaze"
+    );
 
     if (maximazeButton) {
-      maximazeButton.removeAttribute(
-        "onclick"
-      );
-
+      maximazeButton.removeAttribute("onclick");
       maximazeButton.disabled = true;
       maximazeButton.style.opacity = "0.5";
-      maximazeButton.style.pointerEvents =
-        "none";
+      maximazeButton.style.pointerEvents = "none";
 
-      windowElement.style.width =
-        "auto";
-
-      windowElement.style.height =
-        "auto";
+      windowElement.style.width = "auto";
+      windowElement.style.height = "auto";
     }
   } else {
     makeResizable(windowElement);
 
-    const header =
-      windowElement.querySelector(
-        ".window-header"
-      );
+    const header = windowElement.querySelector(".window-header");
 
     if (header) {
       header.setAttribute(
@@ -979,726 +214,452 @@ function openWindow(appName) {
     }
   }
 
-
-  /* Pinball */
-
-  if (
-    appName ===
-    "Space Cadet Pinball"
-  ) {
-    windowElement.style.visibility =
-      "hidden";
-
-    windowElement.style.opacity =
-      "0";
+  if (appName === "Space Cadet Pinball") {
+    windowElement.style.visibility = "hidden";
+    windowElement.style.opacity = "0";
   }
 
-
-  /* Load application HTML */
-
-  fetch(
-    `/Open_Windows/${appName}/${appName}.html`
-  )
+  fetch(`/Open_Windows/${appName}/${appName}.html`)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(
-          "Fichier introuvable"
-        );
+        throw new Error("Fichier introuvable");
       }
 
       return response.text();
     })
     .then((htmlContent) => {
       const contentContainer =
-        windowElement.querySelector(
-          ".window-content"
-        );
+        windowElement.querySelector(".window-content");
 
       if (contentContainer) {
-        contentContainer.innerHTML =
-          htmlContent;
+        contentContainer.innerHTML = htmlContent;
       } else {
-        windowElement.innerHTML =
-          htmlContent;
+        windowElement.innerHTML = htmlContent;
       }
 
-
-      /* Rose header immediately */
-
-      const headerBg =
-        windowElement.querySelector(
-          ".window-header-background"
-        );
-
-      if (headerBg) {
-        headerBg.style.background =
-          `
-          linear-gradient(
-            to bottom,
-            rgb(255,193,220) 0%,
-            rgb(255,165,201) 5%,
-            rgb(244,126,174) 18%,
-            rgb(232,103,157) 50%,
-            rgb(220,88,143) 80%,
-            rgb(199,66,123) 100%
-          )
-          `;
-      }
-
-
-      const labelDivs =
-        windowElement.querySelectorAll(
-          ".drop_down_label, .Minesweeper_drop_down_label"
-        );
-
+      const labelDivs = windowElement.querySelectorAll(
+        ".drop_down_label, .Minesweeper_drop_down_label"
+      );
 
       labelDivs.forEach((labelDiv) => {
-        labelDiv.addEventListener(
-          "click",
-          function () {
-            if (
-              windowTooltipContainer &&
-              windowTooltipContainer.parentNode
-            ) {
-              windowTooltipContainer.removeAttribute(
-                "data-tooltip-initialized"
-              );
-
-              windowTooltipContainer.parentNode.removeChild(
-                windowTooltipContainer
-              );
-
-              windowTooltipContainer =
-                null;
-            }
-
-            windowCurrentLabel =
-              labelDiv;
-
-            const fileName =
-              labelDiv.textContent.trim();
-
-            fetch(
-              `/Open_Windows/${appName}/Tooltip/${fileName}.html`
-            )
-              .then((response) =>
-                response.text()
-              )
-              .then((htmlContent) => {
-                const container =
-                  document.createElement(
-                    "div"
-                  );
-
-                container.className =
-                  "window-tooltip";
-
-                container.innerHTML =
-                  htmlContent;
-
-                observeMinesweeperTooltipLoad();
-                observeSecondaryTooltipRows(
-                  appName
-                );
-
-                labelDiv.parentNode.insertBefore(
-                  container,
-                  labelDiv.nextSibling
-                );
-
-                windowTooltipContainer =
-                  container;
-
-                const closeDivs =
-                  container.querySelectorAll(
-                    ".drop-down__text"
-                  );
-
-                closeDivs.forEach((div) => {
-                  const txt =
-                    div.textContent
-                      .trim()
-                      .toLowerCase();
-
-                  if (
-                    txt === "close" ||
-                    txt === "exit"
-                  ) {
-                    div.setAttribute(
-                      "onclick",
-                      `closeWindow('${appName}')`
-                    );
-                  }
-                });
-              })
-              .catch((err) => {
-                console.error(
-                  "Erreur de chargement du fichier HTML:",
-                  err
-                );
-              });
-          }
-        );
-
-
-        labelDiv.addEventListener(
-          "mouseenter",
-          function () {
-            if (
-              !windowTooltipContainer
-            ) {
-              return;
-            }
-
-            if (
-              windowCurrentLabel ===
-              labelDiv
-            ) {
-              return;
-            }
-
-            if (
-              windowTooltipContainer &&
-              windowTooltipContainer.parentNode
-            ) {
-              windowTooltipContainer.removeAttribute(
-                "data-tooltip-initialized"
-              );
-
-              windowTooltipContainer.parentNode.removeChild(
-                windowTooltipContainer
-              );
-
-              windowTooltipContainer =
-                null;
-            }
-
-            windowCurrentLabel =
-              labelDiv;
-
-            const fileName =
-              labelDiv.textContent.trim();
-
-            fetch(
-              `/Open_Windows/${appName}/Tooltip/${fileName}.html`
-            )
-              .then((response) =>
-                response.text()
-              )
-              .then((htmlContent) => {
-                const container =
-                  document.createElement(
-                    "div"
-                  );
-
-                container.className =
-                  "window-tooltip";
-
-                container.innerHTML =
-                  htmlContent;
-
-                observeMinesweeperTooltipLoad();
-
-                observeSecondaryTooltipRows(
-                  appName
-                );
-
-                labelDiv.parentNode.insertBefore(
-                  container,
-                  labelDiv.nextSibling
-                );
-
-                windowTooltipContainer =
-                  container;
-
-                const closeDivs =
-                  container.querySelectorAll(
-                    ".drop-down__text"
-                  );
-
-                closeDivs.forEach((div) => {
-                  const txt =
-                    div.textContent
-                      .trim()
-                      .toLowerCase();
-
-                  if (
-                    txt === "close" ||
-                    txt === "exit"
-                  ) {
-                    div.setAttribute(
-                      "onclick",
-                      `closeWindow('${appName}')`
-                    );
-                  }
-                });
-              })
-              .catch((err) => {
-                console.error(
-                  "Erreur de chargement du fichier HTML:",
-                  err
-                );
-              });
-          }
-        );
-      });
-
-
-      windowElement.addEventListener(
-        "mousedown",
-        function (event) {
-          const isOnLabel =
-            Array.from(labelDivs).some(
-              (label) =>
-                label.contains(
-                  event.target
-                )
-            );
-
-          const isOnTooltip =
+        labelDiv.addEventListener("click", function () {
+          if (
             windowTooltipContainer &&
-            windowTooltipContainer.contains(
-              event.target
+            windowTooltipContainer.parentNode
+          ) {
+            windowTooltipContainer.removeAttribute(
+              "data-tooltip-initialized"
             );
+
+            windowTooltipContainer.parentNode.removeChild(
+              windowTooltipContainer
+            );
+
+            windowTooltipContainer = null;
+          }
+
+          windowCurrentLabel = labelDiv;
+
+          const fileName = labelDiv.textContent.trim();
+
+          fetch(
+            `/Open_Windows/${appName}/Tooltip/${fileName}.html`
+          )
+            .then((response) => response.text())
+            .then((htmlContent) => {
+              const container = document.createElement("div");
+
+              container.className = "window-tooltip";
+              container.innerHTML = htmlContent;
+
+              observeMinesweeperTooltipLoad();
+              observeSecondaryTooltipRows(appName);
+
+              labelDiv.parentNode.insertBefore(
+                container,
+                labelDiv.nextSibling
+              );
+
+              windowTooltipContainer = container;
+
+              const closeDivs =
+                container.querySelectorAll(".drop-down__text");
+
+              closeDivs.forEach((div) => {
+                const txt = div.textContent
+                  .trim()
+                  .toLowerCase();
+
+                if (txt === "close" || txt === "exit") {
+                  div.setAttribute(
+                    "onclick",
+                    `closeWindow('${appName}')`
+                  );
+                }
+              });
+            })
+            .catch((err) => {
+              console.error(
+                "Erreur de chargement du fichier HTML:",
+                err
+              );
+            });
+        });
+
+        labelDiv.addEventListener("mouseenter", function () {
+          if (!windowTooltipContainer) return;
+          if (windowCurrentLabel === labelDiv) return;
 
           if (
-            !isOnLabel &&
-            !isOnTooltip &&
-            windowTooltipContainer
+            windowTooltipContainer &&
+            windowTooltipContainer.parentNode
           ) {
-            if (
-              windowTooltipContainer.parentNode
-            ) {
-              windowTooltipContainer.removeAttribute(
-                "data-tooltip-initialized"
-              );
-
-              windowTooltipContainer.parentNode.removeChild(
-                windowTooltipContainer
-              );
-
-              windowTooltipContainer =
-                null;
-
-              windowCurrentLabel =
-                null;
-            }
-          }
-        }
-      );
-    })
-    .catch((error) => {
-      console.error(
-        "Erreur de chargement :",
-        error
-      );
-    });
-
-
-  document.body.appendChild(
-    windowElement
-  );
-
-  windowElement.style.top =
-    "115px";
-
-  windowElement.style.left =
-    "115px";
-
-  makeDraggable(
-    windowElement
-  );
-
-
-  /* Taskbar item */
-
-  if (
-    !document.getElementById(
-      `taskbar-${appName}`
-    )
-  ) {
-    let taskbarItem =
-      document.createElement("div");
-
-    taskbarItem.id =
-      `taskbar-${appName}`;
-
-    taskbarItem.classList.add(
-      "taskbar-item"
-    );
-
-    taskbarItem.innerHTML =
-      `<img src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/${appName}.png" width="16"> <span>${appName}</span>`;
-
-    taskbarItem.onmousedown =
-      () =>
-        toggleWindow(appName);
-
-    taskbar.appendChild(
-      taskbarItem
-    );
-  }
-
-
-  window.addEventListener(
-    "mousedown",
-    function (event) {
-      const windowEl =
-        windowElement;
-
-      if (!windowEl) return;
-
-      const isInWindow =
-        windowEl.contains(
-          event.target
-        );
-
-      const isInTooltip =
-        windowTooltipContainer &&
-        windowTooltipContainer.contains(
-          event.target
-        );
-
-      if (
-        !isInWindow &&
-        !isInTooltip &&
-        windowTooltipContainer
-      ) {
-        windowTooltipContainer.removeAttribute(
-          "data-tooltip-initialized"
-        );
-
-        windowTooltipContainer.remove();
-
-        windowTooltipContainer =
-          null;
-
-        windowCurrentLabel =
-          null;
-      }
-    }
-  );
-}
-
-
-/* =========================================================
-   SECONDARY TOOLTIP
-========================================================= */
-
-function observeSecondaryTooltipRows(
-  appName
-) {
-  const windowElement =
-    document.getElementById(
-      `window-${appName}`
-    );
-
-  if (!windowElement) return;
-
-  const observer =
-    new MutationObserver(() => {
-      const tooltipWindows =
-        Array.from(
-          windowElement.querySelectorAll(
-            ".window-tooltip:not([data-tooltip-initialized])"
-          )
-        ).filter(
-          (el) =>
-            el.offsetParent !== null
-        );
-
-      tooltipWindows.forEach(
-        (tooltipWindow) => {
-          tooltipWindow.setAttribute(
-            "data-tooltip-initialized",
-            "true"
-          );
-
-          const dropDownRows =
-            tooltipWindow.querySelectorAll(
-              ".drop-down__row"
+            windowTooltipContainer.removeAttribute(
+              "data-tooltip-initialized"
             );
 
-          let windowSecondTooltip =
-            null;
+            windowTooltipContainer.parentNode.removeChild(
+              windowTooltipContainer
+            );
 
-          let windowSecondCurrentRow =
-            null;
+            windowTooltipContainer = null;
+          }
 
-          dropDownRows.forEach(
-            (row) => {
-              row.addEventListener(
-                "mouseenter",
-                function () {
-                  const textDiv =
-                    row.querySelector(
-                      ".drop-down__text"
-                    );
+          windowCurrentLabel = labelDiv;
 
-                  if (!textDiv) return;
+          const fileName = labelDiv.textContent.trim();
 
-                  const fileName =
-                    textDiv.textContent.trim();
+          fetch(
+            `/Open_Windows/${appName}/Tooltip/${fileName}.html`
+          )
+            .then((response) => response.text())
+            .then((htmlContent) => {
+              const container = document.createElement("div");
 
-                  if (
-                    windowSecondCurrentRow ===
-                    row
-                  ) {
-                    return;
-                  }
+              container.className = "window-tooltip";
+              container.innerHTML = htmlContent;
 
-                  if (
-                    windowSecondTooltip?.parentNode
-                  ) {
-                    windowSecondTooltip.parentNode.removeChild(
-                      windowSecondTooltip
-                    );
+              observeMinesweeperTooltipLoad();
+              observeSecondaryTooltipRows(appName);
 
-                    windowSecondTooltip =
-                      null;
-                  }
-
-                  windowSecondCurrentRow =
-                    row;
-
-                  const allowedTooltips = [
-                    "Encoding",
-                    "Explorer Bar",
-                    "Go to",
-                    "Mail and News",
-                    "New",
-                    "Send",
-                    "Text Size",
-                    "Toolbars",
-                    "Arrange Icons by",
-                    "Links",
-                    "Pop-up Blocker",
-                  ];
-
-                  if (
-                    !allowedTooltips.includes(
-                      fileName
-                    )
-                  ) {
-                    return;
-                  }
-
-                  fetch(
-                    `/Open_Windows/${appName}/Sub_Tooltip/${fileName}.html`
-                  )
-                    .then((response) => {
-                      if (!response.ok) {
-                        if (
-                          response.status ===
-                          404
-                        ) {
-                          return null;
-                        }
-
-                        throw new Error(
-                          `Erreur HTTP: ${response.status}`
-                        );
-                      }
-
-                      return response.text();
-                    })
-                    .then(
-                      (htmlContent) => {
-                        if (
-                          !htmlContent
-                        ) {
-                          return;
-                        }
-
-                        const container =
-                          document.createElement(
-                            "div"
-                          );
-
-                        container.className =
-                          "window-Sub_tooltip";
-
-                        container.innerHTML =
-                          htmlContent;
-
-                        const tooltipWindow =
-                          row.closest(
-                            ".window-tooltip"
-                          );
-
-                        if (
-                          !tooltipWindow
-                        ) {
-                          return;
-                        }
-
-                        const reference =
-                          row.querySelector(
-                            ".drop-down__text"
-                          );
-
-                        if (
-                          !reference
-                        ) {
-                          return;
-                        }
-
-                        const referenceRect =
-                          reference.getBoundingClientRect();
-
-                        const parentRect =
-                          tooltipWindow.getBoundingClientRect();
-
-                        const offsetX =
-                          referenceRect.left -
-                          parentRect.left;
-
-                        const offsetY =
-                          referenceRect.bottom -
-                          parentRect.top +
-                          5;
-
-                        container.style.position =
-                          "absolute";
-
-                        container.style.left =
-                          `${offsetX + 110}px`;
-
-                        container.style.top =
-                          `${offsetY - 5}px`;
-
-                        tooltipWindow.appendChild(
-                          container
-                        );
-
-                        windowSecondTooltip =
-                          container;
-                      }
-                    )
-                    .catch(() => {});
-                }
+              labelDiv.parentNode.insertBefore(
+                container,
+                labelDiv.nextSibling
               );
-            }
-          );
-        }
-      );
-    });
 
-  observer.observe(
-    windowElement,
-    {
-      childList: true,
-      subtree: true,
-    }
-  );
-}
+              windowTooltipContainer = container;
 
+              const closeDivs =
+                container.querySelectorAll(".drop-down__text");
 
-/* =========================================================
-   MINESWEEPER CHECKMARK
-========================================================= */
+              closeDivs.forEach((div) => {
+                const txt = div.textContent
+                  .trim()
+                  .toLowerCase();
 
-function updateCheckmarkInTooltip() {
-  const selectedLevel =
-    localStorage.getItem(
-      "SelectedLevel"
-    );
+                if (txt === "close" || txt === "exit") {
+                  div.setAttribute(
+                    "onclick",
+                    `closeWindow('${appName}')`
+                  );
+                }
+              });
+            })
+            .catch((err) => {
+              console.error(
+                "Erreur de chargement du fichier HTML:",
+                err
+              );
+            });
+        });
+      });
 
-  if (!selectedLevel) return;
-
-  const minesweeperMenu =
-    document.querySelector(
-      ".Minesweeper_drop_down"
-    );
-
-  if (!minesweeperMenu) return;
-
-  const rows =
-    minesweeperMenu.querySelectorAll(
-      ".drop-down__row"
-    );
-
-  rows.forEach((row) => {
-    const checkContainer =
-      row.querySelector(
-        ".drop-down__check"
-      );
-
-    const textContainer =
-      row.querySelector(
-        ".drop-down__text"
-      );
-
-    if (
-      !checkContainer ||
-      !textContainer
-    ) {
-      return;
-    }
-
-    checkContainer.innerHTML = "";
-
-    const levelText =
-      textContainer.textContent
-        .trim()
-        .toLowerCase();
-
-    const selectedText =
-      selectedLevel
-        .trim()
-        .toLowerCase();
-
-    if (
-      levelText ===
-      selectedText
-    ) {
-      const img =
-        document.createElement(
-          "img"
+      windowElement.addEventListener("mousedown", function (event) {
+        const isOnLabel = Array.from(labelDivs).some((label) =>
+          label.contains(event.target)
         );
 
-      img.src =
-        "/Assets/Images/Tooltip_CheckMark.png";
+        const isOnTooltip =
+          windowTooltipContainer &&
+          windowTooltipContainer.contains(event.target);
 
-      img.alt =
-        "Check Mark";
+        if (
+          !isOnLabel &&
+          !isOnTooltip &&
+          windowTooltipContainer
+        ) {
+          if (
+            windowTooltipContainer &&
+            windowTooltipContainer.parentNode
+          ) {
+            windowTooltipContainer.removeAttribute(
+              "data-tooltip-initialized"
+            );
 
-      checkContainer.appendChild(
-        img
+            windowTooltipContainer.parentNode.removeChild(
+              windowTooltipContainer
+            );
+
+            windowTooltipContainer = null;
+            windowCurrentLabel = null;
+          }
+        }
+      });
+    })
+    .catch((error) => {
+      console.error("Erreur de chargement :", error);
+    });
+
+  document.body.appendChild(windowElement);
+
+  windowElement.style.top = "115px";
+  windowElement.style.left = "115px";
+
+  makeDraggable(windowElement);
+
+  if (!document.getElementById(`taskbar-${appName}`)) {
+    const taskbarItem = document.createElement("div");
+
+    taskbarItem.id = `taskbar-${appName}`;
+    taskbarItem.classList.add("taskbar-item");
+
+    taskbarItem.innerHTML = `
+      <img
+        src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/${appName}.png"
+        width="16"
+      >
+      <span>${appName}</span>
+    `;
+
+    taskbarItem.onmousedown = () =>
+      toggleWindow(appName);
+
+    taskbar.appendChild(taskbarItem);
+  }
+
+  window.addEventListener("mousedown", function (event) {
+    const windowEl = windowElement;
+
+    if (!windowEl) return;
+
+    const isInWindow = windowEl.contains(event.target);
+
+    const isInTooltip =
+      windowTooltipContainer &&
+      windowTooltipContainer.contains(event.target);
+
+    if (
+      !isInWindow &&
+      !isInTooltip &&
+      windowTooltipContainer
+    ) {
+      windowTooltipContainer.removeAttribute(
+        "data-tooltip-initialized"
       );
+
+      windowTooltipContainer.remove();
+
+      windowTooltipContainer = null;
+      windowCurrentLabel = null;
     }
   });
 }
 
-
-function observeMinesweeperTooltipLoad() {
-  const observer =
-    new MutationObserver(() => {
-      const tooltip =
-        document.querySelector(
-          ".Minesweeper_drop_down"
-        );
-
-      if (tooltip) {
-        updateCheckmarkInTooltip();
-
-        observer.disconnect();
-      }
-    });
-
-  observer.observe(
-    document.body,
-    {
-      childList: true,
-      subtree: true,
-    }
+function observeSecondaryTooltipRows(appName) {
+  const windowElement = document.getElementById(
+    `window-${appName}`
   );
+
+  if (!windowElement) return;
+
+  const observer = new MutationObserver(() => {
+    const tooltipWindows = Array.from(
+      windowElement.querySelectorAll(
+        ".window-tooltip:not([data-tooltip-initialized])"
+      )
+    ).filter((el) => el.offsetParent !== null);
+
+    tooltipWindows.forEach((tooltipWindow) => {
+      tooltipWindow.setAttribute(
+        "data-tooltip-initialized",
+        "true"
+      );
+
+      const dropDownRows =
+        tooltipWindow.querySelectorAll(".drop-down__row");
+
+      let windowSecondTooltip = null;
+      let windowSecondCurrentRow = null;
+
+      dropDownRows.forEach((row) => {
+        row.addEventListener("mouseenter", function () {
+          const textDiv =
+            row.querySelector(".drop-down__text");
+
+          if (!textDiv) return;
+
+          const fileName = textDiv.textContent.trim();
+
+          if (windowSecondCurrentRow === row) return;
+
+          if (windowSecondTooltip?.parentNode) {
+            windowSecondTooltip.parentNode.removeChild(
+              windowSecondTooltip
+            );
+
+            windowSecondTooltip = null;
+          }
+
+          windowSecondCurrentRow = row;
+
+          const allowedTooltips = [
+            "Encoding",
+            "Explorer Bar",
+            "Go to",
+            "Mail and News",
+            "New",
+            "Send",
+            "Text Size",
+            "Toolbars",
+            "Arrange Icons by",
+            "Links",
+            "Pop-up Blocker",
+          ];
+
+          if (!allowedTooltips.includes(fileName)) return;
+
+          fetch(
+            `/Open_Windows/${appName}/Sub_Tooltip/${fileName}.html`
+          )
+            .then((response) => {
+              if (!response.ok) {
+                if (response.status === 404) return null;
+
+                throw new Error(
+                  `Erreur HTTP: ${response.status}`
+                );
+              }
+
+              return response.text();
+            })
+            .then((htmlContent) => {
+              if (!htmlContent) return;
+
+              const container =
+                document.createElement("div");
+
+              container.className =
+                "window-Sub_tooltip";
+
+              container.innerHTML = htmlContent;
+
+              const tooltipWindow =
+                row.closest(".window-tooltip");
+
+              if (!tooltipWindow) return;
+
+              const reference =
+                row.querySelector(".drop-down__text");
+
+              const referenceRect =
+                reference.getBoundingClientRect();
+
+              const parentRect =
+                tooltipWindow.getBoundingClientRect();
+
+              const offsetX =
+                referenceRect.left - parentRect.left;
+
+              const offsetY =
+                referenceRect.bottom -
+                parentRect.top +
+                5;
+
+              container.style.position = "absolute";
+
+              container.style.left =
+                `${offsetX + 110}px`;
+
+              container.style.top =
+                `${offsetY - 5}px`;
+
+              tooltipWindow.appendChild(container);
+
+              windowSecondTooltip = container;
+            })
+            .catch(() => {});
+        });
+      });
+    });
+  });
+
+  observer.observe(windowElement, {
+    childList: true,
+    subtree: true,
+  });
 }
 
+function updateCheckmarkInTooltip() {
+  const selectedLevel =
+    localStorage.getItem("SelectedLevel");
 
-/* =========================================================
-   WINAMP
-========================================================= */
+  if (!selectedLevel) return;
+
+  const minesweeperMenu =
+    document.querySelector(".Minesweeper_drop_down");
+
+  if (!minesweeperMenu) return;
+
+  const rows =
+    minesweeperMenu.querySelectorAll(".drop-down__row");
+
+  rows.forEach((row) => {
+    const checkContainer =
+      row.querySelector(".drop-down__check");
+
+    const textContainer =
+      row.querySelector(".drop-down__text");
+
+    if (!checkContainer || !textContainer) return;
+
+    checkContainer.innerHTML = "";
+
+    const levelText =
+      textContainer.textContent.trim().toLowerCase();
+
+    const selectedText =
+      selectedLevel.trim().toLowerCase();
+
+    if (levelText === selectedText) {
+      const img = document.createElement("img");
+
+      img.src =
+        "/Assets/Images/Tooltip_CheckMark.png";
+
+      img.alt = "Check Mark";
+
+      checkContainer.appendChild(img);
+    }
+  });
+}
+
+function observeMinesweeperTooltipLoad() {
+  const observer = new MutationObserver(() => {
+    const tooltip = document.querySelector(
+      ".Minesweeper_drop_down"
+    );
+
+    if (tooltip) {
+      updateCheckmarkInTooltip();
+      observer.disconnect();
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+}
 
 function openRawWinamp() {
   if (
@@ -1713,95 +674,121 @@ function openRawWinamp() {
 
   winampDiv.id = "app";
 
-  winampDiv.style.position =
-    "absolute";
-
+  winampDiv.style.position = "absolute";
   winampDiv.style.left = "0";
   winampDiv.style.top = "0";
 
-  document.body.appendChild(
-    winampDiv
-  );
+  document.body.appendChild(winampDiv);
 
   const script =
-    document.createElement(
-      "script"
-    );
+    document.createElement("script");
 
   script.src =
     "https://unpkg.com/webamp@latest/built/webamp.bundle.min.js";
 
   script.onload = () => {
-    if (
-      typeof Webamp ===
-      "undefined"
-    ) {
-      console.error(
-        "Webamp is not loaded!"
-      );
-
+    if (typeof Webamp === "undefined") {
+      console.error("Webamp is not loaded!");
       return;
     }
 
-    const webamp =
-      new Webamp({
-        initialTracks: [
-          {
-            metaData: {
-              artist:
-                "Michael Jackson",
-              title:
-                "Billie Jean",
-            },
-            url:
-              "/Assets/Sounds/Michael Jackson - Billie Jean (Official Video).mp3",
+    const webamp = new Webamp({
+      initialTracks: [
+        {
+          metaData: {
+            artist: "Michael Jackson",
+            title: "Billie Jean",
           },
-          {
-            metaData: {
-              artist:
-                "Joe Hisaishi, Royal Philharmonic Orchestra",
-              title:
-                "The Bygone Days",
-            },
-            url:
-              "/Assets/Sounds/The Bygone Days   Porco Rosso.mp3",
+          url:
+            "/Assets/Sounds/Michael Jackson - Billie Jean (Official Video).mp3",
+        },
+        {
+          metaData: {
+            artist:
+              "Joe Hisaishi, Royal Philharmonic Orchestra",
+            title: "The Bygone Days",
           },
-          {
-            metaData: {
-              artist:
-                "Playboi Carti & The Weeknd",
-              title:
-                "RATHER LIE (Official Audio)",
-            },
-            url:
-              "/Assets/Sounds/Playboi Carti & The Weeknd - RATHER LIE (Official Audio).mp3",
+          url:
+            "/Assets/Sounds/The Bygone Days   Porco Rosso.mp3",
+        },
+        {
+          metaData: {
+            artist:
+              "Playboi Carti & The Weeknd",
+            title: "RATHER LIE (Official Audio)",
           },
-          {
-            metaData: {
-              artist:
-                "Kal Banx ft Smino x Buddy",
-              title:
-                "HOP OUT CHO FEELINGS",
-            },
-            url:
-              "/Assets/Sounds/Kal Banx ft Smino x Buddy  - HOP OUT CHO FEELINGS (Official Video).mp3",
+          url:
+            "/Assets/Sounds/Playboi Carti & The Weeknd - RATHER LIE (Official Audio).mp3",
+        },
+        {
+          metaData: {
+            artist:
+              "Kal Banx ft Smino x Buddy",
+            title:
+              "HOP OUT CHO FEELINGS",
           },
-        ],
-      });
+          url:
+            "/Assets/Sounds/Kal Banx ft Smino x Buddy  - HOP OUT CHO FEELINGS (Official Video).mp3",
+        },
+      ],
+    });
 
-    webamp
-      .renderWhenReady(winampDiv)
-      .then(() => {
-        const observer =
-          new MutationObserver(() => {
-            const webampDiv =
-              document.getElementById(
-                "webamp"
-              );
+    webamp.renderWhenReady(winampDiv).then(() => {
+      const observer =
+        new MutationObserver(() => {
+          const webampDiv =
+            document.getElementById("webamp");
 
-            if (!webampDiv) return;
-
+          if (webampDiv) {
             observer.disconnect();
+
+            const classObserver =
+              new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                  if (
+                    mutation.attributeName ===
+                    "class"
+                  ) {
+                    if (
+                      webampDiv.classList.contains(
+                        "window-inactive"
+                      )
+                    ) {
+                      webampDiv.classList.remove(
+                        "window-inactive"
+                      );
+                    }
+
+                    const inactiveChildren =
+                      webampDiv.querySelectorAll(
+                        ".window-inactive"
+                      );
+
+                    inactiveChildren.forEach((el) => {
+                      el.classList.remove(
+                        "window-inactive"
+                      );
+
+                      el.style.setProperty(
+                        "background-color",
+                        "none",
+                        "important"
+                      );
+                    });
+
+                    webampDiv.style.setProperty(
+                      "background-color",
+                      "",
+                      "important"
+                    );
+                  }
+                });
+              });
+
+            classObserver.observe(webampDiv, {
+              attributes: true,
+              subtree: true,
+            });
 
             zIndexCounter++;
 
@@ -1814,151 +801,209 @@ function openRawWinamp() {
             );
 
             updateTaskbarHighlight();
-          });
 
-        observer.observe(
-          document.body,
-          {
-            childList: true,
-            subtree: true,
+            const windowEl =
+              document.querySelector(
+                "#webamp .window"
+              );
+
+            const styleObserver =
+              new MutationObserver(() => {
+                windowEl.style.setProperty(
+                  "width",
+                  "0",
+                  "important"
+                );
+
+                windowEl.style.setProperty(
+                  "height",
+                  "0",
+                  "important"
+                );
+              });
+
+            styleObserver.observe(windowEl, {
+              attributes: true,
+              attributeFilter: ["style"],
+            });
+
+            webampDiv.addEventListener(
+              "mousedown",
+              () => {
+                zIndexCounter++;
+
+                webampDiv.style.zIndex =
+                  zIndexCounter;
+
+                updateTaskbarHighlight();
+              }
+            );
           }
-        );
+        });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
       });
+    });
 
     webamp.onClose(() => {
-      const taskbarItem =
-        document.getElementById(
-          "taskbar-Winamp"
-        );
+      if (taskbarItem) taskbarItem.remove();
 
-      if (taskbarItem) {
-        taskbarItem.remove();
+      if (winampDiv.parentNode) {
+        winampDiv.parentNode.removeChild(winampDiv);
       }
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+      const webampContainer =
+        document.getElementById("webamp");
 
       if (
-        winampDiv.parentNode
+        webampContainer &&
+        webampContainer.parentNode
       ) {
-        winampDiv.parentNode.removeChild(
-          winampDiv
+        webampContainer.parentNode.removeChild(
+          webampContainer
         );
       }
-
-      if (
-        script.parentNode
-      ) {
-        script.parentNode.removeChild(
-          script
-        );
-      }
-
-      updateTaskbarHighlight();
     });
+
+    setTimeout(() => {
+      const closeBtn =
+        document.getElementById("close");
+
+      if (closeBtn) {
+        closeBtn.addEventListener(
+          "click",
+          () => {
+            if (winampDiv.parentNode) {
+              winampDiv.parentNode.removeChild(
+                winampDiv
+              );
+            }
+
+            if (script.parentNode) {
+              script.parentNode.removeChild(
+                script
+              );
+            }
+
+            const webampContainer =
+              document.getElementById("webamp");
+
+            if (
+              webampContainer &&
+              webampContainer.parentNode
+            ) {
+              webampContainer.parentNode.removeChild(
+                webampContainer
+              );
+
+              updateTaskbarHighlight();
+            }
+          }
+        );
+      }
+    }, 1150);
+
+    setTimeout(() => {
+      const minimizeBtn =
+        document.querySelector(
+          "#webamp #minimize"
+        );
+
+      if (minimizeBtn) {
+        minimizeBtn.addEventListener(
+          "click",
+          () => {
+            const win =
+              document.getElementById("webamp");
+
+            if (win) {
+              win.style.display = "none";
+            }
+
+            updateTaskbarHighlight();
+          }
+        );
+      }
+    }, 1000);
   };
 
-  winampDiv.appendChild(
-    script
-  );
-
+  winampDiv.appendChild(script);
 
   let taskbarItem =
-    document.getElementById(
-      "taskbar-Winamp"
-    );
+    document.getElementById("taskbar-Winamp");
 
-  if (
-    !taskbarItem
-  ) {
+  if (!document.getElementById("taskbar-Winamp")) {
     taskbarItem =
-      document.createElement(
-        "div"
-      );
+      document.createElement("div");
 
-    taskbarItem.id =
-      "taskbar-Winamp";
+    taskbarItem.id = "taskbar-Winamp";
 
     taskbarItem.classList.add(
       "taskbar-item"
     );
 
-    taskbarItem.innerHTML =
-      `<img src="/Assets/Images/Winamp-logo.png" width="16"> <span>Winamp</span>`;
+    taskbarItem.innerHTML = `
+      <img
+        src="/Assets/Images/Winamp-logo.png"
+        width="16"
+      >
+      <span>Winamp</span>
+    `;
 
-    taskbarItem.onmousedown =
-      () => {
-        const winampWindow =
-          document.getElementById(
-            "webamp"
-          );
+    taskbarItem.onmousedown = () => {
+      const winampWindow =
+        document.getElementById("webamp");
 
-        if (!winampWindow) return;
+      if (!winampWindow) return;
 
-        const winampZ =
-          parseInt(
-            winampWindow.style.zIndex ||
-              "0",
-            10
-          );
+      const winampZ =
+        parseInt(
+          winampWindow.style.zIndex || "0",
+          10
+        );
 
-        if (
-          winampWindow.style.display ===
-            "none" ||
-          getComputedStyle(
-            winampWindow
-          ).display === "none"
-        ) {
-          winampWindow.style.display =
-            "block";
+      if (
+        winampWindow.style.display === "none" ||
+        getComputedStyle(winampWindow).display ===
+          "none"
+      ) {
+        winampWindow.style.display = "block";
 
-          zIndexCounter++;
+        zIndexCounter++;
 
-          winampWindow.style.zIndex =
-            zIndexCounter;
+        winampWindow.style.zIndex =
+          zIndexCounter;
 
-          updateTaskbarHighlight();
-        } else if (
-          winampZ <
-          zIndexCounter
-        ) {
-          zIndexCounter++;
+        updateTaskbarHighlight();
+      } else if (winampZ < zIndexCounter) {
+        zIndexCounter++;
 
-          winampWindow.style.zIndex =
-            zIndexCounter;
+        winampWindow.style.zIndex =
+          zIndexCounter;
 
-          updateTaskbarHighlight();
-        } else {
-          winampWindow.style.display =
-            "none";
+        updateTaskbarHighlight();
+      } else if (winampZ >= zIndexCounter) {
+        winampWindow.style.display = "none";
 
-          updateTaskbarHighlight();
-        }
-      };
+        updateTaskbarHighlight();
+      }
+    };
 
-    createTaskbar();
-
-    document
-      .getElementById("taskbar")
-      .appendChild(
-        taskbarItem
-      );
+    taskbar.appendChild(taskbarItem);
   }
 }
 
-
-/* =========================================================
-   PINBALL
-========================================================= */
-
 function waitForGameToLoad() {
-  console.log(
-    "waitForGameToLoad started"
-  );
+  console.log("waitForGameToLoad started");
 
   const iframe =
-    document.getElementById(
-      "pinball-frame"
-    );
-
-  if (!iframe) return;
+    document.getElementById("pinball-frame");
 
   const iframeDoc =
     iframe.contentDocument ||
@@ -1982,29 +1027,37 @@ function waitForGameToLoad() {
         );
 
       const statusElement =
-        iframeDoc.querySelector(
-          "#status"
+        iframeDoc.querySelector("#status");
+
+      console.log(
+        `Canvas found: ${!!canvas}, Status element found: ${!!statusElement}`
+      );
+
+      if (canvas) {
+        console.log(
+          `Canvas display: ${canvas.style.display}, Width: ${canvas.width}, Height: ${canvas.height}`
         );
+      }
 
       const isGameLoaded =
         statusElement &&
         (
-          statusElement.innerHTML ===
-            "" ||
-          statusElement.style.display ===
-            "none"
+          statusElement.innerHTML === "" ||
+          statusElement.style.display === "none"
         ) &&
         canvas &&
-        canvas.style.display !==
-          "none" &&
+        canvas.style.display !== "none" &&
         (
           canvas.width > 0 ||
           canvas.clientWidth > 0
         );
 
+      console.log(
+        `Game loaded: ${isGameLoaded}`
+      );
+
       if (isGameLoaded) {
         observer.disconnect();
-
         styleObserver.disconnect();
 
         const finalWidth =
@@ -2039,20 +1092,16 @@ function waitForGameToLoad() {
         canvas &&
         !canvas.dataset.observed
       ) {
-        canvas.dataset.observed =
-          "true";
+        canvas.dataset.observed = "true";
 
-        styleObserver.observe(
-          canvas,
-          {
-            attributes: true,
-            attributeFilter: [
-              "style",
-              "width",
-              "height",
-            ],
-          }
-        );
+        styleObserver.observe(canvas, {
+          attributes: true,
+          attributeFilter: [
+            "style",
+            "width",
+            "height",
+          ],
+        });
       }
     } catch (e) {
       console.error(
@@ -2061,7 +1110,6 @@ function waitForGameToLoad() {
       );
 
       observer.disconnect();
-
       styleObserver.disconnect();
 
       applyCanvasDimensionsToWindow(
@@ -2081,56 +1129,46 @@ function waitForGameToLoad() {
     }
   }
 
-  observer.observe(
-    iframeDoc.body,
-    {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: [
-        "style",
-      ],
-    }
-  );
+  observer.observe(iframeDoc.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["style"],
+  });
 
   checkGameReady();
 
-  const fallbackTimeout =
-    setTimeout(() => {
-      observer.disconnect();
+  const fallbackTimeout = setTimeout(() => {
+    observer.disconnect();
+    styleObserver.disconnect();
 
-      styleObserver.disconnect();
+    console.log(
+      "Fallback: using default dimensions"
+    );
 
-      applyCanvasDimensionsToWindow(
-        600,
-        440
-      );
+    applyCanvasDimensionsToWindow(
+      600,
+      440
+    );
 
-      resizeWindow(
-        600,
-        440
-      );
+    resizeWindow(
+      600,
+      440
+    );
 
-      showWindow();
-
-      hideLoading();
-    }, 30000);
+    showWindow();
+    hideLoading();
+  }, 30000);
 
   const originalDisconnect =
     observer.disconnect;
 
-  observer.disconnect =
-    function () {
-      clearTimeout(
-        fallbackTimeout
-      );
+  observer.disconnect = function () {
+    clearTimeout(fallbackTimeout);
 
-      originalDisconnect.call(
-        this
-      );
-    };
+    originalDisconnect.call(this);
+  };
 }
-
 
 function showWindow() {
   const windowElement =
@@ -2147,8 +1185,11 @@ function showWindow() {
     windowElement.style.visibility =
       "visible";
 
-    windowElement.style.opacity =
-      "1";
+    windowElement.style.opacity = "1";
+
+    console.log(
+      "Window is now visible"
+    );
   }
 
   if (iframe) {
@@ -2157,24 +1198,18 @@ function showWindow() {
   }
 }
 
-
 function hideLoading() {
   const loading =
-    document.getElementById(
-      "loading"
-    );
+    document.getElementById("loading");
 
   if (loading) {
-    loading.style.opacity =
-      "0";
+    loading.style.opacity = "0";
 
     setTimeout(() => {
-      loading.style.display =
-        "none";
+      loading.style.display = "none";
     }, 300);
   }
 }
-
 
 function applyCanvasDimensionsToWindow(
   canvasWidth,
@@ -2184,27 +1219,22 @@ function applyCanvasDimensionsToWindow(
   const borderWidth = 3;
 
   const totalWidth =
-    canvasWidth +
-    borderWidth;
+    canvasWidth + borderWidth;
 
   const totalHeight =
-    canvasHeight +
-    headerHeight;
+    canvasHeight + headerHeight;
 
   const existingStyles =
     window.parent.document.querySelectorAll(
       "style[data-pinball-resize]"
     );
 
-  existingStyles.forEach(
-    (style) =>
-      style.remove()
+  existingStyles.forEach((style) =>
+    style.remove()
   );
 
   const style =
-    document.createElement(
-      "style"
-    );
+    document.createElement("style");
 
   style.setAttribute(
     "data-pinball-resize",
@@ -2231,6 +1261,10 @@ function applyCanvasDimensionsToWindow(
     style
   );
 
+  console.log(
+    `Canvas dimensions applied to CSS: ${canvasWidth}x${canvasHeight} -> Window: ${totalWidth}x${totalHeight}`
+  );
+
   applyInlineStyles(
     canvasWidth,
     canvasHeight,
@@ -2238,7 +1272,6 @@ function applyCanvasDimensionsToWindow(
     totalHeight
   );
 }
-
 
 function applyInlineStyles(
   canvasWidth,
@@ -2263,9 +1296,12 @@ function applyInlineStyles(
       `${totalHeight}px`,
       "important"
     );
+
+    console.log(
+      `Inline styles applied to window: ${totalWidth}x${totalHeight}`
+    );
   }
 }
-
 
 function resizeWindow(
   canvasWidth,
@@ -2288,25 +1324,26 @@ function resizeWindow(
     const borderWidth = 3;
 
     const totalWidth =
-      canvasWidth +
-      borderWidth;
+      canvasWidth + borderWidth;
 
     const totalHeight =
-      canvasHeight +
-      headerHeight;
+      canvasHeight + headerHeight;
 
     windowElement.style.width =
       totalWidth + "px";
 
     windowElement.style.height =
       totalHeight + "px";
+
+    console.log(
+      `Window resized to: ${totalWidth}x${totalHeight} (canvas: ${canvasWidth}x${canvasHeight})`
+    );
+  } else {
+    console.warn(
+      "Could not find window elements"
+    );
   }
 }
-
-
-/* =========================================================
-   MODALS
-========================================================= */
 
 function openSimpleModal(
   id,
@@ -2320,29 +1357,17 @@ function openSimpleModal(
   );
 
   const modalDiv =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   modalDiv.id = id;
+  modalDiv.innerHTML = htmlContent;
 
-  modalDiv.innerHTML =
-    htmlContent;
-
-  modalDiv.style.position =
-    "fixed";
-
-  modalDiv.style.zIndex =
-    "99999";
-
+  modalDiv.style.position = "fixed";
+  modalDiv.style.zIndex = "99999";
   modalDiv.style.left = "0";
   modalDiv.style.top = "0";
-
-  modalDiv.style.width =
-    "100vw";
-
-  modalDiv.style.height =
-    "100vh";
+  modalDiv.style.width = "100vw";
+  modalDiv.style.height = "100vh";
 
   document.body.appendChild(
     modalDiv
@@ -2385,14 +1410,12 @@ function openSimpleModal(
   }
 }
 
-
 function openLogOff() {
   openSimpleModal(
     "Log_Off",
     openLogOffHTML
   );
 }
-
 
 function turnOffComputer() {
   openSimpleModal(
@@ -2403,11 +1426,6 @@ function turnOffComputer() {
 
 window.turnOffComputer =
   turnOffComputer;
-
-
-/* =========================================================
-   SWITCH USER
-========================================================= */
 
 function switchUser() {
   injectStyle(
@@ -2430,23 +1448,12 @@ function switchUser() {
           ""
         ),
 
-      left:
-        win.style.left,
-
-      top:
-        win.style.top,
-
-      width:
-        win.style.width,
-
-      height:
-        win.style.height,
-
-      display:
-        win.style.display,
-
-      zIndex:
-        win.style.zIndex,
+      left: win.style.left,
+      top: win.style.top,
+      width: win.style.width,
+      height: win.style.height,
+      display: win.style.display,
+      zIndex: win.style.zIndex,
     }));
 
   localStorage.setItem(
@@ -2465,23 +1472,18 @@ function switchUser() {
     "/Start_Menu/Log_Off/Transition/Switch_User.html";
 }
 
-
-/* =========================================================
-   LOG OFF
-========================================================= */
-
 function logOff() {
-  let icones =
+  const icones =
     document.getElementById(
       "desktop"
     );
 
-  let taskbarHidden =
+  const taskbarHidden =
     document.getElementById(
       "Desktop_Footer"
     );
 
-  let logOffElement =
+  const logOff =
     document.getElementById(
       "Log_Off"
     );
@@ -2503,12 +1505,11 @@ function logOff() {
           document.body.classList.remove(
             "modal-open"
           );
-
           break;
 
         case 1:
-          if (logOffElement) {
-            logOffElement.style.display =
+          if (logOff) {
+            logOff.style.display =
               "none";
           }
 
@@ -2516,7 +1517,6 @@ function logOff() {
             icones.style.display =
               "none";
           }
-
           break;
 
         case 2:
@@ -2524,13 +1524,10 @@ function logOff() {
             taskbarHidden.style.display =
               "none";
           }
-
           break;
 
         case 3:
-          clearInterval(
-            interval
-          );
+          clearInterval(interval);
 
           window.location.href =
             "/Start_Menu/Log_Off/Transition/Login.html";
@@ -2541,11 +1538,6 @@ function logOff() {
       step++;
     }, 250);
 }
-
-
-/* =========================================================
-   POWER
-========================================================= */
 
 function PowerState(event) {
   const icones =
@@ -2558,7 +1550,7 @@ function PowerState(event) {
       "Desktop_Footer"
     );
 
-  const turnOffComputerElement =
+  const turnOffComputer =
     document.getElementById(
       "Turn_Off_Computer"
     );
@@ -2588,14 +1580,11 @@ function PowerState(event) {
           document.body.classList.remove(
             "modal-open"
           );
-
           break;
 
         case 1:
-          if (
-            turnOffComputerElement
-          ) {
-            turnOffComputerElement.style.display =
+          if (turnOffComputer) {
+            turnOffComputer.style.display =
               "none";
           }
 
@@ -2603,7 +1592,6 @@ function PowerState(event) {
             icones.style.display =
               "none";
           }
-
           break;
 
         case 2:
@@ -2611,13 +1599,10 @@ function PowerState(event) {
             taskbarHidden.style.display =
               "none";
           }
-
           break;
 
         case 3:
-          clearInterval(
-            interval
-          );
+          clearInterval(interval);
 
           window.location.href =
             "/Start_Menu/Turn_Off_Computer/Shut_Down/Shut_Down.html";
@@ -2628,11 +1613,6 @@ function PowerState(event) {
       step++;
     }, 250);
 }
-
-
-/* =========================================================
-   CLOSE WINDOW
-========================================================= */
 
 function closeWindow(appName) {
   const windowElement =
@@ -2668,11 +1648,6 @@ function closeWindow(appName) {
   updateTaskbarVisibility();
 }
 
-
-/* =========================================================
-   TOGGLE WINDOW
-========================================================= */
-
 function toggleWindow(appName) {
   const windowElement =
     document.getElementById(
@@ -2684,10 +1659,7 @@ function toggleWindow(appName) {
       `taskbar-${appName}`
     );
 
-  if (
-    !windowElement ||
-    !taskbarItem
-  ) {
+  if (!windowElement || !taskbarItem) {
     return;
   }
 
@@ -2700,18 +1672,14 @@ function toggleWindow(appName) {
       "window-inactive"
     );
 
-  if (
-    isInactive &&
-    !isHidden
-  ) {
+  if (isInactive && !isHidden) {
     return;
   }
 
   const isOnTop =
     parseInt(
       windowElement.style.zIndex
-    ) ===
-    zIndexCounter;
+    ) === zIndexCounter;
 
   if (isHidden) {
     windowElement.style.removeProperty(
@@ -2758,11 +1726,6 @@ function toggleWindow(appName) {
   }
 }
 
-
-/* =========================================================
-   MAXIMIZE
-========================================================= */
-
 function maximazeWindow(appName) {
   const windowElement =
     document.getElementById(
@@ -2774,10 +1737,7 @@ function maximazeWindow(appName) {
       `taskbar-${appName}`
     );
 
-  if (
-    !windowElement ||
-    !taskbarItem
-  ) {
+  if (!windowElement || !taskbarItem) {
     return;
   }
 
@@ -2896,32 +1856,20 @@ function maximazeWindow(appName) {
   }
 }
 
-
-/* =========================================================
-   DRAG WINDOWS
-========================================================= */
-
 function makeDraggable(element) {
   const header =
     element.querySelector(
       ".window-header"
     );
 
-  if (!header) return;
-
   let offsetX = 0;
   let offsetY = 0;
-
   let isDragging = false;
 
   header.addEventListener(
     "mousedown",
     (e) => {
-      if (
-        isResizingGlobal
-      ) {
-        return;
-      }
+      if (isResizingGlobal) return;
 
       isDragging = true;
 
@@ -2932,8 +1880,6 @@ function makeDraggable(element) {
       offsetY =
         e.clientY -
         element.offsetTop;
-
-      zIndexCounter++;
 
       element.style.zIndex =
         zIndexCounter;
@@ -2947,7 +1893,14 @@ function makeDraggable(element) {
 
       document.addEventListener(
         "mouseup",
-        stopDragging
+        () => {
+          isDragging = false;
+
+          document.removeEventListener(
+            "mousemove",
+            moveWindow
+          );
+        }
       );
     }
   );
@@ -2956,12 +1909,10 @@ function makeDraggable(element) {
     if (!isDragging) return;
 
     let newX =
-      e.clientX -
-      offsetX;
+      e.clientX - offsetX;
 
     let newY =
-      e.clientY -
-      offsetY;
+      e.clientY - offsetY;
 
     const screenWidth =
       window.innerWidth;
@@ -2975,45 +1926,29 @@ function makeDraggable(element) {
     const windowHeight =
       element.offsetHeight;
 
-    newX =
-      Math.max(
-        0,
-        Math.min(
-          screenWidth -
-            windowWidth,
-          newX
-        )
-      );
+    newX = Math.max(
+      0,
+      Math.min(
+        screenWidth -
+          windowWidth,
+        newX
+      )
+    );
 
-    newY =
-      Math.max(
-        0,
-        Math.min(
-          screenHeight -
-            windowHeight,
-          newY
-        )
-      );
+    newY = Math.max(
+      0,
+      Math.min(
+        screenHeight -
+          windowHeight,
+        newY
+      )
+    );
 
     element.style.left =
       `${newX}px`;
 
     element.style.top =
       `${newY}px`;
-  }
-
-  function stopDragging() {
-    isDragging = false;
-
-    document.removeEventListener(
-      "mousemove",
-      moveWindow
-    );
-
-    document.removeEventListener(
-      "mouseup",
-      stopDragging
-    );
   }
 
   element.addEventListener(
@@ -3029,14 +1964,7 @@ function makeDraggable(element) {
   );
 }
 
-
-/* =========================================================
-   RESIZE WINDOWS
-========================================================= */
-
-function makeResizable(
-  windowElement
-) {
+function makeResizable(windowElement) {
   const minWidth = 150;
   const minHeight = 115;
 
@@ -3044,13 +1972,10 @@ function makeResizable(
 
   let startX;
   let startY;
-
   let startWidth;
   let startHeight;
-
   let startTop;
   let startLeft;
-
   let resizeDir = "";
 
   let iframe;
@@ -3070,8 +1995,7 @@ function makeResizable(
         e.clientY;
 
       const onLeft =
-        mouseX >=
-          rect.left &&
+        mouseX >= rect.left &&
         mouseX <=
           rect.left +
             borderSize;
@@ -3084,8 +2008,7 @@ function makeResizable(
           rect.right;
 
       const onTop =
-        mouseY >=
-          rect.top &&
+        mouseY >= rect.top &&
         mouseY <=
           rect.top +
             borderSize;
@@ -3099,43 +2022,23 @@ function makeResizable(
 
       resizeDir = "";
 
-      if (onRight)
-        resizeDir += "e";
+      if (onRight) resizeDir += "e";
+      if (onLeft) resizeDir += "w";
+      if (onTop) resizeDir += "n";
+      if (onBottom) resizeDir += "s";
 
-      if (onLeft)
-        resizeDir += "w";
-
-      if (onTop)
-        resizeDir += "n";
-
-      if (onBottom)
-        resizeDir += "s";
-
-      if (
-        resizeDir !== ""
-      ) {
+      if (resizeDir !== "") {
         isResizing = true;
+        isResizingGlobal = true;
 
-        isResizingGlobal =
-          true;
+        startX = e.clientX;
+        startY = e.clientY;
 
-        startX =
-          e.clientX;
+        startWidth = rect.width;
+        startHeight = rect.height;
 
-        startY =
-          e.clientY;
-
-        startWidth =
-          rect.width;
-
-        startHeight =
-          rect.height;
-
-        startTop =
-          rect.top;
-
-        startLeft =
-          rect.left;
+        startTop = rect.top;
+        startLeft = rect.left;
 
         iframe =
           windowElement.querySelector(
@@ -3162,62 +2065,44 @@ function makeResizable(
     }
   );
 
-
   windowElement.addEventListener(
     "mousemove",
     (e) => {
       if (isResizing) {
         if (
-          resizeDir.includes(
-            "n"
-          ) &&
-          resizeDir.includes(
-            "e"
-          )
+          resizeDir.includes("n") &&
+          resizeDir.includes("e")
         ) {
           windowElement.style.cursor =
             "nesw-resize";
         } else if (
-          resizeDir.includes(
-            "s"
-          ) &&
-          resizeDir.includes(
-            "w"
-          )
+          resizeDir.includes("s") &&
+          resizeDir.includes("w")
         ) {
           windowElement.style.cursor =
             "nesw-resize";
         } else if (
-          resizeDir.includes(
-            "n"
-          ) &&
-          resizeDir.includes(
-            "w"
-          )
+          resizeDir.includes("n") &&
+          resizeDir.includes("w")
         ) {
           windowElement.style.cursor =
             "nwse-resize";
         } else if (
-          resizeDir.includes(
-            "s"
-          ) &&
-          resizeDir.includes(
-            "e"
-          )
+          resizeDir.includes("s") &&
+          resizeDir.includes("e")
         ) {
           windowElement.style.cursor =
             "nwse-resize";
         } else if (
-          resizeDir.includes(
-            "e"
-          ) ||
-          resizeDir.includes(
-            "w"
-          )
+          resizeDir.includes("e") ||
+          resizeDir.includes("w")
         ) {
           windowElement.style.cursor =
             "ew-resize";
-        } else {
+        } else if (
+          resizeDir.includes("n") ||
+          resizeDir.includes("s")
+        ) {
           windowElement.style.cursor =
             "ns-resize";
         }
@@ -3237,8 +2122,7 @@ function makeResizable(
         e.clientY;
 
       const onLeft =
-        mouseX >=
-          rect.left &&
+        mouseX >= rect.left &&
         mouseX <=
           rect.left +
             borderSize;
@@ -3251,8 +2135,7 @@ function makeResizable(
           rect.right;
 
       const onTop =
-        mouseY >=
-          rect.top &&
+        mouseY >= rect.top &&
         mouseY <=
           rect.top +
             borderSize;
@@ -3295,69 +2178,47 @@ function makeResizable(
     }
   );
 
-
   function onMouseMove(e) {
     if (!isResizing) return;
 
-    let dx =
-      e.clientX -
-      startX;
+    const dx =
+      e.clientX - startX;
 
-    let dy =
-      e.clientY -
-      startY;
+    const dy =
+      e.clientY - startY;
 
-    if (
-      resizeDir.includes("e")
-    ) {
+    if (resizeDir.includes("e")) {
       let newWidth =
-        startWidth +
-        dx;
+        startWidth + dx;
 
-      newWidth =
-        Math.max(
-          minWidth,
-          newWidth
-        );
+      if (newWidth < minWidth) {
+        newWidth = minWidth;
+      }
 
       windowElement.style.width =
-        newWidth +
-        "px";
+        newWidth + "px";
     }
 
-    if (
-      resizeDir.includes("s")
-    ) {
+    if (resizeDir.includes("s")) {
       let newHeight =
-        startHeight +
-        dy;
+        startHeight + dy;
 
-      newHeight =
-        Math.max(
-          minHeight,
-          newHeight
-        );
+      if (newHeight < minHeight) {
+        newHeight = minHeight;
+      }
 
       windowElement.style.height =
-        newHeight +
-        "px";
+        newHeight + "px";
     }
 
-    if (
-      resizeDir.includes("w")
-    ) {
+    if (resizeDir.includes("w")) {
       let newWidth =
-        startWidth -
-        dx;
+        startWidth - dx;
 
       let newLeft =
-        startLeft +
-        dx;
+        startLeft + dx;
 
-      if (
-        newWidth <
-        minWidth
-      ) {
+      if (newWidth < minWidth) {
         newLeft -=
           minWidth -
           newWidth;
@@ -3367,29 +2228,20 @@ function makeResizable(
       }
 
       windowElement.style.width =
-        newWidth +
-        "px";
+        newWidth + "px";
 
       windowElement.style.left =
-        newLeft +
-        "px";
+        newLeft + "px";
     }
 
-    if (
-      resizeDir.includes("n")
-    ) {
+    if (resizeDir.includes("n")) {
       let newHeight =
-        startHeight -
-        dy;
+        startHeight - dy;
 
       let newTop =
-        startTop +
-        dy;
+        startTop + dy;
 
-      if (
-        newHeight <
-        minHeight
-      ) {
+      if (newHeight < minHeight) {
         newTop -=
           minHeight -
           newHeight;
@@ -3399,21 +2251,16 @@ function makeResizable(
       }
 
       windowElement.style.height =
-        newHeight +
-        "px";
+        newHeight + "px";
 
       windowElement.style.top =
-        newTop +
-        "px";
+        newTop + "px";
     }
   }
 
-
   function onMouseUp() {
     isResizing = false;
-
-    isResizingGlobal =
-      false;
+    isResizingGlobal = false;
 
     if (iframe) {
       iframe.style.pointerEvents =
@@ -3432,12 +2279,6 @@ function makeResizable(
   }
 }
 
-
-/* =========================================================
-   TASKBAR HIGHLIGHT
-   BLUE VALUES REMOVED
-========================================================= */
-
 function updateTaskbarHighlight() {
   const windows =
     Array.from(
@@ -3446,8 +2287,7 @@ function updateTaskbarHighlight() {
       )
     ).filter(
       (win) =>
-        win.style.display !==
-        "none"
+        win.style.display !== "none"
     );
 
   const webampDiv =
@@ -3459,126 +2299,108 @@ function updateTaskbarHighlight() {
     webampDiv &&
     webampDiv.style.display !==
       "none" &&
-    !windows.includes(
-      webampDiv
-    )
+    !windows.includes(webampDiv)
   ) {
-    windows.push(
-      webampDiv
-    );
+    windows.push(webampDiv);
   }
 
   let topWindow = null;
-
   let maxZ = -1;
 
-  windows.forEach(
-    (win) => {
-      const z =
-        parseInt(
-          win.style.zIndex ||
-            0,
-          10
-        );
+  windows.forEach((win) => {
+    const z =
+      parseInt(
+        win.style.zIndex || 0,
+        10
+      );
 
-      if (z > maxZ) {
-        maxZ = z;
-        topWindow = win;
-      }
+    if (z > maxZ) {
+      maxZ = z;
+      topWindow = win;
     }
-  );
-
+  });
 
   document
     .querySelectorAll(
       ".taskbar-item"
     )
     .forEach((item) => {
-      item.style.background =
-        "";
-
-      item.style.boxShadow =
-        "";
+      item.style.background = "";
+      item.style.backgroundColor = "";
+      item.style.boxShadow = "";
     });
 
+  windows.forEach((win) => {
+    const isTop =
+      win === topWindow;
 
-  windows.forEach(
-    (win) => {
-      const isTop =
-        win === topWindow;
+    const headerBg =
+      win.querySelector &&
+      win.querySelector(
+        ".window-header-background"
+      );
 
-      const headerBg =
-        win.querySelector &&
-        win.querySelector(
-          ".window-header-background"
-        );
+    const headerButtons =
+      win.querySelector &&
+      win.querySelector(
+        ".window-header-buttons"
+      );
 
-      const headerButtons =
-        win.querySelector &&
-        win.querySelector(
-          ".window-header-buttons"
-        );
+    if (isTop) {
+      win.classList.remove(
+        "window-inactive"
+      );
 
-      if (isTop) {
-        win.classList.remove(
-          "window-inactive"
-        );
+      win.style.backgroundColor =
+        "";
 
-        if (headerBg) {
-          headerBg.style.background =
-            `
-            linear-gradient(
-              to bottom,
-              rgb(255,193,220) 0%,
-              rgb(255,165,201) 5%,
-              rgb(244,126,174) 18%,
-              rgb(232,103,157) 50%,
-              rgb(220,88,143) 80%,
-              rgb(199,66,123) 100%
-            )
-            `;
-        }
+      if (headerBg) {
+        headerBg.style.background =
+          "";
+      }
 
-        if (headerButtons) {
-          headerButtons.style.opacity =
-            "1";
-        }
-      } else {
-        win.classList.add(
-          "window-inactive"
-        );
+      if (headerButtons) {
+        headerButtons.style.opacity =
+          "1";
+      }
+    } else {
+      win.classList.add(
+        "window-inactive"
+      );
 
-        if (headerBg) {
-          headerBg.style.background =
-            `
-            linear-gradient(
-              to bottom,
-              rgb(221,168,192) 0%,
-              rgb(210,139,170) 25%,
-              rgb(193,112,148) 60%,
-              rgb(180,94,135) 100%
-            )
-            `;
-        }
+      if (headerBg) {
+        headerBg.style.background =
+          `
+          linear-gradient(
+            rgb(205, 115, 145) 0%,
+            rgb(215, 125, 155) 3%,
+            rgb(225, 145, 170) 6%,
+            rgb(228, 150, 175) 8%,
+            rgb(220, 135, 165) 14%,
+            rgb(215, 125, 155) 17%,
+            rgb(208, 110, 145) 25%,
+            rgb(210, 115, 150) 56%,
+            rgb(220, 135, 165) 81%,
+            rgb(215, 125, 155) 89%,
+            rgb(205, 105, 140) 94%,
+            rgb(200, 100, 135) 97%,
+            rgb(235, 175, 195) 115%
+          )
+        `;
+      }
 
-        if (headerButtons) {
-          headerButtons.style.opacity =
-            "0.55";
-        }
+      if (headerButtons) {
+        headerButtons.style.opacity =
+          "0.4";
       }
     }
-  );
-
+  });
 
   if (topWindow) {
     let topAppId;
 
-    if (
-      topWindow.id ===
-      "webamp"
-    ) {
-      topAppId =
-        "Winamp";
+    if (topWindow.id === "webamp") {
+      topAppId = "Winamp";
     } else {
       topAppId =
         topWindow.id.replace(
@@ -3596,20 +2418,21 @@ function updateTaskbarHighlight() {
       taskbarItem.style.background =
         `
         linear-gradient(
-          to bottom,
-          rgba(255,216,235,0.98),
-          rgba(229,105,160,0.98)
+          180deg,
+          rgba(255, 195, 218, 0.95) 0%,
+          rgba(235, 100, 145, 0.95) 45%,
+          rgba(185, 45, 95, 0.98) 100%
         )
-        `;
+      `;
 
       taskbarItem.style.boxShadow =
         `
-        rgba(255,255,255,0.45) 0px 1px 0px inset,
-        rgba(120,20,70,0.45) 0px 0px 5px inset
-        `;
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -1px 0 rgba(100,15,45,.3),
+        0 0 8px rgba(255,120,165,.35)
+      `;
     }
   }
-
 
   if (
     !updateTaskbarHighlight._blurListenerAdded
@@ -3641,9 +2464,7 @@ function updateTaskbarHighlight() {
             webampDiv
           )
         ) {
-          windows.push(
-            webampDiv
-          );
+          windows.push(webampDiv);
         }
 
         let clickedOnWindow =
@@ -3652,108 +2473,104 @@ function updateTaskbarHighlight() {
         let clickedOnTaskbar =
           null;
 
-        windows.forEach(
-          (win) => {
-            let appId;
+        windows.forEach((win) => {
+          let appId;
 
-            if (
-              win.id ===
-              "webamp"
-            ) {
-              appId =
-                "Winamp";
-            } else {
-              appId =
-                win.id.replace(
-                  "window-",
-                  ""
-                );
-            }
-
-            const taskbarItem =
-              document.getElementById(
-                `taskbar-${appId}`
+          if (win.id === "webamp") {
+            appId = "Winamp";
+          } else {
+            appId =
+              win.id.replace(
+                "window-",
+                ""
               );
-
-            if (
-              win.contains(
-                event.target
-              )
-            ) {
-              clickedOnWindow =
-                win;
-            }
-
-            if (
-              taskbarItem &&
-              taskbarItem.contains(
-                event.target
-              )
-            ) {
-              clickedOnTaskbar =
-                win;
-            }
           }
-        );
 
+          const taskbarItem =
+            document.getElementById(
+              `taskbar-${appId}`
+            );
+
+          if (
+            win.contains(
+              event.target
+            )
+          ) {
+            clickedOnWindow = win;
+          }
+
+          if (
+            taskbarItem &&
+            taskbarItem.contains(
+              event.target
+            )
+          ) {
+            clickedOnTaskbar = win;
+          }
+        });
 
         if (
           !clickedOnWindow &&
           !clickedOnTaskbar
         ) {
-          windows.forEach(
-            (win) => {
-              win.classList.add(
-                "window-inactive"
+          windows.forEach((win) => {
+            win.classList.add(
+              "window-inactive"
+            );
+
+            const headerBg =
+              win.querySelector &&
+              win.querySelector(
+                ".window-header-background"
               );
 
-              const headerBg =
-                win.querySelector &&
-                win.querySelector(
-                  ".window-header-background"
-                );
+            const headerButtons =
+              win.querySelector &&
+              win.querySelector(
+                ".window-header-buttons"
+              );
 
-              const headerButtons =
-                win.querySelector &&
-                win.querySelector(
-                  ".window-header-buttons"
-                );
-
-              if (headerBg) {
-                headerBg.style.background =
-                  `
-                  linear-gradient(
-                    to bottom,
-                    rgb(221,168,192) 0%,
-                    rgb(210,139,170) 25%,
-                    rgb(193,112,148) 60%,
-                    rgb(180,94,135) 100%
-                  )
-                  `;
-              }
-
-              if (
-                headerButtons
-              ) {
-                headerButtons.style.opacity =
-                  "0.55";
-              }
+            if (headerBg) {
+              headerBg.style.background =
+                `
+                linear-gradient(
+                  rgb(205, 115, 145) 0%,
+                  rgb(215, 125, 155) 3%,
+                  rgb(225, 145, 170) 6%,
+                  rgb(228, 150, 175) 8%,
+                  rgb(220, 135, 165) 14%,
+                  rgb(215, 125, 155) 17%,
+                  rgb(208, 110, 145) 25%,
+                  rgb(210, 115, 150) 56%,
+                  rgb(220, 135, 165) 81%,
+                  rgb(215, 125, 155) 89%,
+                  rgb(205, 105, 140) 94%,
+                  rgb(200, 100, 135) 97%,
+                  rgb(235, 175, 195) 115%
+                )
+              `;
             }
-          );
+
+            if (headerButtons) {
+              headerButtons.style.opacity =
+                "0.4";
+            }
+          });
 
           document
             .querySelectorAll(
               ".taskbar-item"
             )
-            .forEach(
-              (item) => {
-                item.style.background =
-                  "";
+            .forEach((item) => {
+              item.style.background =
+                "";
 
-                item.style.boxShadow =
-                  "";
-              }
-            );
+              item.style.backgroundColor =
+                "";
+
+              item.style.boxShadow =
+                "";
+            });
         } else {
           const win =
             clickedOnWindow ||
@@ -3785,47 +2602,35 @@ function updateTaskbarHighlight() {
   }
 }
 
-
-/* =========================================================
-   TASKBAR
-========================================================= */
-
 function createTaskbar() {
   if (
-    document.getElementById(
+    !document.getElementById(
       "taskbar"
     )
   ) {
-    injectRoseTheme();
-    return;
+    const taskbar =
+      document.createElement(
+        "div"
+      );
+
+    taskbar.id = "taskbar";
+
+    const start_menu =
+      document.querySelector(
+        ".footer__start_menu"
+      );
+
+    if (start_menu) {
+      start_menu.insertAdjacentElement(
+        "afterend",
+        taskbar
+      );
+    }
   }
-
-  let taskbar =
-    document.createElement(
-      "div"
-    );
-
-  taskbar.id =
-    "taskbar";
-
-  let start_menu =
-    document.querySelector(
-      ".footer__start_menu"
-    );
-
-  if (!start_menu) return;
-
-  start_menu.insertAdjacentElement(
-    "afterend",
-    taskbar
-  );
-
-  injectRoseTheme();
 }
 
-
 function updateTaskbarVisibility() {
-  let taskbar =
+  const taskbar =
     document.getElementById(
       "taskbar"
     );
@@ -3839,15 +2644,8 @@ function updateTaskbarVisibility() {
   }
 }
 
-
-/* =========================================================
-   START MENU
-========================================================= */
-
 function openStartMenu() {
-  if (
-    recentlyClosedStartMenu
-  ) {
+  if (recentlyClosedStartMenu) {
     return;
   }
 
@@ -3856,18 +2654,14 @@ function openStartMenu() {
     "/Start_Menu/Base/Start_Menu.css"
   );
 
-  if (!startMenuHTML) {
-    return;
-  }
+  if (!startMenuHTML) return;
 
   const container =
     document.querySelector(
       ".footer__start_menu"
     );
 
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
   const existingMenu =
     container.querySelector(
@@ -3893,9 +2687,7 @@ function openStartMenu() {
       "div"
     );
 
-  StartMenu.id =
-    "StartMenu";
-
+  StartMenu.id = "StartMenu";
   StartMenu.innerHTML =
     startMenuHTML;
 
@@ -3911,7 +2703,6 @@ function openStartMenu() {
       handleOutsideClick
     );
   }, 10);
-
 
   function handleOutsideClick(e) {
     setTimeout(() => {
@@ -3945,11 +2736,6 @@ function openStartMenu() {
   }
 }
 
-
-/* =========================================================
-   START MENU TOOLTIPS
-========================================================= */
-
 function attachHoverTooltip() {
   injectStyle(
     "hover-info-styles",
@@ -3968,231 +2754,257 @@ function attachHoverTooltip() {
 
   if (!menu) return;
 
+  const createTooltip = (
+    content,
+    parent
+  ) => {
+    let level = 0;
 
-  const createTooltip =
-    (content, parent) => {
-      let level = 0;
-
-      const tooltip =
-        document.createElement(
-          "div"
-        );
-
-      tooltip.className =
-        "hover-info";
-
-      tooltip.innerHTML =
-        content;
-
-      const rect =
-        parent.getBoundingClientRect();
-
-      tooltip.style.visibility =
-        "hidden";
-
-      tooltip.style.position =
-        "absolute";
-
-      document.body.appendChild(
-        tooltip
+    const tooltip =
+      document.createElement(
+        "div"
       );
 
-      const parentTooltip =
-        parent.closest(
-          ".hover-info"
-        );
+    tooltip.className =
+      "hover-info";
 
-      const specificTooltip =
-        parent.closest(
-          ".hover-infotxt"
-        );
+    tooltip.innerHTML =
+      content;
 
-      if (
-        parentTooltip &&
-        parentTooltip.dataset.level
-      ) {
-        level =
-          parseInt(
-            parentTooltip.dataset
-              .level,
-            10
-          ) + 1;
-      }
+    const infoitm =
+      parent.closest(
+        ".hover-infoitm"
+      );
 
-      tooltip.dataset.level =
-        level.toString();
+    const tooltipParent =
+      parent.closest(
+        ".hover-info"
+      );
 
-      let tooltipName = "";
+    if (
+      infoitm &&
+      tooltipParent
+    ) {
+      const rectInfoitm =
+        infoitm.getBoundingClientRect();
 
-      const infotxt =
-        parent.querySelector(
-          ".hover-infotxt"
-        );
+      const rectTooltip =
+        tooltipParent.getBoundingClientRect();
 
-      if (infotxt) {
-        tooltipName =
-          infotxt.textContent.trim();
-      }
+      const ecart =
+        rectTooltip.bottom -
+        rectInfoitm.bottom;
+    }
 
+    const rect =
+      parent.getBoundingClientRect();
 
-      if (level === 0) {
-        tooltip.style.visibility =
-          "";
+    console.log(
+      "Parent Rect:",
+      rect
+    );
 
-        tooltip.style.left =
-          `${rect.right}px`;
+    tooltip.style.visibility =
+      "hidden";
 
-        tooltip.style.top =
-          `${405 - rect.height}px`;
-      } else if (
-        tooltipName ===
-        "Accessories"
-      ) {
-        tooltip.style.visibility =
-          "";
+    tooltip.style.position =
+      "absolute";
 
-        tooltip.style.left =
-          `${rect.right - 112}px`;
+    document.body.appendChild(
+      tooltip
+    );
 
-        tooltip.style.top =
-          `${rect.height - 30}px`;
-      } else if (
-        tooltipName ===
-        "Games"
-      ) {
-        tooltip.style.visibility =
-          "";
+    const parentTooltip =
+      parent.closest(
+        ".hover-info"
+      );
 
-        tooltip.style.left =
-          `${rect.right - 112}px`;
+    const specificTooltip =
+      parent.closest(
+        ".hover-infotxt"
+      );
 
-        tooltip.style.top =
-          `${rect.height - 22}px`;
-      } else if (
-        tooltipName ===
-        "Startup"
-      ) {
-        tooltip.style.visibility =
-          "";
+    if (
+      parentTooltip &&
+      parentTooltip.dataset.level
+    ) {
+      level =
+        parseInt(
+          parentTooltip.dataset.level,
+          10
+        ) + 1;
+    }
 
-        tooltip.style.left =
-          `${rect.right - 112}px`;
+    tooltip.dataset.level =
+      level.toString();
 
-        tooltip.style.top =
-          `${rect.height - 3}px`;
-      } else if (
-        tooltipName ===
-        "Accessibility"
-      ) {
-        tooltip.style.visibility =
-          "";
+    let tooltipName = "";
 
-        tooltip.style.left =
-          `${rect.right - 329}px`;
+    const infotxt =
+      parent.querySelector(
+        ".hover-infotxt"
+      );
 
-        tooltip.style.top =
-          `${rect.height + 90}px`;
-      } else if (
-        tooltipName ===
-        "Communication"
-      ) {
-        tooltip.style.visibility =
-          "";
+    if (infotxt) {
+      tooltipName =
+        infotxt.textContent.trim();
+    }
 
-        tooltip.style.left =
-          `${rect.right - 329}px`;
+    if (level === 0) {
+      tooltip.style.visibility =
+        "";
 
-        tooltip.style.top =
-          `${rect.height + 90}px`;
-      } else if (
-        tooltipName ===
-        "Entertainement"
-      ) {
-        tooltip.style.visibility =
-          "";
+      tooltip.style.left =
+        `${rect.right}px`;
 
-        tooltip.style.left =
-          `${rect.right - 329}px`;
+      tooltip.style.top =
+        `${405 - rect.height}px`;
+    } else if (
+      tooltipName ===
+      "Accessories"
+    ) {
+      tooltip.style.visibility =
+        "";
 
-        tooltip.style.top =
-          `${rect.height + 44}px`;
-      } else if (
-        tooltipName ===
-        "System Tools"
-      ) {
-        tooltip.style.visibility =
-          "";
+      tooltip.style.left =
+        `${rect.right - 112}px`;
 
-        tooltip.style.left =
-          `${rect.right - 329}px`;
+      tooltip.style.top =
+        `${rect.height - 30}px`;
+    } else if (
+      tooltipName ===
+      "Games"
+    ) {
+      tooltip.style.visibility =
+        "";
 
-        tooltip.style.top =
-          `${rect.height + 182}px`;
-      }
+      tooltip.style.left =
+        `${rect.right - 112}px`;
 
+      tooltip.style.top =
+        `${rect.height - 22}px`;
+    } else if (
+      tooltipName ===
+      "Startup"
+    ) {
+      tooltip.style.visibility =
+        "";
 
-      const itemMenu =
-        parent.closest(
-          ".ItemMenu"
-        );
+      tooltip.style.left =
+        `${rect.right - 112}px`;
 
-      if (
-        itemMenu &&
-        itemMenu.id ===
-          "Connect To"
-      ) {
-        tooltip.style.left =
-          `${rect.right + 48}px`;
+      tooltip.style.top =
+        `${rect.height - 3}px`;
+    } else if (
+      tooltipName ===
+      "Accessibility"
+    ) {
+      tooltip.style.visibility =
+        "";
 
-        tooltip.style.top =
-          `${rect.height + 256}px`;
-      } else if (
-        itemMenu &&
-        itemMenu.id ===
-          "My Recent Documents"
-      ) {
-        tooltip.style.left =
-          `${rect.right + 48}px`;
+      tooltip.style.left =
+        `${rect.right - 329}px`;
 
-        tooltip.style.top =
-          `${rect.height + 34}px`;
-      }
+      tooltip.style.top =
+        `${rect.height + 90}px`;
+    } else if (
+      tooltipName ===
+      "Communication"
+    ) {
+      tooltip.style.visibility =
+        "";
 
+      tooltip.style.left =
+        `${rect.right - 329}px`;
 
-      tooltip.style.zIndex =
-        9999;
+      tooltip.style.top =
+        `${rect.height + 90}px`;
+    } else if (
+      tooltipName ===
+      "Entertainement"
+    ) {
+      tooltip.style.visibility =
+        "";
 
-      if (
-        parent.classList.contains(
-          "AllProgTxt"
-        )
-      ) {
-        parent.appendChild(
-          tooltip
-        );
-      } else if (
-        parent.classList.contains(
-          "hover-infotxt"
-        )
-      ) {
-        parent.appendChild(
-          tooltip
-        );
-      } else if (
-        specificTooltip
-      ) {
-        specificTooltip.appendChild(
-          tooltip
-        );
-      } else {
-        parent.appendChild(
-          tooltip
-        );
-      }
+      tooltip.style.left =
+        `${rect.right - 329}px`;
 
-      return tooltip;
-    };
+      tooltip.style.top =
+        `${rect.height + 44}px`;
+    } else if (
+      tooltipName ===
+      "System Tools"
+    ) {
+      tooltip.style.visibility =
+        "";
 
+      tooltip.style.left =
+        `${rect.right - 329}px`;
+
+      tooltip.style.top =
+        `${rect.height + 182}px`;
+    }
+
+    const itemMenu =
+      parent.closest(
+        ".ItemMenu"
+      );
+
+    if (
+      itemMenu &&
+      itemMenu.id ===
+        "Connect To"
+    ) {
+      tooltip.style.left =
+        `${rect.right + 48}px`;
+
+      tooltip.style.top =
+        `${rect.height + 256}px`;
+    } else if (
+      itemMenu &&
+      itemMenu.id ===
+        "My Recent Documents"
+    ) {
+      tooltip.style.left =
+        `${rect.right + 48}px`;
+
+      tooltip.style.top =
+        `${rect.height + 34}px`;
+    }
+
+    tooltip.style.zIndex =
+      9999;
+
+    if (
+      parent.classList.contains(
+        "AllProgTxt"
+      )
+    ) {
+      parent.appendChild(
+        tooltip
+      );
+    } else if (
+      parent.classList.contains(
+        "hover-infotxt"
+      )
+    ) {
+      parent.appendChild(
+        tooltip
+      );
+    } else if (
+      specificTooltip
+    ) {
+      specificTooltip.appendChild(
+        tooltip
+      );
+    } else {
+      parent.appendChild(
+        tooltip
+      );
+    }
+
+    return tooltip;
+  };
 
   const closeAllTooltips =
     () => {
@@ -4200,10 +3012,8 @@ function attachHoverTooltip() {
         (t) => t.remove()
       );
 
-      tooltipHierarchy =
-        [];
+      tooltipHierarchy = [];
     };
-
 
   const isMouseOverAnyTooltip =
     () => {
@@ -4214,9 +3024,7 @@ function attachHoverTooltip() {
               ":hover"
             )
         ) ||
-        menu.matches(
-          ":hover"
-        ) ||
+        menu.matches(":hover") ||
         document.querySelector(
           ".ItemMenu:hover"
         ) ||
@@ -4229,7 +3037,6 @@ function attachHoverTooltip() {
       );
     };
 
-
   const scheduleTooltipClose =
     () => {
       if (
@@ -4238,7 +3045,6 @@ function attachHoverTooltip() {
         closeAllTooltips();
       }
     };
-
 
   const handleMouseEnter =
     async (e) => {
@@ -4249,8 +3055,7 @@ function attachHoverTooltip() {
 
       if (!target) return;
 
-      let contentFile =
-        null;
+      let contentFile = null;
 
       const textElement =
         target.querySelector(
@@ -4302,8 +3107,7 @@ function attachHoverTooltip() {
       }
 
       if (!contentFile) {
-        let itemMenu =
-          null;
+        let itemMenu = null;
 
         if (
           target.classList &&
@@ -4317,8 +3121,7 @@ function attachHoverTooltip() {
               "My Recent Documents"
           )
         ) {
-          itemMenu =
-            target;
+          itemMenu = target;
 
           contentFile =
             `/Start_Menu/Tooltip/${itemMenu.id}.html`;
@@ -4329,9 +3132,7 @@ function attachHoverTooltip() {
 
       if (!contentFile) return;
 
-      if (
-        !target.dataset.tooltipId
-      ) {
+      if (!target.dataset.tooltipId) {
         target.dataset.tooltipId =
           `tt-${Date.now()}-${Math.random()
             .toString(36)}`;
@@ -4341,8 +3142,7 @@ function attachHoverTooltip() {
         tooltipHierarchy.find(
           (t) =>
             t.dataset.parent ===
-              target.dataset
-                .tooltipId &&
+              target.dataset.tooltipId &&
             t.dataset.file ===
               contentFile
         );
@@ -4414,7 +3214,6 @@ function attachHoverTooltip() {
               t !== tooltip
             ) {
               t.remove();
-
               return false;
             }
 
@@ -4433,10 +3232,8 @@ function attachHoverTooltip() {
       );
     };
 
-
   let lastActiveLevel =
     null;
-
 
   const attachTooltipListeners =
     (tooltip) => {
@@ -4445,8 +3242,7 @@ function attachHoverTooltip() {
         (e) => {
           const currentLevel =
             parseInt(
-              e.currentTarget.dataset
-                .level,
+              e.currentTarget.dataset.level,
               10
             );
 
@@ -4462,8 +3258,7 @@ function attachHoverTooltip() {
                   (t) => {
                     const tooltipLevel =
                       parseInt(
-                        t.dataset
-                          .level,
+                        t.dataset.level,
                         10
                       );
 
@@ -4472,7 +3267,6 @@ function attachHoverTooltip() {
                       currentLevel
                     ) {
                       t.remove();
-
                       return false;
                     }
 
@@ -4484,14 +3278,12 @@ function attachHoverTooltip() {
         }
       );
 
-
       tooltip.addEventListener(
         "mouseleave",
         (e) => {
           const leavingLevel =
             parseInt(
-              e.currentTarget.dataset
-                .level,
+              e.currentTarget.dataset.level,
               10
             );
 
@@ -4500,7 +3292,6 @@ function attachHoverTooltip() {
         }
       );
     };
-
 
   if (
     hoverTooltipMouseEnterHandler
@@ -4522,7 +3313,6 @@ function attachHoverTooltip() {
     );
   }
 
-
   hoverTooltipMouseEnterHandler =
     function (e) {
       if (
@@ -4534,12 +3324,10 @@ function attachHoverTooltip() {
       }
     };
 
-
   hoverTooltipMouseLeaveHandler =
     function () {
       scheduleTooltipClose();
     };
-
 
   document.body.addEventListener(
     "mouseenter",
@@ -4553,11 +3341,6 @@ function attachHoverTooltip() {
     true
   );
 }
-
-
-/* =========================================================
-   CSS INJECTION
-========================================================= */
 
 function injectStyle(
   id,
@@ -4576,9 +3359,7 @@ function injectStyle(
         "link"
       );
 
-    link.id =
-      cssId;
-
+    link.id = cssId;
     link.rel =
       "stylesheet";
 
@@ -4589,14 +3370,7 @@ function injectStyle(
       link
     );
   }
-
-  injectRoseTheme();
 }
-
-
-/* =========================================================
-   TOOLTIP CLICK HANDLING
-========================================================= */
 
 document.addEventListener(
   "mousedown",
@@ -4605,48 +3379,44 @@ document.addEventListener(
       .querySelectorAll(
         ".window"
       )
-      .forEach(
-        (windowEl) => {
-          const labelDivs =
-            windowEl.querySelectorAll(
-              ".drop_down_label"
-            );
+      .forEach((windowEl) => {
+        const labelDivs =
+          windowEl.querySelectorAll(
+            ".drop_down_label"
+          );
 
-          const tooltip =
-            windowEl.querySelector(
-              ".tooltip, .window-tooltip, .hover-info"
-            );
+        const tooltip =
+          windowEl.querySelector(
+            ".tooltip, .window-tooltip, .hover-info"
+          );
 
-          if (!tooltip) return;
+        if (!tooltip) return;
 
-          const isOnLabel =
-            Array.from(
-              labelDivs
-            ).some(
-              (label) =>
-                label.contains(
-                  event.target
-                )
-            );
-
-          const isOnTooltip =
-            tooltip.contains(
+        const isOnLabel =
+          Array.from(
+            labelDivs
+          ).some((label) =>
+            label.contains(
               event.target
-            );
+            )
+          );
 
-          if (
-            !isOnLabel &&
-            !isOnTooltip
-          ) {
-            tooltip.parentNode.removeChild(
-              tooltip
-            );
-          }
+        const isOnTooltip =
+          tooltip.contains(
+            event.target
+          );
+
+        if (
+          !isOnLabel &&
+          !isOnTooltip
+        ) {
+          tooltip.parentNode.removeChild(
+            tooltip
+          );
         }
-      );
+      });
   }
 );
-
 
 document.addEventListener(
   "click",
@@ -4661,11 +3431,6 @@ document.addEventListener(
     }
   }
 );
-
-
-/* =========================================================
-   RESTORE WINDOWS
-========================================================= */
 
 setTimeout(() => {
   const windowStates =
@@ -4685,18 +3450,6 @@ setTimeout(() => {
       display,
       zIndex,
     }) => {
-      /*
-        Safety:
-        LinkedIn is no longer restored.
-      */
-
-      if (
-        appName ===
-        "LinkedIn"
-      ) {
-        return;
-      }
-
       openWindow(
         appName
       );
@@ -4711,37 +3464,38 @@ setTimeout(() => {
           "window-inactive"
         );
 
-        if (left)
+        if (left) {
           win.style.left =
             left;
+        }
 
-        if (top)
+        if (top) {
           win.style.top =
             top;
+        }
 
-        if (width)
+        if (width) {
           win.style.width =
             width;
+        }
 
-        if (height)
+        if (height) {
           win.style.height =
             height;
+        }
 
-        if (display)
+        if (display) {
           win.style.display =
             display;
+        }
 
-        if (zIndex)
+        if (zIndex) {
           win.style.zIndex =
             zIndex;
+        }
       }
     }
   );
-
-  /*
-    Remove any old LinkedIn
-    state from localStorage.
-  */
 
   localStorage.removeItem(
     "openWindows"
@@ -4750,44 +3504,7 @@ setTimeout(() => {
   localStorage.removeItem(
     "zIndexCounter"
   );
-
-  /*
-    Make sure a previously-created
-    LinkedIn window/taskbar item
-    cannot survive.
-  */
-
-  const linkedinWindow =
-    document.getElementById(
-      "window-LinkedIn"
-    );
-
-  const linkedinTaskbar =
-    document.getElementById(
-      "taskbar-LinkedIn"
-    );
-
-  if (linkedinWindow) {
-    linkedinWindow.remove();
-  }
-
-  if (linkedinTaskbar) {
-    linkedinTaskbar.remove();
-  }
-
-  /*
-    Reattach icon dragging after
-    restored desktop content.
-  */
-
-  setupIconDragging();
-
 }, 200);
-
-
-/* =========================================================
-   DATE / TIME
-========================================================= */
 
 function writeDateTime() {
   const textarea =
@@ -4828,35 +3545,1792 @@ function writeDateTime() {
 }
 
 
+
+
+
 /* =========================================================
-   FINAL SAFETY:
-   NEVER ALLOW LINKEDIN TO BE OPENED
-========================================================= */
+   ROSE GLASS THEME + DESKTOP SELECTION + ICON GRID
+   ========================================================= */
 
-const originalOpenWindow =
-  window.openWindow;
+(function () {
+  "use strict";
 
-window.openWindow =
-  function (appName) {
-    if (
-      appName ===
-      "LinkedIn"
-    ) {
-      console.warn(
-        "LinkedIn has been disabled."
+  /* ---------------------------------------------------------
+     ROSE COLORS
+     --------------------------------------------------------- */
+
+  const ROSE = {
+    dark: "#7b234f",
+    darker: "#581936",
+    main: "#c94f82",
+    light: "#e98daf",
+    pale: "#f7c1d2",
+    highlight: "#ffdce8",
+    taskbar: "#b83f70",
+    taskbarDark: "#762247",
+    active: "#d85b8d",
+    inactive: "#a83b69",
+    border: "#702044",
+    glass: "rgba(214, 88, 133, 0.72)",
+    glassLight: "rgba(255, 205, 222, 0.30)"
+  };
+
+  /* ---------------------------------------------------------
+     ROSE GLASS CSS
+     --------------------------------------------------------- */
+
+  function installRoseGlassTheme() {
+    if (document.getElementById("rose-glass-theme")) return;
+
+    const style = document.createElement("style");
+    style.id = "rose-glass-theme";
+
+    style.textContent = `
+      /* =====================================================
+         DESKTOP
+         ===================================================== */
+
+      #desktop {
+        position: relative;
+      }
+
+      /* =====================================================
+         MAIN XP TASKBAR
+         ===================================================== */
+
+      #Desktop_Footer {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 211, 226, 0.78) 0%,
+            rgba(234, 139, 169, 0.90) 4%,
+            rgba(215, 91, 135, 0.94) 12%,
+            rgba(193, 65, 112, 0.96) 50%,
+            rgba(169, 48, 94, 0.98) 88%,
+            rgba(119, 31, 70, 1) 100%
+          ) !important;
+
+        border-top: 1px solid rgba(255, 230, 240, 0.8) !important;
+
+        box-shadow:
+          0 -1px 0 rgba(255,255,255,.55) inset,
+          0 -2px 8px rgba(80, 15, 42, .35),
+          0 -8px 25px rgba(190, 55, 105, .18);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      /* =====================================================
+         START BUTTON CONTAINER
+         ===================================================== */
+
+      #Desktop_Footer .footer__start_menu {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 226, 235, .42),
+            rgba(196, 62, 111, .35)
+          );
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.45),
+          inset 0 -1px rgba(91,20,52,.35);
+      }
+
+      /* =====================================================
+         DYNAMIC APP TASKBAR
+         ===================================================== */
+
+      #taskbar {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(246, 170, 194, .88) 0%,
+            rgba(218, 105, 145, .90) 6%,
+            rgba(194, 64, 112, .95) 50%,
+            rgba(156, 43, 84, .98) 100%
+          ) !important;
+
+        border-left: 1px solid rgba(255,255,255,.25);
+        border-right: 1px solid rgba(255,255,255,.15);
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.35),
+          inset 0 -1px rgba(86,18,49,.4),
+          0 0 14px rgba(93, 17, 48, .28);
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      /* =====================================================
+         TASKBAR ITEMS
+         ===================================================== */
+
+      #taskbar .taskbar-item {
+        position: relative;
+
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 209, 225, .30),
+            rgba(185, 55, 103, .42)
+          ) !important;
+
+        border-left: 1px solid rgba(255,255,255,.16);
+        border-right: 1px solid rgba(87,18,48,.22);
+
+        color: white !important;
+
+        text-shadow:
+          0 1px 1px rgba(70, 10, 35, .8);
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.20),
+          inset 0 -1px rgba(74,12,39,.30);
+
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+
+        transition:
+          background .12s ease,
+          box-shadow .12s ease,
+          filter .12s ease;
+      }
+
+      #taskbar .taskbar-item:hover {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 225, 236, .55),
+            rgba(211, 75, 124, .70)
+          ) !important;
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.42),
+          inset 0 -1px rgba(86,15,46,.35),
+          0 0 8px rgba(255, 160, 193, .18);
+      }
+
+      #taskbar .taskbar-item img {
+        filter:
+          drop-shadow(0 1px 1px rgba(50, 5, 25, .65));
+      }
+
+      /* =====================================================
+         ACTIVE TASKBAR ITEM
+         ===================================================== */
+
+      #taskbar .taskbar-item.rose-active {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 215, 230, .70),
+            rgba(220, 80, 130, .95) 40%,
+            rgba(171, 45, 91, .98)
+          ) !important;
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.55),
+          inset 0 -1px rgba(76,12,39,.65),
+          0 0 7px rgba(255, 164, 194, .28);
+      }
+
+      /* =====================================================
+         WINDOWS
+         ===================================================== */
+
+      .window {
+        border-color: ${ROSE.border} !important;
+
+        box-shadow:
+          0 8px 28px rgba(57, 7, 30, .34),
+          0 2px 7px rgba(44, 5, 23, .25),
+          inset 0 0 0 1px rgba(255,255,255,.22);
+
+        background:
+          rgba(255, 225, 236, .13) !important;
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* =====================================================
+         WINDOW HEADER
+         ===================================================== */
+
+      .window-header,
+      .window-header-background {
+        background:
+          linear-gradient(
+            rgb(143, 47, 86) 0%,
+            rgb(220, 106, 143) 3%,
+            rgb(241, 146, 174) 7%,
+            rgb(229, 117, 151) 14%,
+            rgb(205, 76, 119) 25%,
+            rgb(201, 72, 116) 55%,
+            rgb(211, 86, 128) 81%,
+            rgb(192, 60, 105) 94%,
+            rgb(155, 43, 81) 100%
+          ) !important;
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.55),
+          inset 0 -1px rgba(91,17,48,.40);
+
+        color: white !important;
+
+        text-shadow:
+          0 1px 1px rgba(65, 8, 32, .8);
+      }
+
+      .window-header-background::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1px;
+        height: 2px;
+
+        background:
+          linear-gradient(
+            to right,
+            transparent,
+            rgba(255,255,255,.65),
+            transparent
+          );
+
+        pointer-events: none;
+      }
+
+      /* =====================================================
+         WINDOW CONTENT GLASS
+         ===================================================== */
+
+      .window-content {
+        background:
+          linear-gradient(
+            135deg,
+            rgba(255,255,255,.22),
+            rgba(255,185,211,.08)
+          ) !important;
+
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+      }
+
+      /* =====================================================
+         WINDOW BUTTONS
+         ===================================================== */
+
+      .window-header-buttons button,
+      .header-button--close,
+      .header-button--maximaze,
+      .header-button--minimize,
+      .header-button--maximized,
+      [class*="header-button"] {
+        filter:
+          hue-rotate(300deg)
+          saturate(1.15);
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.28);
+      }
+
+      /* =====================================================
+         INACTIVE WINDOWS
+         ===================================================== */
+
+      .window.window-inactive
+      .window-header-background {
+        background:
+          linear-gradient(
+            rgb(112, 48, 76) 0%,
+            rgb(159, 83, 110) 3%,
+            rgb(190, 117, 143) 7%,
+            rgb(181, 104, 133) 14%,
+            rgb(162, 82, 115) 25%,
+            rgb(166, 88, 119) 56%,
+            rgb(175, 99, 128) 81%,
+            rgb(160, 79, 111) 94%,
+            rgb(130, 61, 89) 100%
+          ) !important;
+
+        filter: saturate(.82);
+      }
+
+      /* =====================================================
+         START MENU / XP MENUS
+         ===================================================== */
+
+      #StartMenu,
+      .StartMenu,
+      .AllProgMenu,
+      .ItemMenu,
+      .hover-info {
+        border-color: rgba(105, 25, 59, .75) !important;
+
+        box-shadow:
+          0 8px 25px rgba(54, 7, 28, .35),
+          inset 0 1px rgba(255,255,255,.35);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      /* broad rose tint for existing blue XP menu gradients */
+      #StartMenu [style*="blue"],
+      .AllProgMenu [style*="blue"],
+      .ItemMenu [style*="blue"] {
+        filter: hue-rotate(300deg) saturate(1.05);
+      }
+
+      /* =====================================================
+         DESKTOP ICONS
+         ===================================================== */
+
+      #desktop .icon {
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        cursor: default;
+      }
+
+      #desktop .icon.dragging {
+        opacity: .82;
+        z-index: 9999;
+
+        filter:
+          drop-shadow(0 4px 9px rgba(35, 3, 18, .45));
+      }
+
+      #desktop .icon.rose-selected {
+        background: rgba(224, 91, 140, .30) !important;
+
+        border: 1px solid rgba(255, 199, 218, .85);
+
+        box-shadow:
+          inset 0 0 0 1px rgba(121, 31, 67, .30),
+          0 0 8px rgba(244, 130, 168, .18);
+
+        border-radius: 2px;
+      }
+
+      /* =====================================================
+         SELECTION RECTANGLE
+         ===================================================== */
+
+      #desktop-selection-box {
+        position: absolute;
+
+        display: none;
+
+        pointer-events: none;
+
+        z-index: 9998;
+
+        box-sizing: border-box;
+
+        border: 1px solid rgba(255, 190, 215, .95);
+
+        background:
+          rgba(210, 76, 127, .22);
+
+        box-shadow:
+          inset 0 0 0 1px rgba(104, 28, 60, .28),
+          0 0 5px rgba(240, 117, 160, .18);
+      }
+
+      /* =====================================================
+         GRID
+         ===================================================== */
+
+      #desktop-grid-overlay {
+        position: absolute;
+
+        inset: 0;
+
+        pointer-events: none;
+
+        display: none;
+
+        z-index: 9990;
+
+        opacity: .42;
+
+        background-image:
+          linear-gradient(
+            rgba(255, 174, 203, .18) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(255, 174, 203, .18) 1px,
+            transparent 1px
+          );
+
+        background-size:
+          70px 70px;
+
+        background-position:
+          20px 20px;
+
+        mask-image:
+          linear-gradient(
+            to bottom,
+            rgba(0,0,0,.85),
+            rgba(0,0,0,.25)
+          );
+      }
+
+      /* =====================================================
+         SMALL GLASS HIGHLIGHT
+         ===================================================== */
+
+      #Desktop_Footer::before,
+      #taskbar::before {
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+        right: 0;
+        top: 0;
+
+        height: 1px;
+
+        background:
+          linear-gradient(
+            to right,
+            transparent,
+            rgba(255,255,255,.65),
+            transparent
+          );
+
+        pointer-events: none;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  /* ---------------------------------------------------------
+     CREATE DESKTOP SELECTION BOX
+     --------------------------------------------------------- */
+
+  function installDesktopSelection() {
+    const desktop = document.getElementById("desktop");
+
+    if (!desktop) return;
+
+    if (!document.getElementById("desktop-selection-box")) {
+      const selection = document.createElement("div");
+      selection.id = "desktop-selection-box";
+      desktop.appendChild(selection);
+    }
+
+    if (!document.getElementById("desktop-grid-overlay")) {
+      const grid = document.createElement("div");
+      grid.id = "desktop-grid-overlay";
+      desktop.appendChild(grid);
+    }
+
+    const selectionBox =
+      document.getElementById("desktop-selection-box");
+
+    const gridOverlay =
+      document.getElementById("desktop-grid-overlay");
+
+    let selecting = false;
+
+    let startX = 0;
+    let startY = 0;
+
+    function clearSelections() {
+      desktop
+        .querySelectorAll(".icon.rose-selected")
+        .forEach((icon) => {
+          icon.classList.remove("rose-selected");
+        });
+    }
+
+    function pointInsideRectangle(rect, x, y) {
+      return (
+        x >= rect.left &&
+        x <= rect.right &&
+        y >= rect.top &&
+        y <= rect.bottom
       );
+    }
 
+    function updateSelection(event) {
+      if (!selecting) return;
+
+      const desktopRect =
+        desktop.getBoundingClientRect();
+
+      const currentX =
+        event.clientX - desktopRect.left;
+
+      const currentY =
+        event.clientY - desktopRect.top;
+
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+
+      const width =
+        Math.abs(currentX - startX);
+
+      const height =
+        Math.abs(currentY - startY);
+
+      selectionBox.style.display = "block";
+
+      selectionBox.style.left =
+        `${left}px`;
+
+      selectionBox.style.top =
+        `${top}px`;
+
+      selectionBox.style.width =
+        `${width}px`;
+
+      selectionBox.style.height =
+        `${height}px`;
+
+      const selectionRect = {
+        left,
+        top,
+        right: left + width,
+        bottom: top + height
+      };
+
+      desktop
+        .querySelectorAll(".icon")
+        .forEach((icon) => {
+          const iconLeft =
+            parseInt(icon.style.left || "0", 10);
+
+          const iconTop =
+            parseInt(icon.style.top || "0", 10);
+
+          const iconRight =
+            iconLeft + icon.offsetWidth;
+
+          const iconBottom =
+            iconTop + icon.offsetHeight;
+
+          const overlaps =
+            iconLeft < selectionRect.right &&
+            iconRight > selectionRect.left &&
+            iconTop < selectionRect.bottom &&
+            iconBottom > selectionRect.top;
+
+          if (overlaps) {
+            icon.classList.add("rose-selected");
+          } else {
+            icon.classList.remove("rose-selected");
+          }
+        });
+    }
+
+    desktop.addEventListener("mousedown", function (event) {
+      if (event.button !== 0) return;
+
+      /*
+       * Do not start selection when clicking an icon,
+       * a window, or another interactive element.
+       */
+      if (event.target.closest(".icon")) return;
+
+      if (event.target !== desktop) return;
+
+      const rect =
+        desktop.getBoundingClientRect();
+
+      startX =
+        event.clientX - rect.left;
+
+      startY =
+        event.clientY - rect.top;
+
+      selecting = true;
+
+      clearSelections();
+
+      selectionBox.style.display = "block";
+
+      selectionBox.style.left =
+        `${startX}px`;
+
+      selectionBox.style.top =
+        `${startY}px`;
+
+      selectionBox.style.width = "0px";
+      selectionBox.style.height = "0px";
+
+      event.preventDefault();
+    });
+
+    document.addEventListener("mousemove", function (event) {
+      if (!selecting) return;
+
+      updateSelection(event);
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (!selecting) return;
+
+      selecting = false;
+
+      selectionBox.style.display = "none";
+    });
+
+    /*
+     * Click desktop with no drag = deselect.
+     */
+    desktop.addEventListener("click", function (event) {
+      if (
+        event.target === desktop &&
+        !selecting
+      ) {
+        clearSelections();
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------
+     GRID SNAP
+     --------------------------------------------------------- */
+
+  const GRID_X = 70;
+  const GRID_Y = 70;
+
+  const GRID_ORIGIN_X = 20;
+  const GRID_ORIGIN_Y = 20;
+
+  const SNAP_DISTANCE = 28;
+
+  function nearestGrid(value, grid, origin) {
+    return (
+      origin +
+      Math.round(
+        (value - origin) / grid
+      ) *
+        grid
+    );
+  }
+
+  function getOtherIconPositions(currentIcon) {
+    const desktop =
+      document.getElementById("desktop");
+
+    if (!desktop) return [];
+
+    return Array.from(
+      desktop.querySelectorAll(".icon")
+    )
+      .filter((icon) => icon !== currentIcon)
+      .map((icon) => ({
+        x: parseInt(
+          icon.style.left || "0",
+          10
+        ),
+        y: parseInt(
+          icon.style.top || "0",
+          10
+        )
+      }));
+  }
+
+  function snapIconPosition(icon, rawX, rawY) {
+    let x = nearestGrid(
+      rawX,
+      GRID_X,
+      GRID_ORIGIN_X
+    );
+
+    let y = nearestGrid(
+      rawY,
+      GRID_Y,
+      GRID_ORIGIN_Y
+    );
+
+    /*
+     * First snap to the normal grid.
+     */
+
+    const otherIcons =
+      getOtherIconPositions(icon);
+
+    /*
+     * Then see if another icon is nearby.
+     * This makes icons "magnetically" line up.
+     */
+
+    let bestX = x;
+    let bestY = y;
+
+    let bestDistance =
+      Number.POSITIVE_INFINITY;
+
+    otherIcons.forEach((position) => {
+      const dx =
+        Math.abs(rawX - position.x);
+
+      const dy =
+        Math.abs(rawY - position.y);
+
+      /*
+       * Same-column snapping
+       */
+      if (dx <= SNAP_DISTANCE && dy <= 45) {
+        const distance = dx;
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestX = position.x;
+        }
+      }
+
+      /*
+       * Same-row snapping
+       */
+      if (dy <= SNAP_DISTANCE && dx <= 45) {
+        const distance = dy;
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestY = position.y;
+        }
+      }
+    });
+
+    return {
+      x: bestX,
+      y: bestY
+    };
+  }
+
+  /* ---------------------------------------------------------
+     PATCH EXISTING ICON DRAGGING
+     --------------------------------------------------------- */
+
+  function installIconSnapSystem() {
+    const desktop =
+      document.getElementById("desktop");
+
+    if (!desktop) return;
+
+    let draggedIcon = null;
+
+    /*
+     * Detect the icon currently being dragged.
+     *
+     * The existing Bureau.html drag system still does
+     * the actual movement. We simply snap its resulting
+     * position to our grid.
+     */
+
+    desktop
+      .querySelectorAll(".icon")
+      .forEach((icon) => {
+        icon.addEventListener(
+          "mousedown",
+          function (event) {
+            if (event.button !== 0) return;
+
+            draggedIcon = icon;
+
+            const grid =
+              document.getElementById(
+                "desktop-grid-overlay"
+              );
+
+            if (grid) {
+              grid.style.display = "block";
+            }
+          },
+          true
+        );
+      });
+
+    document.addEventListener(
+      "mousemove",
+      function () {
+        if (!draggedIcon) return;
+
+        /*
+         * The original drag handler has already updated
+         * left/top by this point.
+         */
+
+        const rawX =
+          parseInt(
+            draggedIcon.style.left || "0",
+            10
+          );
+
+        const rawY =
+          parseInt(
+            draggedIcon.style.top || "0",
+            10
+          );
+
+        const snapped =
+          snapIconPosition(
+            draggedIcon,
+            rawX,
+            rawY
+          );
+
+        draggedIcon.style.left =
+          `${snapped.x}px`;
+
+        draggedIcon.style.top =
+          `${snapped.y}px`;
+      },
+      true
+    );
+
+    document.addEventListener(
+      "mouseup",
+      function () {
+        if (!draggedIcon) return;
+
+        const snapped =
+          snapIconPosition(
+            draggedIcon,
+            parseInt(
+              draggedIcon.style.left || "0",
+              10
+            ),
+            parseInt(
+              draggedIcon.style.top || "0",
+              10
+            )
+          );
+
+        draggedIcon.style.left =
+          `${snapped.x}px`;
+
+        draggedIcon.style.top =
+          `${snapped.y}px`;
+
+        /*
+         * Save position using the same localStorage
+         * format as the existing desktop system.
+         */
+
+        if (draggedIcon.dataset.icon) {
+          localStorage.setItem(
+            "desktop-icon-" +
+              draggedIcon.dataset.icon,
+            JSON.stringify({
+              x: snapped.x,
+              y: snapped.y
+            })
+          );
+        }
+
+        draggedIcon.classList.remove(
+          "dragging"
+        );
+
+        const grid =
+          document.getElementById(
+            "desktop-grid-overlay"
+          );
+
+        if (grid) {
+          grid.style.display = "none";
+        }
+
+        draggedIcon = null;
+      },
+      true
+    );
+  }
+
+  /* ---------------------------------------------------------
+     MAKE DYNAMIC TASKBAR ITEMS ROSE
+     --------------------------------------------------------- */
+
+  function refreshRoseTaskbar() {
+    const taskbar =
+      document.getElementById("taskbar");
+
+    if (!taskbar) return;
+
+    taskbar
+      .querySelectorAll(".taskbar-item")
+      .forEach((item) => {
+        item.style.setProperty(
+          "color",
+          "#fff",
+          "important"
+        );
+
+        item.style.setProperty(
+          "text-shadow",
+          "0 1px 1px rgba(70,10,35,.8)",
+          "important"
+        );
+      });
+  }
+
+  /* ---------------------------------------------------------
+     FORCE ACTIVE TASKBAR COLOR
+     --------------------------------------------------------- */
+
+  function patchTaskbarHighlight() {
+    if (
+      typeof updateTaskbarHighlight !==
+      "function"
+    ) {
       return;
     }
 
-    return originalOpenWindow(
-      appName
+    const original =
+      updateTaskbarHighlight;
+
+    /*
+     * Don't patch repeatedly.
+     */
+
+    if (
+      updateTaskbarHighlight
+        ._rosePatched
+    ) {
+      return;
+    }
+
+    function roseHighlight() {
+      original.apply(this, arguments);
+
+      const taskbar =
+        document.getElementById("taskbar");
+
+      if (!taskbar) return;
+
+      taskbar
+        .querySelectorAll(".taskbar-item")
+        .forEach((item) => {
+          /*
+           * The original function gives the active
+           * item an inline blue background.
+           * Remove that blue and replace it.
+           */
+
+          const background =
+            item.style.backgroundColor;
+
+          if (
+            background &&
+            (
+              background.includes("26, 80, 183") ||
+              background.includes(
+                "rgb(26, 80, 183)"
+              )
+            )
+          ) {
+            item.style.backgroundColor =
+              "rgba(211, 75, 124, .95)";
+
+            item.style.boxShadow =
+              `
+              inset 0 1px rgba(255,255,255,.55),
+              inset 0 -1px rgba(76,12,39,.65),
+              0 0 7px rgba(255,164,194,.28)
+              `;
+
+            item.classList.add(
+              "rose-active"
+            );
+          }
+        });
+
+      refreshRoseTaskbar();
+    }
+
+    roseHighlight._rosePatched = true;
+
+    /*
+     * Replace global function.
+     */
+    window.updateTaskbarHighlight =
+      roseHighlight;
+  }
+
+  /* ---------------------------------------------------------
+     REMOVE ANY OLD LINKEDIN WINDOW
+     --------------------------------------------------------- */
+
+  function removeLinkedInEverywhere() {
+    /*
+     * Remove an already-open LinkedIn window.
+     */
+
+    document
+      .querySelectorAll(
+        '[id*="LinkedIn"], [data-app-name*="LinkedIn"]'
+      )
+      .forEach((element) => {
+        element.remove();
+      });
+
+    /*
+     * Remove LinkedIn taskbar entry.
+     */
+
+    document
+      .querySelectorAll(
+        '[id="taskbar-LinkedIn"]'
+      )
+      .forEach((element) => {
+        element.remove();
+      });
+
+    /*
+     * Clean saved window state.
+     */
+
+    try {
+      const saved =
+        JSON.parse(
+          localStorage.getItem(
+            "openWindows"
+          ) || "[]"
+        );
+
+      const filtered =
+        saved.filter(
+          (windowState) =>
+            windowState.appName !==
+            "LinkedIn"
+        );
+
+      localStorage.setItem(
+        "openWindows",
+        JSON.stringify(filtered)
+      );
+    } catch (error) {
+      console.warn(
+        "Could not clean LinkedIn from saved windows:",
+        error
+      );
+    }
+  }
+
+  /* ---------------------------------------------------------
+     OBSERVE NEW WINDOWS / TASKBAR
+     --------------------------------------------------------- */
+
+  function installDynamicObserver() {
+    const observer =
+      new MutationObserver(() => {
+        refreshRoseTaskbar();
+        removeLinkedInEverywhere();
+
+        const grid =
+          document.getElementById(
+            "desktop-grid-overlay"
+          );
+
+        if (grid) {
+          grid.style.pointerEvents =
+            "none";
+        }
+      });
+
+    observer.observe(
+      document.body,
+      {
+        childList: true,
+        subtree: true
+      }
     );
-  };
+  }
+
+  /* ---------------------------------------------------------
+     START EVERYTHING
+     --------------------------------------------------------- */
+
+  function initializeRoseSystem() {
+    installRoseGlassTheme();
+
+    removeLinkedInEverywhere();
+
+    installDesktopSelection();
+
+    installIconSnapSystem();
+
+    installDynamicObserver();
+
+    /*
+     * updateTaskbarHighlight may not exist yet
+     * depending on script execution order.
+     */
+
+    setTimeout(() => {
+      patchTaskbarHighlight();
+      refreshRoseTaskbar();
+    }, 50);
+
+    setTimeout(() => {
+      patchTaskbarHighlight();
+      refreshRoseTaskbar();
+    }, 500);
+
+    setTimeout(() => {
+      patchTaskbarHighlight();
+      refreshRoseTaskbar();
+    }, 1500);
+  }
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeRoseSystem
+    );
+  } else {
+    initializeRoseSystem();
+  }
+})();
 
 
-/* =========================================================
-   INITIAL THEME
-========================================================= */
 
-injectRoseTheme();
+/* ============================================================
+   ROSE GLASS THEME
+   ============================================================ */
+
+(function initRoseTheme() {
+  function applyRoseTheme() {
+    if (document.getElementById("rose-glass-theme")) return;
+
+    const style = document.createElement("style");
+    style.id = "rose-glass-theme";
+
+    style.textContent = `
+      /* ======================================================
+         COLORS
+         ====================================================== */
+
+      :root {
+        --rose-dark: #9b2457;
+        --rose-deep: #b72f67;
+        --rose: #d84c82;
+        --rose-light: #ed78a5;
+        --rose-lighter: #f5a0bd;
+        --rose-highlight: #ffd4e3;
+
+        --glass-white: rgba(255,255,255,0.24);
+        --glass-white-strong: rgba(255,255,255,0.38);
+      }
+
+
+      /* ======================================================
+         DESKTOP FOOTER
+         
+         LIGHTER ROSE VERSION
+         ====================================================== */
+
+      #Desktop_Footer {
+        background:
+          linear-gradient(
+            to bottom,
+
+            /* glossy top */
+            rgba(255, 215, 230, 0.78) 0%,
+
+            rgba(255, 190, 215, 0.58) 4%,
+
+            /* light rose */
+            rgba(244, 139, 174, 0.98) 10%,
+
+            rgba(235, 112, 153, 0.98) 28%,
+
+            rgba(225, 91, 139, 0.98) 52%,
+
+            rgba(211, 70, 121, 0.99) 76%,
+
+            rgba(193, 53, 103, 1) 100%
+          ) !important;
+
+        border-top:
+          1px solid rgba(255,255,255,0.65) !important;
+
+        box-shadow:
+          0 -1px 0 rgba(255,255,255,0.5) inset,
+          0 -2px 8px rgba(255,105,155,0.20),
+          0 -5px 18px rgba(120,20,60,0.18);
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+
+      /* ======================================================
+         START BUTTON AREA
+         ====================================================== */
+
+      #Desktop_Footer .footer__start_menu {
+        filter:
+          drop-shadow(0 1px 2px rgba(70,0,30,0.25));
+      }
+
+
+      /* ======================================================
+         DYNAMIC TASKBAR
+         ====================================================== */
+
+      #taskbar {
+        background: transparent !important;
+      }
+
+
+      .taskbar-item {
+        position: relative;
+
+        background:
+          linear-gradient(
+            to bottom,
+
+            rgba(255,218,232,0.58) 0%,
+            rgba(255,184,211,0.42) 5%,
+            rgba(230,91,139,0.95) 16%,
+            rgba(211,61,113,0.98) 45%,
+            rgba(185,40,91,1) 100%
+          ) !important;
+
+        border:
+          1px solid rgba(255,205,225,0.40) !important;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.45) inset,
+          0 -1px 0 rgba(110,10,45,0.25) inset,
+          1px 0 1px rgba(100,10,45,0.35) inset,
+          0 1px 3px rgba(90,0,35,0.18);
+
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+
+      .taskbar-item:hover {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255,230,240,0.72),
+            rgba(244,129,169,0.98) 25%,
+            rgba(215,67,119,1) 100%
+          ) !important;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.55) inset,
+          0 0 7px rgba(255,130,175,0.28);
+
+        filter: brightness(1.05);
+      }
+
+
+      /* ======================================================
+         ACTIVE TASKBAR ITEM
+         ====================================================== */
+
+      .taskbar-item.active {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(247,157,188,0.72),
+            rgba(194,42,92,0.98) 35%,
+            rgba(153,22,65,1) 100%
+          ) !important;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.20) inset,
+          0 1px 2px rgba(70,0,25,0.45) inset;
+      }
+
+
+      /* ======================================================
+         ROSE GLASS WINDOWS
+         ====================================================== */
+
+      .window {
+        border:
+          1px solid rgba(255,215,230,0.62) !important;
+
+        border-radius: 8px;
+
+        background:
+          linear-gradient(
+            135deg,
+            rgba(255,190,215,0.48),
+            rgba(207,55,108,0.92)
+          ) !important;
+
+        box-shadow:
+          0 8px 25px rgba(70,0,30,0.32),
+          0 1px 0 rgba(255,255,255,0.50) inset,
+          0 0 0 1px rgba(120,10,50,0.25);
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+
+      /* ======================================================
+         WINDOW TOPBAR
+         ====================================================== */
+
+      .window-header-background {
+        background:
+          linear-gradient(
+            to bottom,
+
+            rgba(255,220,233,0.82) 0%,
+            rgba(255,188,214,0.66) 4%,
+            rgba(246,125,165,0.98) 11%,
+            rgba(232,86,135,0.99) 30%,
+            rgba(213,56,111,1) 60%,
+            rgba(189,35,88,1) 85%,
+            rgba(158,23,69,1) 100%
+          ) !important;
+
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.52) inset,
+          0 2px 5px rgba(120,10,50,0.18);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+
+      /* ======================================================
+         WINDOW TOPBAR SHINE
+         ====================================================== */
+
+      .window-header-background::before {
+        opacity: 1 !important;
+
+        background:
+          linear-gradient(
+            to right,
+            rgba(255,255,255,0.42),
+            rgba(255,255,255,0.10),
+            transparent
+          ) !important;
+      }
+
+
+      .window-header-background::after {
+        opacity: 1 !important;
+
+        background:
+          linear-gradient(
+            to left,
+            rgba(255,255,255,0.25),
+            transparent
+          ) !important;
+      }
+
+
+      /* ======================================================
+         INACTIVE WINDOW
+         ====================================================== */
+
+      .window.window-inactive {
+        filter: saturate(0.72);
+      }
+
+
+      .window.window-inactive .window-header-background {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(218,169,188,0.72),
+            rgba(187,111,140,0.82) 30%,
+            rgba(157,76,108,0.90) 65%,
+            rgba(126,52,81,0.96) 100%
+          ) !important;
+      }
+
+
+      /* ======================================================
+         WINDOW BUTTONS
+         ====================================================== */
+
+      .header-button--minimize,
+      .header-button--maximaze,
+      .header-button--maximized {
+
+        background-image:
+          radial-gradient(
+            circle at 85% 85%,
+            #a71954 0%,
+            #cf3975 42%,
+            #ee78a6 67%,
+            #ffc9dd 88%,
+            #fff 100%
+          ) !important;
+
+        box-shadow:
+          #8e1649 0 -1px 2px 1px inset,
+          rgba(255,255,255,0.35) 0 1px 1px inset !important;
+      }
+
+
+      .header-button--close {
+        background-image:
+          radial-gradient(
+            circle at 85% 85%,
+            #941442 0%,
+            #c52d65 45%,
+            #ed719d 68%,
+            #ffc8dc 88%,
+            #fff 100%
+          ) !important;
+
+        box-shadow:
+          #7d1038 0 -1px 2px 1px inset,
+          rgba(255,255,255,0.30) 0 1px 1px inset !important;
+      }
+
+
+      /* ======================================================
+         DESKTOP SELECTION FRAME
+         ====================================================== */
+
+      #desktop-selection-frame {
+        position: fixed;
+
+        display: none;
+
+        pointer-events: none;
+
+        z-index: 999999;
+
+        box-sizing: border-box;
+
+        border:
+          1px solid rgba(70,150,235,0.95);
+
+        background:
+          rgba(80,155,235,0.20);
+
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.16) inset;
+      }
+
+
+      /* ======================================================
+         SELECTED DESKTOP ICON
+         ====================================================== */
+
+      #desktop .desktop-selected {
+        background:
+          rgba(70,150,235,0.32) !important;
+
+        outline:
+          1px solid rgba(120,190,255,0.78);
+      }
+
+
+      /* ======================================================
+         ICONS
+         ====================================================== */
+
+      #desktop .icon {
+        box-sizing: border-box;
+      }
+
+
+      #desktop .icon img {
+        filter:
+          drop-shadow(
+            0 2px 2px rgba(0,0,0,0.35)
+          );
+      }
+
+
+      #desktop .icon:hover img {
+        filter:
+          drop-shadow(
+            0 2px 3px rgba(0,0,0,0.45)
+          )
+          brightness(1.06);
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyRoseTheme);
+  } else {
+    applyRoseTheme();
+  }
+})();
+
+
+/* ============================================================
+   DESKTOP SELECTION RECTANGLE
+   ============================================================ */
+
+(function initDesktopSelection() {
+
+  function setupSelection() {
+
+    const desktop = document.getElementById("desktop");
+
+    if (!desktop) return;
+
+    if (document.getElementById("desktop-selection-frame")) return;
+
+    const frame = document.createElement("div");
+
+    frame.id = "desktop-selection-frame";
+
+    document.body.appendChild(frame);
+
+
+    let selecting = false;
+
+    let startX = 0;
+    let startY = 0;
+
+
+    desktop.addEventListener("mousedown", function (event) {
+
+      if (event.button !== 0) return;
+
+      /*
+       * If the user clicked an icon,
+       * let the existing icon dragging system handle it.
+       */
+
+      if (event.target.closest(".icon")) return;
+
+      /*
+       * Don't start desktop selection on windows.
+       */
+
+      if (event.target.closest(".window")) return;
+
+
+      selecting = true;
+
+      startX = event.clientX;
+      startY = event.clientY;
+
+
+      frame.style.display = "block";
+
+      frame.style.left = `${startX}px`;
+      frame.style.top = `${startY}px`;
+
+      frame.style.width = "0px";
+      frame.style.height = "0px";
+
+
+      /*
+       * Clear old selections.
+       */
+
+      desktop
+        .querySelectorAll(".desktop-selected")
+        .forEach((icon) => {
+          icon.classList.remove("desktop-selected");
+        });
+
+
+      event.preventDefault();
+    });
+
+
+    document.addEventListener("mousemove", function (event) {
+
+      if (!selecting) return;
+
+
+      const currentX = event.clientX;
+      const currentY = event.clientY;
+
+
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+
+
+      frame.style.left = `${left}px`;
+      frame.style.top = `${top}px`;
+
+      frame.style.width = `${width}px`;
+      frame.style.height = `${height}px`;
+
+
+      const selectionRect =
+        frame.getBoundingClientRect();
+
+
+      desktop
+        .querySelectorAll(".icon")
+        .forEach((icon) => {
+
+          const iconRect =
+            icon.getBoundingClientRect();
+
+
+          const intersects =
+            iconRect.left < selectionRect.right &&
+            iconRect.right > selectionRect.left &&
+            iconRect.top < selectionRect.bottom &&
+            iconRect.bottom > selectionRect.top;
+
+
+          icon.classList.toggle(
+            "desktop-selected",
+            intersects
+          );
+        });
+    });
+
+
+    document.addEventListener("mouseup", function () {
+
+      if (!selecting) return;
+
+      selecting = false;
+
+      frame.style.display = "none";
+    });
+  }
+
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      setupSelection
+    );
+  } else {
+    setupSelection();
+  }
+
+})();
+
+
+/* ============================================================
+   DESKTOP ICON GRID SNAP
+   ============================================================ */
+
+(function initDesktopGrid() {
+
+  const GRID_X = 90;
+  const GRID_Y = 70;
+
+  const GRID_OFFSET_X = 20;
+  const GRID_OFFSET_Y = 20;
+
+
+  function snapToGrid(value, grid, offset) {
+
+    return (
+      Math.round(
+        (value - offset) / grid
+      ) * grid +
+      offset
+    );
+
+  }
+
+
+  function snapIcon(icon) {
+
+    if (!icon) return;
+
+
+    const currentLeft =
+      parseInt(
+        icon.style.left || "0",
+        10
+      );
+
+
+    const currentTop =
+      parseInt(
+        icon.style.top || "0",
+        10
+      );
+
+
+    const snappedLeft =
+      snapToGrid(
+        currentLeft,
+        GRID_X,
+        GRID_OFFSET_X
+      );
+
+
+    const snappedTop =
+      snapToGrid(
+        currentTop,
+        GRID_Y,
+        GRID_OFFSET_Y
+      );
+
+
+    icon.style.left =
+      `${snappedLeft}px`;
+
+    icon.style.top =
+      `${snappedTop}px`;
+  }
+
+
+  /*
+   * When the mouse is released, find the icon
+   * that was being moved and snap it.
+   */
+
+  document.addEventListener(
+    "mouseup",
+    function () {
+
+      const selectedIcons =
+        document.querySelectorAll(
+          "#desktop .icon"
+        );
+
+
+      selectedIcons.forEach((icon) => {
+
+        /*
+         * Only snap icons that have an explicit
+         * position.
+         */
+
+        if (
+          icon.style.left !== "" &&
+          icon.style.top !== ""
+        ) {
+          snapIcon(icon);
+        }
+
+      });
+
+    },
+    true
+  );
+
+})();
