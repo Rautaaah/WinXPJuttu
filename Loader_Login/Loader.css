@@ -1,262 +1,133 @@
 @keyframes fadeOutBlack {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
+from {
+opacity: 1;
+}
+to {
+opacity: 0;
+}
 }
 
 @keyframes moveBlocks {
-  0% {
-    transform: translateX(-60px);
-  }
-
-  100% {
-    transform: translateX(250px);
-  }
+0% {
+transform: translateX(-60px);
 }
-
-@keyframes fadeInSteps {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+100% {
+transform: translateX(250px);
 }
-
-/* ================================
-   BLACK BOOT FADE
-================================ */
+}
 
 body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: black;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 1;
-  animation: fadeOutBlack 1.2s steps(12, end) forwards;
+content: "";
+position: fixed;
+inset: 0;
+background: black;
+z-index: 9999;
+pointer-events: none;
+opacity: 1;
+animation: fadeOutBlack 1.2s steps(12, end) forwards;
 }
-
-/* ================================
-   STEP FADE-IN
-================================ */
 
 .fade-in-steps * {
-  animation: fadeInSteps 1.2s steps(40, end) forwards;
+animation: fadeInSteps 1.2s steps(40, end) forwards;
 }
 
-/* ================================
-   GLOBAL
-================================ */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Tahoma, Verdana, sans-serif;
+{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: Tahoma, Verdana, sans-serif;
 }
-
-/* ================================
-   WINDOWS XP LOADER
-================================ */
 
 #loader {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: black;
+position: fixed;
+width: 100%;
+height: 100%;
+background: black;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  z-index: 9999;
-  pointer-events: none;
+z-index: 9999;
+pointer-events: none;
 }
-
-/* ================================
-   WINDOWS XP LOGO
-================================ */
 
 #logo {
-  width: 25%;
-  margin-bottom: 8%;
+width: 25%;
+margin-bottom: 8%;
 }
-
-/* ================================
-   PROGRESS BAR
-================================ */
 
 #progress-bar {
-  width: 15%;
-  height: 3%;
-
-  border: 2px solid #d9a0b8;
-  background: #170b11;
-
-  display: flex;
-  align-items: center;
-
-  border-radius: 8px;
-  overflow: hidden;
-
-  box-shadow:
-    inset 0 0 3px rgba(255, 255, 255, 0.35),
-    0 0 4px rgba(255, 105, 160, 0.15);
+width: 15%;
+height: 3%;
+border: 2px solid #a5a5a5;
+display: flex;
+align-items: center;
+border-radius: 8px;
+overflow: hidden;
 }
-
-/* ================================
-   ROSE PROGRESS BLOCKS
-================================ */
 
 .progress-block {
-  width: 5%;
-  height: 80%;
-
-  background: #d94f8a;
-
-  margin-right: 1%;
-
-  animation:
-    moveBlocks 2.5s infinite steps(40);
-
-  border-radius: 1px;
+width: 5%;
+height: 80%;
+background: #2838c4;
+margin-right: 1%;
+animation: moveBlocks 2.5s infinite steps(40);
 }
-
-/* ================================
-   ROSE BLOCK #1
-   Dark → Bright → Dark
-================================ */
 
 .progress-block:nth-child(1) {
-  background: linear-gradient(
-    to bottom,
-
-    #6b1238 0%,
-    #6b1238 10%,
-
-    #a52b5f 10%,
-    #a52b5f 20%,
-
-    #e85b96 20%,
-    #e85b96 30%,
-
-    #ff9fc5 30%,
-    #ff9fc5 40%,
-
-    #f477aa 40%,
-    #f477aa 50%,
-
-    #e9679e 50%,
-    #e9679e 60%,
-
-    #d94f8a 60%,
-    #d94f8a 90%,
-
-    #8c1d4e 90%,
-    #8c1d4e 100%
-  );
+background: linear-gradient(
+to bottom,
+#141c62 10%,
+#435cda 10% 20%,
+#7690ee 20% 30%,
+#849cf0 30% 40%,
+#5a7aec 40% 50%,
+#2838c4 60% 90%,
+#19237a 100%
+);
 }
-
-/* ================================
-   ROSE BLOCK #2
-================================ */
 
 .progress-block:nth-child(2) {
-  background: linear-gradient(
-    to bottom,
-
-    #6b1238 0%,
-    #6b1238 10%,
-
-    #a52b5f 10%,
-    #a52b5f 20%,
-
-    #ed68a0 20%,
-    #ed68a0 30%,
-
-    #ffadd0 30%,
-    #ffadd0 40%,
-
-    #fa86b5 40%,
-    #fa86b5 50%,
-
-    #e66a9e 50%,
-    #e66a9e 60%,
-
-    #d94f8a 60%,
-    #d94f8a 80%,
-
-    #8c1d4e 80%,
-    #8c1d4e 100%
-  );
+background: linear-gradient(
+to bottom,
+#141c62 10%,
+#435cda 10% 20%,
+#7690ee 20% 30%,
+#849cf0 30% 40%,
+#5a7aec 40% 50%,
+#5574e9 50% 60%,
+#2838c4 60% 80%,
+#19237a 100%
+);
 }
-
-/* ================================
-   ROSE BLOCK #3
-================================ */
 
 .progress-block:nth-child(3) {
-  background: linear-gradient(
-    to bottom,
-
-    #6b1238 0%,
-    #6b1238 10%,
-
-    #a52b5f 10%,
-    #a52b5f 20%,
-
-    #ed68a0 20%,
-    #ed68a0 30%,
-
-    #ffb4d4 30%,
-    #ffb4d4 50%,
-
-    #f58bb8 50%,
-    #f58bb8 60%,
-
-    #df6098 60%,
-    #df6098 70%,
-
-    #d94f8a 70%,
-    #d94f8a 90%,
-
-    #8c1d4e 90%,
-    #8c1d4e 100%
-  );
+background: linear-gradient(
+to bottom,
+#141c62 10%,
+#435cda 10% 20%,
+#7690ee 20% 30%,
+#849cf0 30% 50%,
+#5878ec 50% 60%,
+#4f6ce4 60% 70%,
+#2838c4 70% 90%,
+#19237a 100%
+);
 }
-
-/* ================================
-   COPYRIGHT
-================================ */
 
 #Copyright {
-  position: absolute;
-
-  width: 7%;
-
-  bottom: 5%;
-  right: 3%;
+position: absolute;
+width: 7%;
+bottom: 5%;
+right: 3%;
 }
 
-/* ================================
-   MICROSOFT LOGO
-================================ */
-
 #Microsoft {
-  position: absolute;
-
-  width: 15%;
-
-  bottom: 5%;
-  left: 3%;
+position: absolute;
+width: 15%;
+bottom: 5%;
+left: 3%;
 }
 
 /* =========================================================
