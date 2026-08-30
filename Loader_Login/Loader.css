@@ -70,7 +70,7 @@ body::after {
 .progress-block {
   width: 5%;
   height: 80%;
-  background: #2838c4;
+  background: #e44b8a;
   margin-right: 1%;
   animation: moveBlocks 2.5s infinite steps(40);
 }
@@ -78,41 +78,42 @@ body::after {
 .progress-block:nth-child(1) {
   background: linear-gradient(
     to bottom,
-    #141c62 10%,
-    #435cda 10% 20%,
-    #7690ee 20% 30%,
-    #849cf0 30% 40%,
-    #5a7aec 40% 50%,
-    #2838c4 60% 90%,
-    #19237a 100%
+    #6b123c 0%,
+    #a82863 10%,
+    #e75b9a 25%,
+    #ff9cc6 40%,
+    #ffb7d5 50%,
+    #ef6fa8 65%,
+    #c73d78 85%,
+    #72153f 100%
   );
 }
 
 .progress-block:nth-child(2) {
   background: linear-gradient(
     to bottom,
-    #141c62 10%,
-    #435cda 10% 20%,
-    #7690ee 20% 30%,
-    #849cf0 30% 40%,
-    #5a7aec 40% 50%,
-    #5574e9 50% 60%,
-    #2838c4 60% 80%,
-    #19237a 100%
+    #6b123c 0%,
+    #b52e6a 10%,
+    #ee6ba7 25%,
+    #ffadd0 40%,
+    #ffd0e2 50%,
+    #f27caf 65%,
+    #cc417b 85%,
+    #72153f 100%
   );
 }
 
 .progress-block:nth-child(3) {
   background: linear-gradient(
     to bottom,
-    #141c62 10%,
-    #435cda 10% 20%,
-    #7690ee 20% 30%,
-    #849cf0 30% 50%,
-    #5878ec 50% 60%,
-    #4f6ce4 60% 70%,
-    #2838c4 70% 90%,
-    #19237a 100%
+    #6b123c 0%,
+    #a82863 10%,
+    #e75b9a 25%,
+    #ff9fc8 40%,
+    #ffc4dc 55%,
+    #e95d9d 70%,
+    #bd3470 88%,
+    #72153f 100%
   );
 }
 
