@@ -4702,3 +4702,635 @@ function writeDateTime() {
   }
 })();
 
+
+
+/* ============================================================
+   ROSE GLASS THEME
+   ============================================================ */
+
+(function initRoseTheme() {
+  function applyRoseTheme() {
+    if (document.getElementById("rose-glass-theme")) return;
+
+    const style = document.createElement("style");
+    style.id = "rose-glass-theme";
+
+    style.textContent = `
+      /* ======================================================
+         COLORS
+         ====================================================== */
+
+      :root {
+        --rose-dark: #9b2457;
+        --rose-deep: #b72f67;
+        --rose: #d84c82;
+        --rose-light: #ed78a5;
+        --rose-lighter: #f5a0bd;
+        --rose-highlight: #ffd4e3;
+
+        --glass-white: rgba(255,255,255,0.24);
+        --glass-white-strong: rgba(255,255,255,0.38);
+      }
+
+
+      /* ======================================================
+         DESKTOP FOOTER
+         
+         LIGHTER ROSE VERSION
+         ====================================================== */
+
+      #Desktop_Footer {
+        background:
+          linear-gradient(
+            to bottom,
+
+            /* glossy top */
+            rgba(255, 215, 230, 0.78) 0%,
+
+            rgba(255, 190, 215, 0.58) 4%,
+
+            /* light rose */
+            rgba(244, 139, 174, 0.98) 10%,
+
+            rgba(235, 112, 153, 0.98) 28%,
+
+            rgba(225, 91, 139, 0.98) 52%,
+
+            rgba(211, 70, 121, 0.99) 76%,
+
+            rgba(193, 53, 103, 1) 100%
+          ) !important;
+
+        border-top:
+          1px solid rgba(255,255,255,0.65) !important;
+
+        box-shadow:
+          0 -1px 0 rgba(255,255,255,0.5) inset,
+          0 -2px 8px rgba(255,105,155,0.20),
+          0 -5px 18px rgba(120,20,60,0.18);
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+
+      /* ======================================================
+         START BUTTON AREA
+         ====================================================== */
+
+      #Desktop_Footer .footer__start_menu {
+        filter:
+          drop-shadow(0 1px 2px rgba(70,0,30,0.25));
+      }
+
+
+      /* ======================================================
+         DYNAMIC TASKBAR
+         ====================================================== */
+
+      #taskbar {
+        background: transparent !important;
+      }
+
+
+      .taskbar-item {
+        position: relative;
+
+        background:
+          linear-gradient(
+            to bottom,
+
+            rgba(255,218,232,0.58) 0%,
+            rgba(255,184,211,0.42) 5%,
+            rgba(230,91,139,0.95) 16%,
+            rgba(211,61,113,0.98) 45%,
+            rgba(185,40,91,1) 100%
+          ) !important;
+
+        border:
+          1px solid rgba(255,205,225,0.40) !important;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.45) inset,
+          0 -1px 0 rgba(110,10,45,0.25) inset,
+          1px 0 1px rgba(100,10,45,0.35) inset,
+          0 1px 3px rgba(90,0,35,0.18);
+
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+
+      .taskbar-item:hover {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255,230,240,0.72),
+            rgba(244,129,169,0.98) 25%,
+            rgba(215,67,119,1) 100%
+          ) !important;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.55) inset,
+          0 0 7px rgba(255,130,175,0.28);
+
+        filter: brightness(1.05);
+      }
+
+
+      /* ======================================================
+         ACTIVE TASKBAR ITEM
+         ====================================================== */
+
+      .taskbar-item.active {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(247,157,188,0.72),
+            rgba(194,42,92,0.98) 35%,
+            rgba(153,22,65,1) 100%
+          ) !important;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.20) inset,
+          0 1px 2px rgba(70,0,25,0.45) inset;
+      }
+
+
+      /* ======================================================
+         ROSE GLASS WINDOWS
+         ====================================================== */
+
+      .window {
+        border:
+          1px solid rgba(255,215,230,0.62) !important;
+
+        border-radius: 8px;
+
+        background:
+          linear-gradient(
+            135deg,
+            rgba(255,190,215,0.48),
+            rgba(207,55,108,0.92)
+          ) !important;
+
+        box-shadow:
+          0 8px 25px rgba(70,0,30,0.32),
+          0 1px 0 rgba(255,255,255,0.50) inset,
+          0 0 0 1px rgba(120,10,50,0.25);
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+
+      /* ======================================================
+         WINDOW TOPBAR
+         ====================================================== */
+
+      .window-header-background {
+        background:
+          linear-gradient(
+            to bottom,
+
+            rgba(255,220,233,0.82) 0%,
+            rgba(255,188,214,0.66) 4%,
+            rgba(246,125,165,0.98) 11%,
+            rgba(232,86,135,0.99) 30%,
+            rgba(213,56,111,1) 60%,
+            rgba(189,35,88,1) 85%,
+            rgba(158,23,69,1) 100%
+          ) !important;
+
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.52) inset,
+          0 2px 5px rgba(120,10,50,0.18);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+
+      /* ======================================================
+         WINDOW TOPBAR SHINE
+         ====================================================== */
+
+      .window-header-background::before {
+        opacity: 1 !important;
+
+        background:
+          linear-gradient(
+            to right,
+            rgba(255,255,255,0.42),
+            rgba(255,255,255,0.10),
+            transparent
+          ) !important;
+      }
+
+
+      .window-header-background::after {
+        opacity: 1 !important;
+
+        background:
+          linear-gradient(
+            to left,
+            rgba(255,255,255,0.25),
+            transparent
+          ) !important;
+      }
+
+
+      /* ======================================================
+         INACTIVE WINDOW
+         ====================================================== */
+
+      .window.window-inactive {
+        filter: saturate(0.72);
+      }
+
+
+      .window.window-inactive .window-header-background {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(218,169,188,0.72),
+            rgba(187,111,140,0.82) 30%,
+            rgba(157,76,108,0.90) 65%,
+            rgba(126,52,81,0.96) 100%
+          ) !important;
+      }
+
+
+      /* ======================================================
+         WINDOW BUTTONS
+         ====================================================== */
+
+      .header-button--minimize,
+      .header-button--maximaze,
+      .header-button--maximized {
+
+        background-image:
+          radial-gradient(
+            circle at 85% 85%,
+            #a71954 0%,
+            #cf3975 42%,
+            #ee78a6 67%,
+            #ffc9dd 88%,
+            #fff 100%
+          ) !important;
+
+        box-shadow:
+          #8e1649 0 -1px 2px 1px inset,
+          rgba(255,255,255,0.35) 0 1px 1px inset !important;
+      }
+
+
+      .header-button--close {
+        background-image:
+          radial-gradient(
+            circle at 85% 85%,
+            #941442 0%,
+            #c52d65 45%,
+            #ed719d 68%,
+            #ffc8dc 88%,
+            #fff 100%
+          ) !important;
+
+        box-shadow:
+          #7d1038 0 -1px 2px 1px inset,
+          rgba(255,255,255,0.30) 0 1px 1px inset !important;
+      }
+
+
+      /* ======================================================
+         DESKTOP SELECTION FRAME
+         ====================================================== */
+
+      #desktop-selection-frame {
+        position: fixed;
+
+        display: none;
+
+        pointer-events: none;
+
+        z-index: 999999;
+
+        box-sizing: border-box;
+
+        border:
+          1px solid rgba(70,150,235,0.95);
+
+        background:
+          rgba(80,155,235,0.20);
+
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.16) inset;
+      }
+
+
+      /* ======================================================
+         SELECTED DESKTOP ICON
+         ====================================================== */
+
+      #desktop .desktop-selected {
+        background:
+          rgba(70,150,235,0.32) !important;
+
+        outline:
+          1px solid rgba(120,190,255,0.78);
+      }
+
+
+      /* ======================================================
+         ICONS
+         ====================================================== */
+
+      #desktop .icon {
+        box-sizing: border-box;
+      }
+
+
+      #desktop .icon img {
+        filter:
+          drop-shadow(
+            0 2px 2px rgba(0,0,0,0.35)
+          );
+      }
+
+
+      #desktop .icon:hover img {
+        filter:
+          drop-shadow(
+            0 2px 3px rgba(0,0,0,0.45)
+          )
+          brightness(1.06);
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyRoseTheme);
+  } else {
+    applyRoseTheme();
+  }
+})();
+
+
+/* ============================================================
+   DESKTOP SELECTION RECTANGLE
+   ============================================================ */
+
+(function initDesktopSelection() {
+
+  function setupSelection() {
+
+    const desktop = document.getElementById("desktop");
+
+    if (!desktop) return;
+
+    if (document.getElementById("desktop-selection-frame")) return;
+
+    const frame = document.createElement("div");
+
+    frame.id = "desktop-selection-frame";
+
+    document.body.appendChild(frame);
+
+
+    let selecting = false;
+
+    let startX = 0;
+    let startY = 0;
+
+
+    desktop.addEventListener("mousedown", function (event) {
+
+      if (event.button !== 0) return;
+
+      /*
+       * If the user clicked an icon,
+       * let the existing icon dragging system handle it.
+       */
+
+      if (event.target.closest(".icon")) return;
+
+      /*
+       * Don't start desktop selection on windows.
+       */
+
+      if (event.target.closest(".window")) return;
+
+
+      selecting = true;
+
+      startX = event.clientX;
+      startY = event.clientY;
+
+
+      frame.style.display = "block";
+
+      frame.style.left = `${startX}px`;
+      frame.style.top = `${startY}px`;
+
+      frame.style.width = "0px";
+      frame.style.height = "0px";
+
+
+      /*
+       * Clear old selections.
+       */
+
+      desktop
+        .querySelectorAll(".desktop-selected")
+        .forEach((icon) => {
+          icon.classList.remove("desktop-selected");
+        });
+
+
+      event.preventDefault();
+    });
+
+
+    document.addEventListener("mousemove", function (event) {
+
+      if (!selecting) return;
+
+
+      const currentX = event.clientX;
+      const currentY = event.clientY;
+
+
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+
+
+      frame.style.left = `${left}px`;
+      frame.style.top = `${top}px`;
+
+      frame.style.width = `${width}px`;
+      frame.style.height = `${height}px`;
+
+
+      const selectionRect =
+        frame.getBoundingClientRect();
+
+
+      desktop
+        .querySelectorAll(".icon")
+        .forEach((icon) => {
+
+          const iconRect =
+            icon.getBoundingClientRect();
+
+
+          const intersects =
+            iconRect.left < selectionRect.right &&
+            iconRect.right > selectionRect.left &&
+            iconRect.top < selectionRect.bottom &&
+            iconRect.bottom > selectionRect.top;
+
+
+          icon.classList.toggle(
+            "desktop-selected",
+            intersects
+          );
+        });
+    });
+
+
+    document.addEventListener("mouseup", function () {
+
+      if (!selecting) return;
+
+      selecting = false;
+
+      frame.style.display = "none";
+    });
+  }
+
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      setupSelection
+    );
+  } else {
+    setupSelection();
+  }
+
+})();
+
+
+/* ============================================================
+   DESKTOP ICON GRID SNAP
+   ============================================================ */
+
+(function initDesktopGrid() {
+
+  const GRID_X = 90;
+  const GRID_Y = 70;
+
+  const GRID_OFFSET_X = 20;
+  const GRID_OFFSET_Y = 20;
+
+
+  function snapToGrid(value, grid, offset) {
+
+    return (
+      Math.round(
+        (value - offset) / grid
+      ) * grid +
+      offset
+    );
+
+  }
+
+
+  function snapIcon(icon) {
+
+    if (!icon) return;
+
+
+    const currentLeft =
+      parseInt(
+        icon.style.left || "0",
+        10
+      );
+
+
+    const currentTop =
+      parseInt(
+        icon.style.top || "0",
+        10
+      );
+
+
+    const snappedLeft =
+      snapToGrid(
+        currentLeft,
+        GRID_X,
+        GRID_OFFSET_X
+      );
+
+
+    const snappedTop =
+      snapToGrid(
+        currentTop,
+        GRID_Y,
+        GRID_OFFSET_Y
+      );
+
+
+    icon.style.left =
+      `${snappedLeft}px`;
+
+    icon.style.top =
+      `${snappedTop}px`;
+  }
+
+
+  /*
+   * When the mouse is released, find the icon
+   * that was being moved and snap it.
+   */
+
+  document.addEventListener(
+    "mouseup",
+    function () {
+
+      const selectedIcons =
+        document.querySelectorAll(
+          "#desktop .icon"
+        );
+
+
+      selectedIcons.forEach((icon) => {
+
+        /*
+         * Only snap icons that have an explicit
+         * position.
+         */
+
+        if (
+          icon.style.left !== "" &&
+          icon.style.top !== ""
+        ) {
+          snapIcon(icon);
+        }
+
+      });
+
+    },
+    true
+  );
+
+})();
