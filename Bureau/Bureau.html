@@ -59,6 +59,45 @@
 
     <script src="/Bureau/Bureau.js"></script>
     <script src="/Open_Windows/Minesweeper/Minesweeper.js"></script>
+
+    <style>
+      /*
+       * =====================================================
+       * DRAGGABLE DESKTOP ICONS
+       * =====================================================
+       */
+
+      #desktop {
+        position: relative;
+        width: 100vw;
+        height: calc(100vh - 30px);
+        padding: 0;
+      }
+
+      #desktop .icon {
+        position: absolute;
+        margin: 0;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+      }
+
+      #desktop .icon.dragging {
+        z-index: 9999;
+        opacity: 0.85;
+      }
+
+      /*
+       * Prevent the centered folder from being controlled
+       * by the old fixed positioning.
+       */
+      #centered-folder {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
   </head>
 
   <body>
@@ -74,9 +113,9 @@
       "
     >
 
-      <!-- ================================= -->
-      <!-- AUTOMATIC TIME-BASED WALLPAPER    -->
-      <!-- ================================= -->
+      <!-- =================================================
+           TIME-BASED WALLPAPER
+           ================================================= -->
 
       <script>
         function updateDesktopWallpaper() {
@@ -84,164 +123,194 @@
 
           let wallpaper;
 
-          /*
-           * MORNING
-           * 06:00 - 11:59
-           */
+          // 🌅 MORNING — 06:00 to 11:59
           if (hour >= 6 && hour < 12) {
             wallpaper =
-              "https://media1.tenor.com/m/NkqanKk4XmYAAAAd/%D0%B9%D1%86%D1%83.gif";
+              "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHV6ZTR1Zzg4NTF3dHZsOW1vNGtoOGxncTRybGpsamw1bHQzMWt0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13ZzYXkeIjcZy0/giphy.gif";
           }
 
-          /*
-           * AFTERNOON
-           * 12:00 - 17:59
-           */
+          // 🌸 AFTERNOON — 12:00 to 17:59
           else if (hour >= 12 && hour < 18) {
             wallpaper =
-              "https://media1.tenor.com/m/cphmUyMjQ60AAAAd/sakura.gif";
+              "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExam5kM2l4bGt3bzZnZWRxbGR2MWxsZ2VuNzVsdmczZ2d4Z2J1bjRtMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NKicvKt6iisXS/giphy.gif";
           }
 
-          /*
-           * NIGHT
-           * 18:00 - 05:59
-           */
+          // 🌙 NIGHT — 18:00 to 05:59
           else {
             wallpaper =
-              "https://media1.tenor.com/m/UymJ9Gn-nf0AAAAd/%D1%8B.gif";
+              "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmhsaDV5eDc4am52aXA3YzBlN21jNnRrOWt0c2xlbjBnZWNiaGJ0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lR5poYluERnRuaGQOd/giphy.gif";
           }
 
-          document.getElementById("main-content").style.backgroundImage =
-            `url("${wallpaper}")`;
+          const desktop = document.getElementById("main-content");
+
+          if (desktop) {
+            desktop.style.backgroundImage = `url("${wallpaper}")`;
+          }
         }
 
-        // Set wallpaper immediately when the desktop loads
+        // Set wallpaper immediately
         updateDesktopWallpaper();
 
-        // Check again every minute
+        // Check every minute
         setInterval(updateDesktopWallpaper, 60000);
       </script>
 
 
-      <!-- ================================= -->
-      <!-- DESKTOP ICONS                     -->
-      <!-- ================================= -->
+      <!-- =================================================
+           DESKTOP
+           ================================================= -->
 
       <div id="desktop">
 
+        <!-- My Computer -->
+
         <div
           class="icon"
+          data-icon="my-computer"
           ondblclick="openWindow('My Computer')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/My Computer.png"
             alt="My Computer"
           />
+
           <span>My Computer</span>
         </div>
 
 
+        <!-- Recycle Bin -->
+
         <div
           class="icon"
+          data-icon="recycle-bin"
           ondblclick="openWindow('Recycle Bin (empty)')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Recycle Bin (empty).png"
             alt="Recycle Bin"
           />
+
           <span>Recycle Bin</span>
         </div>
 
 
+        <!-- Internet Explorer -->
+
         <div
           class="icon"
+          data-icon="internet-explorer"
           ondblclick="openWindow('Internet Explorer 6')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Internet Explorer 6.png"
             alt="Internet Explorer"
           />
+
           <span>Internet Explorer</span>
         </div>
 
 
+        <!-- Minesweeper -->
+
         <div
           class="icon"
+          data-icon="minesweeper"
           ondblclick="openWindow('Minesweeper'); SetLvl('Beginner')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Minesweeper.png"
             alt="Minesweeper"
           />
+
           <span>Minesweeper</span>
         </div>
 
 
+        <!-- Pinball -->
+
         <div
           class="icon"
+          data-icon="pinball"
           ondblclick="openWindow('Space Cadet Pinball')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Space Cadet Pinball.png"
             alt="Pinball"
           />
+
           <span>Pinball</span>
         </div>
 
 
+        <!-- Paint -->
+
         <div
           class="icon"
+          data-icon="paint"
           ondblclick="openWindow('Paint')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Paint.png"
             alt="Paint"
           />
+
           <span>Paint</span>
         </div>
 
 
+        <!-- Notepad -->
+
         <div
           class="icon"
+          data-icon="notepad"
           ondblclick="openWindow('Notepad')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Notepad.png"
             alt="Notepad"
           />
+
           <span>Notepad</span>
         </div>
 
 
+        <!-- Winamp -->
+
         <div
           class="icon"
+          data-icon="winamp"
           ondblclick="openRawWinamp()"
         >
           <img
             src="/Assets/Images/Winamp-logo.png"
             alt="Winamp"
           />
+
           <span>Winamp</span>
         </div>
 
 
+        <!-- Projects Folder -->
+
         <div
           class="icon"
           id="centered-folder"
+          data-icon="projects"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Folder Closed.png"
             alt="Projects Under Construct ! Folder"
           />
+
           <span>Projects Under Construct !</span>
         </div>
 
       </div>
 
 
-      <!-- ================================= -->
-      <!-- WINDOWS XP TASKBAR                -->
-      <!-- ================================= -->
+      <!-- =================================================
+           TASKBAR
+           ================================================= -->
 
       <footer
         id="Desktop_Footer"
@@ -295,6 +364,329 @@
       </footer>
 
     </div>
+
+
+    <!-- =================================================
+         DRAG & DROP SYSTEM
+         ================================================= -->
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+
+        const desktop = document.getElementById("desktop");
+
+        if (!desktop) return;
+
+        const icons = desktop.querySelectorAll(".icon");
+
+        let draggedIcon = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        /*
+         * Default positions.
+         * These are only used if the icon has never
+         * been moved before.
+         */
+
+        const defaultPositions = [
+          [20, 20],    // My Computer
+          [20, 90],    // Recycle Bin
+          [20, 160],   // Internet Explorer
+          [20, 230],   // Minesweeper
+          [20, 300],   // Pinball
+          [20, 370],   // Paint
+          [20, 440],   // Notepad
+          [20, 510],   // Winamp
+        ];
+
+
+        icons.forEach((icon, index) => {
+
+          const key =
+            "desktop-icon-" +
+            (icon.dataset.icon || index);
+
+          /*
+           * Restore saved position
+           */
+
+          const savedPosition =
+            localStorage.getItem(key);
+
+          if (savedPosition) {
+
+            try {
+
+              const position =
+                JSON.parse(savedPosition);
+
+              icon.style.left =
+                position.x + "px";
+
+              icon.style.top =
+                position.y + "px";
+
+            } catch (error) {
+
+              console.warn(
+                "Could not restore icon position:",
+                error
+              );
+
+            }
+
+          } else {
+
+            /*
+             * Set default position
+             */
+
+            if (defaultPositions[index]) {
+
+              icon.style.left =
+                defaultPositions[index][0] + "px";
+
+              icon.style.top =
+                defaultPositions[index][1] + "px";
+            }
+          }
+
+
+          /*
+           * Mouse down
+           */
+
+          icon.addEventListener("mousedown", function (event) {
+
+            /*
+             * Only left mouse button
+             */
+
+            if (event.button !== 0) return;
+
+            draggedIcon = icon;
+
+            const rect =
+              icon.getBoundingClientRect();
+
+            offsetX =
+              event.clientX - rect.left;
+
+            offsetY =
+              event.clientY - rect.top;
+
+            icon.classList.add("dragging");
+
+            event.preventDefault();
+          });
+
+
+          /*
+           * Touch support
+           */
+
+          icon.addEventListener(
+            "touchstart",
+            function (event) {
+
+              const touch =
+                event.touches[0];
+
+              const rect =
+                icon.getBoundingClientRect();
+
+              draggedIcon = icon;
+
+              offsetX =
+                touch.clientX - rect.left;
+
+              offsetY =
+                touch.clientY - rect.top;
+
+              icon.classList.add("dragging");
+
+            },
+            { passive: true }
+          );
+
+        });
+
+
+        /*
+         * Mouse movement
+         */
+
+        document.addEventListener("mousemove", function (event) {
+
+          if (!draggedIcon) return;
+
+          const desktopRect =
+            desktop.getBoundingClientRect();
+
+          let x =
+            event.clientX -
+            desktopRect.left -
+            offsetX;
+
+          let y =
+            event.clientY -
+            desktopRect.top -
+            offsetY;
+
+
+          /*
+           * Keep icon inside desktop
+           */
+
+          const maxX =
+            desktop.clientWidth -
+            draggedIcon.offsetWidth;
+
+          const maxY =
+            desktop.clientHeight -
+            draggedIcon.offsetHeight;
+
+
+          x =
+            Math.max(
+              0,
+              Math.min(x, maxX)
+            );
+
+          y =
+            Math.max(
+              0,
+              Math.min(y, maxY)
+            );
+
+
+          draggedIcon.style.left =
+            x + "px";
+
+          draggedIcon.style.top =
+            y + "px";
+        });
+
+
+        /*
+         * Touch movement
+         */
+
+        document.addEventListener(
+          "touchmove",
+          function (event) {
+
+            if (!draggedIcon) return;
+
+            const touch =
+              event.touches[0];
+
+            const desktopRect =
+              desktop.getBoundingClientRect();
+
+            let x =
+              touch.clientX -
+              desktopRect.left -
+              offsetX;
+
+            let y =
+              touch.clientY -
+              desktopRect.top -
+              offsetY;
+
+
+            const maxX =
+              desktop.clientWidth -
+              draggedIcon.offsetWidth;
+
+            const maxY =
+              desktop.clientHeight -
+              draggedIcon.offsetHeight;
+
+
+            x =
+              Math.max(
+                0,
+                Math.min(x, maxX)
+              );
+
+            y =
+              Math.max(
+                0,
+                Math.min(y, maxY)
+              );
+
+
+            draggedIcon.style.left =
+              x + "px";
+
+            draggedIcon.style.top =
+              y + "px";
+
+          },
+          { passive: false }
+        );
+
+
+        /*
+         * Mouse release
+         */
+
+        document.addEventListener("mouseup", function () {
+
+          if (!draggedIcon) return;
+
+          saveIconPosition(draggedIcon);
+
+          draggedIcon.classList.remove("dragging");
+
+          draggedIcon = null;
+        });
+
+
+        /*
+         * Touch release
+         */
+
+        document.addEventListener("touchend", function () {
+
+          if (!draggedIcon) return;
+
+          saveIconPosition(draggedIcon);
+
+          draggedIcon.classList.remove("dragging");
+
+          draggedIcon = null;
+        });
+
+
+        /*
+         * Save icon position
+         */
+
+        function saveIconPosition(icon) {
+
+          const key =
+            "desktop-icon-" +
+            (icon.dataset.icon || "unknown");
+
+          const position = {
+
+            x: parseInt(icon.style.left) || 0,
+
+            y: parseInt(icon.style.top) || 0
+          };
+
+
+          localStorage.setItem(
+            key,
+            JSON.stringify(position)
+          );
+        }
+
+      });
+    </script>
 
   </body>
 </html>
