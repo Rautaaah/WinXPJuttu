@@ -153,4 +153,28 @@ body {
   margin: 0px 0.4em;
 }
 
+/* =========================================
+   OLD COMPUTER SCREEN PIXEL / DOT EFFECT
+   ========================================= */
 
+#main-content::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+  z-index: 999999;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 40, 80, 0.10) 1px,
+      transparent 1px
+    );
+
+  background-size: 16px 16px;
+}
