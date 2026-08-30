@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Windows XPortfolio</title>
+
+    <title>R</title>
+
     <link
       rel="icon"
       type="image/ico"
@@ -24,30 +26,35 @@
       as="style"
       onload="this.onload=null;this.rel='stylesheet';"
     />
+
     <link
       rel="preload"
       href="/Start_Menu/Base/Start_Menu.css"
       as="style"
       onload="this.onload=null;this.rel='stylesheet';"
     />
+
     <link
       rel="preload"
       href="/Open_Windows/Base/OpenWindow_Tooltip.css"
       as="style"
       onload="this.onload=null;this.rel='stylesheet';"
     />
+
     <link
       rel="preload"
       href="/Start_Menu/All_Programs/Tooltip/Tooltip.css"
       as="style"
       onload="this.onload=null;this.rel='stylesheet';"
     />
+
     <link
       rel="preload"
       href="/Bureau/Taskbar.css"
       as="style"
       onload="this.onload=null;this.rel='stylesheet';"
     />
+
     <link
       rel="preload"
       href="/Open_Windows/Base/Open_Window.css"
@@ -60,6 +67,7 @@
     <script src="/Bureau/Bureau.js"></script>
     <script src="/Open_Windows/Minesweeper/Minesweeper.js"></script>
   </head>
+
   <body>
     <div
       id="main-content"
@@ -78,6 +86,7 @@
           />
           <span>My Computer</span>
         </div>
+
         <div class="icon" ondblclick="openWindow('Recycle Bin (empty)')">
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Recycle Bin (empty).png"
@@ -85,6 +94,7 @@
           />
           <span>Recycle Bin</span>
         </div>
+
         <div class="icon" ondblclick="openWindow('Internet Explorer 6')">
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Internet Explorer 6.png"
@@ -92,6 +102,7 @@
           />
           <span>Internet Explorer</span>
         </div>
+
         <div
           class="icon"
           ondblclick="openWindow('Minesweeper'), SetLvl('Beginner')"
@@ -102,6 +113,7 @@
           />
           <span>Minesweeper</span>
         </div>
+
         <div class="icon" ondblclick="openWindow('Space Cadet Pinball')">
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Space Cadet Pinball.png"
@@ -109,6 +121,7 @@
           />
           <span>Pinball</span>
         </div>
+
         <div class="icon" ondblclick="openWindow('Paint')">
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Paint.png"
@@ -116,6 +129,7 @@
           />
           <span>Paint</span>
         </div>
+
         <div class="icon" ondblclick="openWindow('Notepad')">
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Notepad.png"
@@ -123,14 +137,23 @@
           />
           <span>Notepad</span>
         </div>
+
         <div class="icon" ondblclick="openRawWinamp()">
-          <img src="/Assets/Images/Winamp-logo.png" alt="Winamp" />
+          <img
+            src="/Assets/Images/Winamp-logo.png"
+            alt="Winamp"
+          />
           <span>Winamp</span>
         </div>
+
         <div class="icon" ondblclick="openWindow('LinkedIn')">
-          <img src="/Assets/Images/LinkedIn_logo_initials.png" alt="LinkedIn" />
+          <img
+            src="/Assets/Images/LinkedIn_logo_initials.png"
+            alt="LinkedIn"
+          />
           <span>LinkedIn</span>
         </div>
+
         <div class="icon" id="centered-folder">
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Folder Closed.png"
@@ -139,9 +162,13 @@
           <span>Projects Under Construct !</span>
         </div>
       </div>
+
       <footer id="Desktop_Footer" class="footer_original">
         <div class="footer__items left">
-          <div class="footer__start_menu" onclick="openStartMenu()">
+          <div
+            class="footer__start_menu"
+            onclick="openStartMenu()"
+          >
             <img
               src="/Assets/Images/windows_xp_start_button_normal.png"
               id="start-button"
@@ -150,25 +177,59 @@
             />
           </div>
         </div>
+
         <div class="footer__items right">
           <img
             class="footer__icon"
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Security - Ok.png"
             alt=""
           />
+
           <img
             class="footer__icon"
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Volume.png"
             alt=""
           />
+
           <img
             class="footer__icon"
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Safely Remove Hardware.png"
             alt=""
           />
-          <div class="footer__time" id="footer-time"></div>
+
+          <div
+            class="footer__time"
+            id="footer-time"
+          ></div>
         </div>
       </footer>
     </div>
+
+    <!-- RAUTATIENTORI browser title animation -->
+    <script>
+      const titleText = "RAUTATIENTORI";
+      let titleIndex = 1;
+
+      function animateTitle() {
+        document.title = titleText.substring(0, titleIndex);
+
+        titleIndex++;
+
+        if (titleIndex > titleText.length) {
+          titleIndex = 1;
+        }
+
+        // Faster when the tab is active
+        // Slower when the tab is inactive
+        const delay =
+          document.visibilityState === "visible"
+            ? 100
+            : 300;
+
+        setTimeout(animateTitle, delay);
+      }
+
+      animateTitle();
+    </script>
   </body>
 </html>
