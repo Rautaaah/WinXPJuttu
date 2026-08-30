@@ -4,20 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>R</title>
+    <title>Windows XPortfolio</title>
 
     <link
       rel="icon"
       type="image/ico"
       sizes="32x32"
       href="/Assets/Images/Windows_XP-min.ico"
-    />
-
-    <link
-      rel="preload"
-      as="image"
-      href="/Assets/Images/Background.webp"
-      type="image/webp"
     />
 
     <link
@@ -69,17 +62,77 @@
   </head>
 
   <body>
+
     <div
       id="main-content"
       style="
-        background: url('/Assets/Images/Background.webp') no-repeat center
-          center fixed;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
         background-size: cover;
         min-height: 100vh;
       "
     >
+
+      <!-- ================================= -->
+      <!-- AUTOMATIC TIME-BASED WALLPAPER    -->
+      <!-- ================================= -->
+
+      <script>
+        function updateDesktopWallpaper() {
+          const hour = new Date().getHours();
+
+          let wallpaper;
+
+          /*
+           * MORNING
+           * 06:00 - 11:59
+           */
+          if (hour >= 6 && hour < 12) {
+            wallpaper =
+              "https://media1.tenor.com/m/NkqanKk4XmYAAAAd/%D0%B9%D1%86%D1%83.gif";
+          }
+
+          /*
+           * AFTERNOON
+           * 12:00 - 17:59
+           */
+          else if (hour >= 12 && hour < 18) {
+            wallpaper =
+              "https://media1.tenor.com/m/cphmUyMjQ60AAAAd/sakura.gif";
+          }
+
+          /*
+           * NIGHT
+           * 18:00 - 05:59
+           */
+          else {
+            wallpaper =
+              "https://media1.tenor.com/m/UymJ9Gn-nf0AAAAd/%D1%8B.gif";
+          }
+
+          document.getElementById("main-content").style.backgroundImage =
+            `url("${wallpaper}")`;
+        }
+
+        // Set wallpaper immediately when the desktop loads
+        updateDesktopWallpaper();
+
+        // Check again every minute
+        setInterval(updateDesktopWallpaper, 60000);
+      </script>
+
+
+      <!-- ================================= -->
+      <!-- DESKTOP ICONS                     -->
+      <!-- ================================= -->
+
       <div id="desktop">
-        <div class="icon" ondblclick="openWindow('My Computer')">
+
+        <div
+          class="icon"
+          ondblclick="openWindow('My Computer')"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/My Computer.png"
             alt="My Computer"
@@ -87,7 +140,11 @@
           <span>My Computer</span>
         </div>
 
-        <div class="icon" ondblclick="openWindow('Recycle Bin (empty)')">
+
+        <div
+          class="icon"
+          ondblclick="openWindow('Recycle Bin (empty)')"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Recycle Bin (empty).png"
             alt="Recycle Bin"
@@ -95,7 +152,11 @@
           <span>Recycle Bin</span>
         </div>
 
-        <div class="icon" ondblclick="openWindow('Internet Explorer 6')">
+
+        <div
+          class="icon"
+          ondblclick="openWindow('Internet Explorer 6')"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Internet Explorer 6.png"
             alt="Internet Explorer"
@@ -103,9 +164,10 @@
           <span>Internet Explorer</span>
         </div>
 
+
         <div
           class="icon"
-          ondblclick="openWindow('Minesweeper'), SetLvl('Beginner')"
+          ondblclick="openWindow('Minesweeper'); SetLvl('Beginner')"
         >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Minesweeper.png"
@@ -114,7 +176,11 @@
           <span>Minesweeper</span>
         </div>
 
-        <div class="icon" ondblclick="openWindow('Space Cadet Pinball')">
+
+        <div
+          class="icon"
+          ondblclick="openWindow('Space Cadet Pinball')"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Space Cadet Pinball.png"
             alt="Pinball"
@@ -122,7 +188,11 @@
           <span>Pinball</span>
         </div>
 
-        <div class="icon" ondblclick="openWindow('Paint')">
+
+        <div
+          class="icon"
+          ondblclick="openWindow('Paint')"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Paint.png"
             alt="Paint"
@@ -130,15 +200,23 @@
           <span>Paint</span>
         </div>
 
-        <div class="icon" ondblclick="openWindow('Notepad')">
+
+        <div
+          class="icon"
+          ondblclick="openWindow('Notepad')"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Notepad.png"
-            alt="Paint"
+            alt="Notepad"
           />
           <span>Notepad</span>
         </div>
 
-        <div class="icon" ondblclick="openRawWinamp()">
+
+        <div
+          class="icon"
+          ondblclick="openRawWinamp()"
+        >
           <img
             src="/Assets/Images/Winamp-logo.png"
             alt="Winamp"
@@ -147,18 +225,31 @@
         </div>
 
 
-
-        <div class="icon" id="centered-folder">
+        <div
+          class="icon"
+          id="centered-folder"
+        >
           <img
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Folder Closed.png"
-            alt="Projets Under Construct ! Folder"
+            alt="Projects Under Construct ! Folder"
           />
           <span>Projects Under Construct !</span>
         </div>
+
       </div>
 
-      <footer id="Desktop_Footer" class="footer_original">
+
+      <!-- ================================= -->
+      <!-- WINDOWS XP TASKBAR                -->
+      <!-- ================================= -->
+
+      <footer
+        id="Desktop_Footer"
+        class="footer_original"
+      >
+
         <div class="footer__items left">
+
           <div
             class="footer__start_menu"
             onclick="openStartMenu()"
@@ -170,9 +261,12 @@
               alt="start"
             />
           </div>
+
         </div>
 
+
         <div class="footer__items right">
+
           <img
             class="footer__icon"
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Security - Ok.png"
@@ -195,35 +289,12 @@
             class="footer__time"
             id="footer-time"
           ></div>
+
         </div>
+
       </footer>
+
     </div>
 
-    <!-- RAUTATIENTORI browser title animation -->
-    <script>
-      const titleText = "RAUTATIENTORI";
-      let titleIndex = 1;
-
-      function animateTitle() {
-        document.title = titleText.substring(0, titleIndex);
-
-        titleIndex++;
-
-        if (titleIndex > titleText.length) {
-          titleIndex = 1;
-        }
-
-        // Faster when the tab is active
-        // Slower when the tab is inactive
-        const delay =
-          document.visibilityState === "visible"
-            ? 100
-            : 300;
-
-        setTimeout(animateTitle, delay);
-      }
-
-      animateTitle();
-    </script>
   </body>
 </html>
