@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sneaky monkey test</title>
+
+    <title>R</title>
+
     <link
       rel="icon"
       type="image/ico"
@@ -17,15 +19,45 @@
     <script src="Loader_Login/Loader_Login.js"></script>
     <script src="/Bureau/Bureau.js"></script>
   </head>
+
   <body>
     <div id="login-screen" class="hidden">
       <div id="top-bar"></div>
+
       <div id="Transi_content">
         <div id="Transi_panel">
           <p>Windows is starting up...</p>
         </div>
       </div>
+
       <div id="bottom-bar"></div>
     </div>
+
+    <!-- RAUTATIENTORI title animation -->
+    <script>
+      const titleText = "RAUTATIENTORI";
+      let titleIndex = 1;
+
+      function animateTitle() {
+        document.title = titleText.substring(0, titleIndex);
+
+        titleIndex++;
+
+        if (titleIndex > titleText.length) {
+          titleIndex = 1;
+        }
+
+        // Faster when the tab is active,
+        // slower when the tab is inactive.
+        const delay =
+          document.visibilityState === "visible"
+            ? 100
+            : 300;
+
+        setTimeout(animateTitle, delay);
+      }
+
+      animateTitle();
+    </script>
   </body>
 </html>
