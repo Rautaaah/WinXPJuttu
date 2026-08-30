@@ -3571,6 +3571,7 @@ function writeDateTime() {
     active: "#d85b8d",
     inactive: "#a83b69",
     border: "#702044",
+
     glass: "rgba(214, 88, 133, 0.72)",
     glassLight: "rgba(255, 205, 222, 0.30)"
   };
@@ -3599,6 +3600,8 @@ function writeDateTime() {
          ===================================================== */
 
       #Desktop_Footer {
+        position: relative;
+
         background:
           linear-gradient(
             to bottom,
@@ -3619,6 +3622,14 @@ function writeDateTime() {
 
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
+
+        /*
+         * Important:
+         * Keep pseudo-elements and children from leaking
+         * through rounded corners.
+         */
+        overflow: hidden;
+        isolation: isolate;
       }
 
       /* =====================================================
@@ -3626,16 +3637,85 @@ function writeDateTime() {
          ===================================================== */
 
       #Desktop_Footer .footer__start_menu {
+        position: relative;
+
         background:
           linear-gradient(
             to bottom,
-            rgba(255, 226, 235, .42),
-            rgba(196, 62, 111, .35)
-          );
+            rgba(255, 244, 150, .98) 0%,
+            rgba(255, 226, 70, .98) 45%,
+            rgba(238, 190, 18, .98) 100%
+          ) !important;
+
+        border-top: 1px solid rgba(255,255,255,.80);
+        border-bottom: 1px solid rgba(132,95,0,.45);
 
         box-shadow:
-          inset 0 1px rgba(255,255,255,.45),
-          inset 0 -1px rgba(91,20,52,.35);
+          inset 0 1px rgba(255,255,255,.75),
+          inset 0 -1px rgba(150,105,0,.35),
+          0 0 5px rgba(255,225,80,.22);
+
+        text-shadow:
+          0 1px 1px rgba(105,70,0,.45);
+
+        overflow: hidden;
+      }
+
+      /*
+       * Make the actual Start image yellow as well.
+       * mix-blend-mode is deliberately NOT used here because
+       * it can make the XP logo/text look muddy.
+       */
+      #Desktop_Footer .footer__start_menu img,
+      #Desktop_Footer #start-button {
+        filter:
+          sepia(1)
+          saturate(4)
+          hue-rotate(355deg)
+          brightness(1.16)
+          contrast(.96);
+
+        transition:
+          filter .12s ease,
+          transform .08s ease;
+      }
+
+      #Desktop_Footer .footer__start_menu:hover {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 250, 175, 1) 0%,
+            rgba(255, 232, 86, 1) 45%,
+            rgba(244, 204, 30, 1) 100%
+          ) !important;
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.9),
+          inset 0 -1px rgba(155,105,0,.35),
+          0 0 7px rgba(255,230,75,.30);
+      }
+
+      #Desktop_Footer .footer__start_menu:active {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(236,194,20,1),
+            rgba(255,225,52,1)
+          ) !important;
+
+        box-shadow:
+          inset 0 2px 4px rgba(115,75,0,.28),
+          inset 0 1px rgba(255,255,255,.40);
+      }
+
+      #Desktop_Footer .footer__start_menu:hover img,
+      #Desktop_Footer #start-button:hover {
+        filter:
+          sepia(1)
+          saturate(4.5)
+          hue-rotate(355deg)
+          brightness(1.22)
+          contrast(.96);
       }
 
       /* =====================================================
@@ -3643,6 +3723,8 @@ function writeDateTime() {
          ===================================================== */
 
       #taskbar {
+        position: relative;
+
         background:
           linear-gradient(
             to bottom,
@@ -3658,7 +3740,7 @@ function writeDateTime() {
         box-shadow:
           inset 0 1px rgba(255,255,255,.35),
           inset 0 -1px rgba(86,18,49,.4),
-          0 0 14px rgba(93, 17, 48, .28);
+          0 0 14px rgba(93,17,48,.28);
 
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
@@ -3684,7 +3766,7 @@ function writeDateTime() {
         color: white !important;
 
         text-shadow:
-          0 1px 1px rgba(70, 10, 35, .8);
+          0 1px 1px rgba(70,10,35,.8);
 
         box-shadow:
           inset 0 1px rgba(255,255,255,.20),
@@ -3703,19 +3785,19 @@ function writeDateTime() {
         background:
           linear-gradient(
             to bottom,
-            rgba(255, 225, 236, .55),
-            rgba(211, 75, 124, .70)
+            rgba(255,225,236,.55),
+            rgba(211,75,124,.70)
           ) !important;
 
         box-shadow:
           inset 0 1px rgba(255,255,255,.42),
           inset 0 -1px rgba(86,15,46,.35),
-          0 0 8px rgba(255, 160, 193, .18);
+          0 0 8px rgba(255,160,193,.18);
       }
 
       #taskbar .taskbar-item img {
         filter:
-          drop-shadow(0 1px 1px rgba(50, 5, 25, .65));
+          drop-shadow(0 1px 1px rgba(50,5,25,.65));
       }
 
       /* =====================================================
@@ -3726,15 +3808,104 @@ function writeDateTime() {
         background:
           linear-gradient(
             to bottom,
-            rgba(255, 215, 230, .70),
-            rgba(220, 80, 130, .95) 40%,
-            rgba(171, 45, 91, .98)
+            rgba(255,215,230,.70),
+            rgba(220,80,130,.95) 40%,
+            rgba(171,45,91,.98)
           ) !important;
 
         box-shadow:
           inset 0 1px rgba(255,255,255,.55),
           inset 0 -1px rgba(76,12,39,.65),
-          0 0 7px rgba(255, 164, 194, .28);
+          0 0 7px rgba(255,164,194,.28);
+      }
+
+      /* =====================================================
+         RIGHT-SIDE FOOTER ITEMS
+         LIGHTER ROSE GLASS
+         ===================================================== */
+
+      /*
+       * Support both the existing footer naming and the
+       * footer_items naming used by the footer markup.
+       */
+
+      #Desktop_Footer .footer_items,
+      #Desktop_Footer .footer__items,
+      #Desktop_Footer .footer_items.right,
+      #Desktop_Footer .footer__items.right,
+      #Desktop_Footer .footer__right,
+      #Desktop_Footer .footer-right {
+        position: relative;
+
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255, 224, 236, .30) 0%,
+            rgba(244, 174, 199, .22) 45%,
+            rgba(205, 92, 137, .20) 100%
+          ) !important;
+
+        border-left: 1px solid rgba(255,255,255,.26);
+        border-right: 1px solid rgba(255,255,255,.10);
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.30),
+          inset 0 -1px rgba(110,30,63,.14),
+          0 0 8px rgba(215,91,135,.10);
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        /*
+         * Deliberately lighter than the main taskbar.
+         */
+        color: rgba(255,248,251,.96) !important;
+
+        text-shadow:
+          0 1px 1px rgba(91,25,52,.38);
+      }
+
+      /*
+       * If footer_items is a collection of individual items,
+       * give each item the same subtle glass treatment.
+       */
+
+      #Desktop_Footer .footer_items > *,
+      #Desktop_Footer .footer__items > *,
+      #Desktop_Footer .footer_items .footer_item,
+      #Desktop_Footer .footer__items .footer__item {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255,235,243,.22),
+            rgba(221,125,160,.13)
+          ) !important;
+
+        border-left: 1px solid rgba(255,255,255,.12);
+        border-right: 1px solid rgba(111,30,63,.10);
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.22),
+          inset 0 -1px rgba(105,25,58,.10);
+
+        color: rgba(255,248,251,.96) !important;
+      }
+
+      #Desktop_Footer .footer_items > *:hover,
+      #Desktop_Footer .footer__items > *:hover,
+      #Desktop_Footer .footer_items .footer_item:hover,
+      #Desktop_Footer .footer__items .footer__item:hover {
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(255,242,247,.38),
+            rgba(226,132,166,.23)
+          ) !important;
+
+        box-shadow:
+          inset 0 1px rgba(255,255,255,.34),
+          inset 0 -1px rgba(105,25,58,.12),
+          0 0 6px rgba(255,175,202,.13);
       }
 
       /* =====================================================
@@ -3742,18 +3913,42 @@ function writeDateTime() {
          ===================================================== */
 
       .window {
+        position: relative;
+
         border-color: ${ROSE.border} !important;
 
+        /*
+         * Fix the rose glass corner bug:
+         * all visual layers are clipped to the same window.
+         */
+        overflow: hidden;
+        border-radius: 4px;
+
         box-shadow:
-          0 8px 28px rgba(57, 7, 30, .34),
-          0 2px 7px rgba(44, 5, 23, .25),
+          0 8px 28px rgba(57,7,30,.34),
+          0 2px 7px rgba(44,5,23,.25),
           inset 0 0 0 1px rgba(255,255,255,.22);
 
         background:
-          rgba(255, 225, 236, .13) !important;
+          rgba(255,225,236,.13) !important;
 
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+      }
+
+      /*
+       * Keep every window child inside the rounded glass.
+       */
+      .window > *,
+      .window-header,
+      .window-header-background,
+      .window-content {
+        box-sizing: border-box;
+      }
+
+      .window-header,
+      .window-header-background {
+        overflow: hidden;
       }
 
       /* =====================================================
@@ -3764,15 +3959,15 @@ function writeDateTime() {
       .window-header-background {
         background:
           linear-gradient(
-            rgb(143, 47, 86) 0%,
-            rgb(220, 106, 143) 3%,
-            rgb(241, 146, 174) 7%,
-            rgb(229, 117, 151) 14%,
-            rgb(205, 76, 119) 25%,
-            rgb(201, 72, 116) 55%,
-            rgb(211, 86, 128) 81%,
-            rgb(192, 60, 105) 94%,
-            rgb(155, 43, 81) 100%
+            rgb(143,47,86) 0%,
+            rgb(220,106,143) 3%,
+            rgb(241,146,174) 7%,
+            rgb(229,117,151) 14%,
+            rgb(205,76,119) 25%,
+            rgb(201,72,116) 55%,
+            rgb(211,86,128) 81%,
+            rgb(192,60,105) 94%,
+            rgb(155,43,81) 100%
           ) !important;
 
         box-shadow:
@@ -3782,15 +3977,17 @@ function writeDateTime() {
         color: white !important;
 
         text-shadow:
-          0 1px 1px rgba(65, 8, 32, .8);
+          0 1px 1px rgba(65,8,32,.8);
       }
 
       .window-header-background::after {
         content: "";
+
         position: absolute;
         left: 0;
         right: 0;
         top: 1px;
+
         height: 2px;
 
         background:
@@ -3818,6 +4015,8 @@ function writeDateTime() {
 
         backdrop-filter: blur(7px);
         -webkit-backdrop-filter: blur(7px);
+
+        overflow: hidden;
       }
 
       /* =====================================================
@@ -3846,15 +4045,15 @@ function writeDateTime() {
       .window-header-background {
         background:
           linear-gradient(
-            rgb(112, 48, 76) 0%,
-            rgb(159, 83, 110) 3%,
-            rgb(190, 117, 143) 7%,
-            rgb(181, 104, 133) 14%,
-            rgb(162, 82, 115) 25%,
-            rgb(166, 88, 119) 56%,
-            rgb(175, 99, 128) 81%,
-            rgb(160, 79, 111) 94%,
-            rgb(130, 61, 89) 100%
+            rgb(112,48,76) 0%,
+            rgb(159,83,110) 3%,
+            rgb(190,117,143) 7%,
+            rgb(181,104,133) 14%,
+            rgb(162,82,115) 25%,
+            rgb(166,88,119) 56%,
+            rgb(175,99,128) 81%,
+            rgb(160,79,111) 94%,
+            rgb(130,61,89) 100%
           ) !important;
 
         filter: saturate(.82);
@@ -3869,21 +4068,23 @@ function writeDateTime() {
       .AllProgMenu,
       .ItemMenu,
       .hover-info {
-        border-color: rgba(105, 25, 59, .75) !important;
+        border-color:
+          rgba(105,25,59,.75) !important;
 
         box-shadow:
-          0 8px 25px rgba(54, 7, 28, .35),
+          0 8px 25px rgba(54,7,28,.35),
           inset 0 1px rgba(255,255,255,.35);
 
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
       }
 
-      /* broad rose tint for existing blue XP menu gradients */
       #StartMenu [style*="blue"],
       .AllProgMenu [style*="blue"],
       .ItemMenu [style*="blue"] {
-        filter: hue-rotate(300deg) saturate(1.05);
+        filter:
+          hue-rotate(300deg)
+          saturate(1.05);
       }
 
       /* =====================================================
@@ -3902,17 +4103,19 @@ function writeDateTime() {
         z-index: 9999;
 
         filter:
-          drop-shadow(0 4px 9px rgba(35, 3, 18, .45));
+          drop-shadow(0 4px 9px rgba(35,3,18,.45));
       }
 
       #desktop .icon.rose-selected {
-        background: rgba(224, 91, 140, .30) !important;
+        background:
+          rgba(224,91,140,.30) !important;
 
-        border: 1px solid rgba(255, 199, 218, .85);
+        border:
+          1px solid rgba(255,199,218,.85);
 
         box-shadow:
-          inset 0 0 0 1px rgba(121, 31, 67, .30),
-          0 0 8px rgba(244, 130, 168, .18);
+          inset 0 0 0 1px rgba(121,31,67,.30),
+          0 0 8px rgba(244,130,168,.18);
 
         border-radius: 2px;
       }
@@ -3932,14 +4135,15 @@ function writeDateTime() {
 
         box-sizing: border-box;
 
-        border: 1px solid rgba(255, 190, 215, .95);
+        border:
+          1px solid rgba(255,190,215,.95);
 
         background:
-          rgba(210, 76, 127, .22);
+          rgba(210,76,127,.22);
 
         box-shadow:
-          inset 0 0 0 1px rgba(104, 28, 60, .28),
-          0 0 5px rgba(240, 117, 160, .18);
+          inset 0 0 0 1px rgba(104,28,60,.28),
+          0 0 5px rgba(240,117,160,.18);
       }
 
       /* =====================================================
@@ -3961,12 +4165,12 @@ function writeDateTime() {
 
         background-image:
           linear-gradient(
-            rgba(255, 174, 203, .18) 1px,
+            rgba(255,174,203,.18) 1px,
             transparent 1px
           ),
           linear-gradient(
             90deg,
-            rgba(255, 174, 203, .18) 1px,
+            rgba(255,174,203,.18) 1px,
             transparent 1px
           );
 
@@ -4009,6 +4213,8 @@ function writeDateTime() {
           );
 
         pointer-events: none;
+
+        z-index: 20;
       }
     `;
 
@@ -4020,27 +4226,40 @@ function writeDateTime() {
      --------------------------------------------------------- */
 
   function installDesktopSelection() {
-    const desktop = document.getElementById("desktop");
+    const desktop =
+      document.getElementById("desktop");
 
     if (!desktop) return;
 
     if (!document.getElementById("desktop-selection-box")) {
-      const selection = document.createElement("div");
-      selection.id = "desktop-selection-box";
+      const selection =
+        document.createElement("div");
+
+      selection.id =
+        "desktop-selection-box";
+
       desktop.appendChild(selection);
     }
 
     if (!document.getElementById("desktop-grid-overlay")) {
-      const grid = document.createElement("div");
-      grid.id = "desktop-grid-overlay";
+      const grid =
+        document.createElement("div");
+
+      grid.id =
+        "desktop-grid-overlay";
+
       desktop.appendChild(grid);
     }
 
     const selectionBox =
-      document.getElementById("desktop-selection-box");
+      document.getElementById(
+        "desktop-selection-box"
+      );
 
     const gridOverlay =
-      document.getElementById("desktop-grid-overlay");
+      document.getElementById(
+        "desktop-grid-overlay"
+      );
 
     let selecting = false;
 
@@ -4049,19 +4268,14 @@ function writeDateTime() {
 
     function clearSelections() {
       desktop
-        .querySelectorAll(".icon.rose-selected")
+        .querySelectorAll(
+          ".icon.rose-selected"
+        )
         .forEach((icon) => {
-          icon.classList.remove("rose-selected");
+          icon.classList.remove(
+            "rose-selected"
+          );
         });
-    }
-
-    function pointInsideRectangle(rect, x, y) {
-      return (
-        x >= rect.left &&
-        x <= rect.right &&
-        y >= rect.top &&
-        y <= rect.bottom
-      );
     }
 
     function updateSelection(event) {
@@ -4071,21 +4285,39 @@ function writeDateTime() {
         desktop.getBoundingClientRect();
 
       const currentX =
-        event.clientX - desktopRect.left;
+        event.clientX -
+        desktopRect.left;
 
       const currentY =
-        event.clientY - desktopRect.top;
+        event.clientY -
+        desktopRect.top;
 
-      const left = Math.min(startX, currentX);
-      const top = Math.min(startY, currentY);
+      const left =
+        Math.min(
+          startX,
+          currentX
+        );
+
+      const top =
+        Math.min(
+          startY,
+          currentY
+        );
 
       const width =
-        Math.abs(currentX - startX);
+        Math.abs(
+          currentX -
+          startX
+        );
 
       const height =
-        Math.abs(currentY - startY);
+        Math.abs(
+          currentY -
+          startY
+        );
 
-      selectionBox.style.display = "block";
+      selectionBox.style.display =
+        "block";
 
       selectionBox.style.left =
         `${left}px`;
@@ -4102,102 +4334,148 @@ function writeDateTime() {
       const selectionRect = {
         left,
         top,
-        right: left + width,
-        bottom: top + height
+        right:
+          left + width,
+        bottom:
+          top + height
       };
 
       desktop
         .querySelectorAll(".icon")
         .forEach((icon) => {
           const iconLeft =
-            parseInt(icon.style.left || "0", 10);
+            parseInt(
+              icon.style.left ||
+                "0",
+              10
+            );
 
           const iconTop =
-            parseInt(icon.style.top || "0", 10);
+            parseInt(
+              icon.style.top ||
+                "0",
+              10
+            );
 
           const iconRight =
-            iconLeft + icon.offsetWidth;
+            iconLeft +
+            icon.offsetWidth;
 
           const iconBottom =
-            iconTop + icon.offsetHeight;
+            iconTop +
+            icon.offsetHeight;
 
           const overlaps =
-            iconLeft < selectionRect.right &&
-            iconRight > selectionRect.left &&
-            iconTop < selectionRect.bottom &&
-            iconBottom > selectionRect.top;
+            iconLeft <
+              selectionRect.right &&
+            iconRight >
+              selectionRect.left &&
+            iconTop <
+              selectionRect.bottom &&
+            iconBottom >
+              selectionRect.top;
 
           if (overlaps) {
-            icon.classList.add("rose-selected");
+            icon.classList.add(
+              "rose-selected"
+            );
           } else {
-            icon.classList.remove("rose-selected");
+            icon.classList.remove(
+              "rose-selected"
+            );
           }
         });
     }
 
-    desktop.addEventListener("mousedown", function (event) {
-      if (event.button !== 0) return;
+    desktop.addEventListener(
+      "mousedown",
+      function (event) {
+        if (event.button !== 0)
+          return;
 
-      /*
-       * Do not start selection when clicking an icon,
-       * a window, or another interactive element.
-       */
-      if (event.target.closest(".icon")) return;
+        if (
+          event.target.closest(
+            ".icon"
+          )
+        ) {
+          return;
+        }
 
-      if (event.target !== desktop) return;
+        if (
+          event.target !==
+          desktop
+        ) {
+          return;
+        }
 
-      const rect =
-        desktop.getBoundingClientRect();
+        const rect =
+          desktop.getBoundingClientRect();
 
-      startX =
-        event.clientX - rect.left;
+        startX =
+          event.clientX -
+          rect.left;
 
-      startY =
-        event.clientY - rect.top;
+        startY =
+          event.clientY -
+          rect.top;
 
-      selecting = true;
+        selecting = true;
 
-      clearSelections();
-
-      selectionBox.style.display = "block";
-
-      selectionBox.style.left =
-        `${startX}px`;
-
-      selectionBox.style.top =
-        `${startY}px`;
-
-      selectionBox.style.width = "0px";
-      selectionBox.style.height = "0px";
-
-      event.preventDefault();
-    });
-
-    document.addEventListener("mousemove", function (event) {
-      if (!selecting) return;
-
-      updateSelection(event);
-    });
-
-    document.addEventListener("mouseup", function () {
-      if (!selecting) return;
-
-      selecting = false;
-
-      selectionBox.style.display = "none";
-    });
-
-    /*
-     * Click desktop with no drag = deselect.
-     */
-    desktop.addEventListener("click", function (event) {
-      if (
-        event.target === desktop &&
-        !selecting
-      ) {
         clearSelections();
+
+        selectionBox.style.display =
+          "block";
+
+        selectionBox.style.left =
+          `${startX}px`;
+
+        selectionBox.style.top =
+          `${startY}px`;
+
+        selectionBox.style.width =
+          "0px";
+
+        selectionBox.style.height =
+          "0px";
+
+        event.preventDefault();
       }
-    });
+    );
+
+    document.addEventListener(
+      "mousemove",
+      function (event) {
+        if (!selecting) return;
+
+        updateSelection(event);
+      }
+    );
+
+    document.addEventListener(
+      "mouseup",
+      function () {
+        if (!selecting)
+          return;
+
+        selecting = false;
+
+        selectionBox.style.display =
+          "none";
+      }
+    );
+
+    desktop.addEventListener(
+      "click",
+      function (event) {
+        if (
+          event.target ===
+            desktop &&
+          !selecting
+        ) {
+          clearSelections();
+        }
+      }
+    );
   }
 
   /* ---------------------------------------------------------
@@ -4212,62 +4490,80 @@ function writeDateTime() {
 
   const SNAP_DISTANCE = 28;
 
-  function nearestGrid(value, grid, origin) {
+  function nearestGrid(
+    value,
+    grid,
+    origin
+  ) {
     return (
       origin +
       Math.round(
-        (value - origin) / grid
+        (value - origin) /
+          grid
       ) *
         grid
     );
   }
 
-  function getOtherIconPositions(currentIcon) {
+  function getOtherIconPositions(
+    currentIcon
+  ) {
     const desktop =
-      document.getElementById("desktop");
+      document.getElementById(
+        "desktop"
+      );
 
-    if (!desktop) return [];
+    if (!desktop)
+      return [];
 
     return Array.from(
-      desktop.querySelectorAll(".icon")
+      desktop.querySelectorAll(
+        ".icon"
+      )
     )
-      .filter((icon) => icon !== currentIcon)
+      .filter(
+        (icon) =>
+          icon !==
+          currentIcon
+      )
       .map((icon) => ({
         x: parseInt(
-          icon.style.left || "0",
+          icon.style.left ||
+            "0",
           10
         ),
+
         y: parseInt(
-          icon.style.top || "0",
+          icon.style.top ||
+            "0",
           10
         )
       }));
   }
 
-  function snapIconPosition(icon, rawX, rawY) {
-    let x = nearestGrid(
-      rawX,
-      GRID_X,
-      GRID_ORIGIN_X
-    );
+  function snapIconPosition(
+    icon,
+    rawX,
+    rawY
+  ) {
+    let x =
+      nearestGrid(
+        rawX,
+        GRID_X,
+        GRID_ORIGIN_X
+      );
 
-    let y = nearestGrid(
-      rawY,
-      GRID_Y,
-      GRID_ORIGIN_Y
-    );
-
-    /*
-     * First snap to the normal grid.
-     */
+    let y =
+      nearestGrid(
+        rawY,
+        GRID_Y,
+        GRID_ORIGIN_Y
+      );
 
     const otherIcons =
-      getOtherIconPositions(icon);
-
-    /*
-     * Then see if another icon is nearby.
-     * This makes icons "magnetically" line up.
-     */
+      getOtherIconPositions(
+        icon
+      );
 
     let bestX = x;
     let bestY = y;
@@ -4275,37 +4571,47 @@ function writeDateTime() {
     let bestDistance =
       Number.POSITIVE_INFINITY;
 
-    otherIcons.forEach((position) => {
-      const dx =
-        Math.abs(rawX - position.x);
+    otherIcons.forEach(
+      (position) => {
+        const dx =
+          Math.abs(
+            rawX -
+              position.x
+          );
 
-      const dy =
-        Math.abs(rawY - position.y);
+        const dy =
+          Math.abs(
+            rawY -
+              position.y
+          );
 
-      /*
-       * Same-column snapping
-       */
-      if (dx <= SNAP_DISTANCE && dy <= 45) {
-        const distance = dx;
+        if (
+          dx <
+            SNAP_DISTANCE &&
+          dx <
+            bestDistance
+        ) {
+          bestX =
+            position.x;
 
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestX = position.x;
+          bestDistance =
+            dx;
+        }
+
+        if (
+          dy <
+            SNAP_DISTANCE &&
+          dy <
+            bestDistance
+        ) {
+          bestY =
+            position.y;
+
+          bestDistance =
+            dy;
         }
       }
-
-      /*
-       * Same-row snapping
-       */
-      if (dy <= SNAP_DISTANCE && dx <= 45) {
-        const distance = dy;
-
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestY = position.y;
-        }
-      }
-    });
+    );
 
     return {
       x: bestX,
@@ -4314,157 +4620,21 @@ function writeDateTime() {
   }
 
   /* ---------------------------------------------------------
-     PATCH EXISTING ICON DRAGGING
-     --------------------------------------------------------- */
-
-  function installIconSnapSystem() {
-    const desktop =
-      document.getElementById("desktop");
-
-    if (!desktop) return;
-
-    let draggedIcon = null;
-
-    /*
-     * Detect the icon currently being dragged.
-     *
-     * The existing Bureau.html drag system still does
-     * the actual movement. We simply snap its resulting
-     * position to our grid.
-     */
-
-    desktop
-      .querySelectorAll(".icon")
-      .forEach((icon) => {
-        icon.addEventListener(
-          "mousedown",
-          function (event) {
-            if (event.button !== 0) return;
-
-            draggedIcon = icon;
-
-            const grid =
-              document.getElementById(
-                "desktop-grid-overlay"
-              );
-
-            if (grid) {
-              grid.style.display = "block";
-            }
-          },
-          true
-        );
-      });
-
-    document.addEventListener(
-      "mousemove",
-      function () {
-        if (!draggedIcon) return;
-
-        /*
-         * The original drag handler has already updated
-         * left/top by this point.
-         */
-
-        const rawX =
-          parseInt(
-            draggedIcon.style.left || "0",
-            10
-          );
-
-        const rawY =
-          parseInt(
-            draggedIcon.style.top || "0",
-            10
-          );
-
-        const snapped =
-          snapIconPosition(
-            draggedIcon,
-            rawX,
-            rawY
-          );
-
-        draggedIcon.style.left =
-          `${snapped.x}px`;
-
-        draggedIcon.style.top =
-          `${snapped.y}px`;
-      },
-      true
-    );
-
-    document.addEventListener(
-      "mouseup",
-      function () {
-        if (!draggedIcon) return;
-
-        const snapped =
-          snapIconPosition(
-            draggedIcon,
-            parseInt(
-              draggedIcon.style.left || "0",
-              10
-            ),
-            parseInt(
-              draggedIcon.style.top || "0",
-              10
-            )
-          );
-
-        draggedIcon.style.left =
-          `${snapped.x}px`;
-
-        draggedIcon.style.top =
-          `${snapped.y}px`;
-
-        /*
-         * Save position using the same localStorage
-         * format as the existing desktop system.
-         */
-
-        if (draggedIcon.dataset.icon) {
-          localStorage.setItem(
-            "desktop-icon-" +
-              draggedIcon.dataset.icon,
-            JSON.stringify({
-              x: snapped.x,
-              y: snapped.y
-            })
-          );
-        }
-
-        draggedIcon.classList.remove(
-          "dragging"
-        );
-
-        const grid =
-          document.getElementById(
-            "desktop-grid-overlay"
-          );
-
-        if (grid) {
-          grid.style.display = "none";
-        }
-
-        draggedIcon = null;
-      },
-      true
-    );
-  }
-
-  /* ---------------------------------------------------------
      MAKE DYNAMIC TASKBAR ITEMS ROSE
      --------------------------------------------------------- */
 
   function refreshRoseTaskbar() {
     const taskbar =
-      document.getElementById("taskbar");
+      document.getElementById(
+        "taskbar"
+      );
 
     if (!taskbar) return;
 
     taskbar
-      .querySelectorAll(".taskbar-item")
+      .querySelectorAll(
+        ".taskbar-item"
+      )
       .forEach((item) => {
         item.style.setProperty(
           "color",
@@ -4495,10 +4665,6 @@ function writeDateTime() {
     const original =
       updateTaskbarHighlight;
 
-    /*
-     * Don't patch repeatedly.
-     */
-
     if (
       updateTaskbarHighlight
         ._rosePatched
@@ -4507,42 +4673,46 @@ function writeDateTime() {
     }
 
     function roseHighlight() {
-      original.apply(this, arguments);
+      original.apply(
+        this,
+        arguments
+      );
 
       const taskbar =
-        document.getElementById("taskbar");
+        document.getElementById(
+          "taskbar"
+        );
 
       if (!taskbar) return;
 
       taskbar
-        .querySelectorAll(".taskbar-item")
+        .querySelectorAll(
+          ".taskbar-item"
+        )
         .forEach((item) => {
-          /*
-           * The original function gives the active
-           * item an inline blue background.
-           * Remove that blue and replace it.
-           */
-
           const background =
-            item.style.backgroundColor;
+            item.style
+              .backgroundColor;
 
           if (
             background &&
             (
-              background.includes("26, 80, 183") ||
+              background.includes(
+                "26, 80, 183"
+              ) ||
               background.includes(
                 "rgb(26, 80, 183)"
               )
             )
           ) {
             item.style.backgroundColor =
-              "rgba(211, 75, 124, .95)";
+              "rgba(211,75,124,.95)";
 
             item.style.boxShadow =
               `
-              inset 0 1px rgba(255,255,255,.55),
-              inset 0 -1px rgba(76,12,39,.65),
-              0 0 7px rgba(255,164,194,.28)
+                inset 0 1px rgba(255,255,255,.55),
+                inset 0 -1px rgba(76,12,39,.65),
+                0 0 7px rgba(255,164,194,.28)
               `;
 
             item.classList.add(
@@ -4554,11 +4724,9 @@ function writeDateTime() {
       refreshRoseTaskbar();
     }
 
-    roseHighlight._rosePatched = true;
+    roseHighlight._rosePatched =
+      true;
 
-    /*
-     * Replace global function.
-     */
     window.updateTaskbarHighlight =
       roseHighlight;
   }
@@ -4568,10 +4736,6 @@ function writeDateTime() {
      --------------------------------------------------------- */
 
   function removeLinkedInEverywhere() {
-    /*
-     * Remove an already-open LinkedIn window.
-     */
-
     document
       .querySelectorAll(
         '[id*="LinkedIn"], [data-app-name*="LinkedIn"]'
@@ -4580,10 +4744,6 @@ function writeDateTime() {
         element.remove();
       });
 
-    /*
-     * Remove LinkedIn taskbar entry.
-     */
-
     document
       .querySelectorAll(
         '[id="taskbar-LinkedIn"]'
@@ -4591,10 +4751,6 @@ function writeDateTime() {
       .forEach((element) => {
         element.remove();
       });
-
-    /*
-     * Clean saved window state.
-     */
 
     try {
       const saved =
@@ -4613,7 +4769,9 @@ function writeDateTime() {
 
       localStorage.setItem(
         "openWindows",
-        JSON.stringify(filtered)
+        JSON.stringify(
+          filtered
+        )
       );
     } catch (error) {
       console.warn(
@@ -4629,20 +4787,23 @@ function writeDateTime() {
 
   function installDynamicObserver() {
     const observer =
-      new MutationObserver(() => {
-        refreshRoseTaskbar();
-        removeLinkedInEverywhere();
+      new MutationObserver(
+        () => {
+          refreshRoseTaskbar();
 
-        const grid =
-          document.getElementById(
-            "desktop-grid-overlay"
-          );
+          removeLinkedInEverywhere();
 
-        if (grid) {
-          grid.style.pointerEvents =
-            "none";
+          const grid =
+            document.getElementById(
+              "desktop-grid-overlay"
+            );
+
+          if (grid) {
+            grid.style.pointerEvents =
+              "none";
+          }
         }
-      });
+      );
 
     observer.observe(
       document.body,
@@ -4667,11 +4828,6 @@ function writeDateTime() {
     installIconSnapSystem();
 
     installDynamicObserver();
-
-    /*
-     * updateTaskbarHighlight may not exist yet
-     * depending on script execution order.
-     */
 
     setTimeout(() => {
       patchTaskbarHighlight();
@@ -4701,636 +4857,5 @@ function writeDateTime() {
     initializeRoseSystem();
   }
 })();
-
-
-
-/* ============================================================
-   ROSE GLASS THEME
-   ============================================================ */
-
-(function initRoseTheme() {
-  function applyRoseTheme() {
-    if (document.getElementById("rose-glass-theme")) return;
-
-    const style = document.createElement("style");
-    style.id = "rose-glass-theme";
-
-    style.textContent = `
-      /* ======================================================
-         COLORS
-         ====================================================== */
-
-      :root {
-        --rose-dark: #9b2457;
-        --rose-deep: #b72f67;
-        --rose: #d84c82;
-        --rose-light: #ed78a5;
-        --rose-lighter: #f5a0bd;
-        --rose-highlight: #ffd4e3;
-
-        --glass-white: rgba(255,255,255,0.24);
-        --glass-white-strong: rgba(255,255,255,0.38);
-      }
-
-
-      /* ======================================================
-         DESKTOP FOOTER
-         
-         LIGHTER ROSE VERSION
-         ====================================================== */
-
-      #Desktop_Footer {
-        background:
-          linear-gradient(
-            to bottom,
-
-            /* glossy top */
-            rgba(255, 215, 230, 0.78) 0%,
-
-            rgba(255, 190, 215, 0.58) 4%,
-
-            /* light rose */
-            rgba(244, 139, 174, 0.98) 10%,
-
-            rgba(235, 112, 153, 0.98) 28%,
-
-            rgba(225, 91, 139, 0.98) 52%,
-
-            rgba(211, 70, 121, 0.99) 76%,
-
-            rgba(193, 53, 103, 1) 100%
-          ) !important;
-
-        border-top:
-          1px solid rgba(255,255,255,0.65) !important;
-
-        box-shadow:
-          0 -1px 0 rgba(255,255,255,0.5) inset,
-          0 -2px 8px rgba(255,105,155,0.20),
-          0 -5px 18px rgba(120,20,60,0.18);
-
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-      }
-
-
-      /* ======================================================
-         START BUTTON AREA
-         ====================================================== */
-
-      #Desktop_Footer .footer__start_menu {
-        filter:
-          drop-shadow(0 1px 2px rgba(70,0,30,0.25));
-      }
-
-
-      /* ======================================================
-         DYNAMIC TASKBAR
-         ====================================================== */
-
-      #taskbar {
-        background: transparent !important;
-      }
-
-
-      .taskbar-item {
-        position: relative;
-
-        background:
-          linear-gradient(
-            to bottom,
-
-            rgba(255,218,232,0.58) 0%,
-            rgba(255,184,211,0.42) 5%,
-            rgba(230,91,139,0.95) 16%,
-            rgba(211,61,113,0.98) 45%,
-            rgba(185,40,91,1) 100%
-          ) !important;
-
-        border:
-          1px solid rgba(255,205,225,0.40) !important;
-
-        box-shadow:
-          0 1px 0 rgba(255,255,255,0.45) inset,
-          0 -1px 0 rgba(110,10,45,0.25) inset,
-          1px 0 1px rgba(100,10,45,0.35) inset,
-          0 1px 3px rgba(90,0,35,0.18);
-
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-      }
-
-
-      .taskbar-item:hover {
-        background:
-          linear-gradient(
-            to bottom,
-            rgba(255,230,240,0.72),
-            rgba(244,129,169,0.98) 25%,
-            rgba(215,67,119,1) 100%
-          ) !important;
-
-        box-shadow:
-          0 1px 0 rgba(255,255,255,0.55) inset,
-          0 0 7px rgba(255,130,175,0.28);
-
-        filter: brightness(1.05);
-      }
-
-
-      /* ======================================================
-         ACTIVE TASKBAR ITEM
-         ====================================================== */
-
-      .taskbar-item.active {
-        background:
-          linear-gradient(
-            to bottom,
-            rgba(247,157,188,0.72),
-            rgba(194,42,92,0.98) 35%,
-            rgba(153,22,65,1) 100%
-          ) !important;
-
-        box-shadow:
-          0 1px 0 rgba(255,255,255,0.20) inset,
-          0 1px 2px rgba(70,0,25,0.45) inset;
-      }
-
-
-      /* ======================================================
-         ROSE GLASS WINDOWS
-         ====================================================== */
-
-      .window {
-        border:
-          1px solid rgba(255,215,230,0.62) !important;
-
-        border-radius: 8px;
-
-        background:
-          linear-gradient(
-            135deg,
-            rgba(255,190,215,0.48),
-            rgba(207,55,108,0.92)
-          ) !important;
-
-        box-shadow:
-          0 8px 25px rgba(70,0,30,0.32),
-          0 1px 0 rgba(255,255,255,0.50) inset,
-          0 0 0 1px rgba(120,10,50,0.25);
-
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-      }
-
-
-      /* ======================================================
-         WINDOW TOPBAR
-         ====================================================== */
-
-      .window-header-background {
-        background:
-          linear-gradient(
-            to bottom,
-
-            rgba(255,220,233,0.82) 0%,
-            rgba(255,188,214,0.66) 4%,
-            rgba(246,125,165,0.98) 11%,
-            rgba(232,86,135,0.99) 30%,
-            rgba(213,56,111,1) 60%,
-            rgba(189,35,88,1) 85%,
-            rgba(158,23,69,1) 100%
-          ) !important;
-
-        border-top-left-radius: 7px;
-        border-top-right-radius: 7px;
-
-        box-shadow:
-          0 1px 0 rgba(255,255,255,0.52) inset,
-          0 2px 5px rgba(120,10,50,0.18);
-
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-
-
-      /* ======================================================
-         WINDOW TOPBAR SHINE
-         ====================================================== */
-
-      .window-header-background::before {
-        opacity: 1 !important;
-
-        background:
-          linear-gradient(
-            to right,
-            rgba(255,255,255,0.42),
-            rgba(255,255,255,0.10),
-            transparent
-          ) !important;
-      }
-
-
-      .window-header-background::after {
-        opacity: 1 !important;
-
-        background:
-          linear-gradient(
-            to left,
-            rgba(255,255,255,0.25),
-            transparent
-          ) !important;
-      }
-
-
-      /* ======================================================
-         INACTIVE WINDOW
-         ====================================================== */
-
-      .window.window-inactive {
-        filter: saturate(0.72);
-      }
-
-
-      .window.window-inactive .window-header-background {
-        background:
-          linear-gradient(
-            to bottom,
-            rgba(218,169,188,0.72),
-            rgba(187,111,140,0.82) 30%,
-            rgba(157,76,108,0.90) 65%,
-            rgba(126,52,81,0.96) 100%
-          ) !important;
-      }
-
-
-      /* ======================================================
-         WINDOW BUTTONS
-         ====================================================== */
-
-      .header-button--minimize,
-      .header-button--maximaze,
-      .header-button--maximized {
-
-        background-image:
-          radial-gradient(
-            circle at 85% 85%,
-            #a71954 0%,
-            #cf3975 42%,
-            #ee78a6 67%,
-            #ffc9dd 88%,
-            #fff 100%
-          ) !important;
-
-        box-shadow:
-          #8e1649 0 -1px 2px 1px inset,
-          rgba(255,255,255,0.35) 0 1px 1px inset !important;
-      }
-
-
-      .header-button--close {
-        background-image:
-          radial-gradient(
-            circle at 85% 85%,
-            #941442 0%,
-            #c52d65 45%,
-            #ed719d 68%,
-            #ffc8dc 88%,
-            #fff 100%
-          ) !important;
-
-        box-shadow:
-          #7d1038 0 -1px 2px 1px inset,
-          rgba(255,255,255,0.30) 0 1px 1px inset !important;
-      }
-
-
-      /* ======================================================
-         DESKTOP SELECTION FRAME
-         ====================================================== */
-
-      #desktop-selection-frame {
-        position: fixed;
-
-        display: none;
-
-        pointer-events: none;
-
-        z-index: 999999;
-
-        box-sizing: border-box;
-
-        border:
-          1px solid rgba(70,150,235,0.95);
-
-        background:
-          rgba(80,155,235,0.20);
-
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.16) inset;
-      }
-
-
-      /* ======================================================
-         SELECTED DESKTOP ICON
-         ====================================================== */
-
-      #desktop .desktop-selected {
-        background:
-          rgba(70,150,235,0.32) !important;
-
-        outline:
-          1px solid rgba(120,190,255,0.78);
-      }
-
-
-      /* ======================================================
-         ICONS
-         ====================================================== */
-
-      #desktop .icon {
-        box-sizing: border-box;
-      }
-
-
-      #desktop .icon img {
-        filter:
-          drop-shadow(
-            0 2px 2px rgba(0,0,0,0.35)
-          );
-      }
-
-
-      #desktop .icon:hover img {
-        filter:
-          drop-shadow(
-            0 2px 3px rgba(0,0,0,0.45)
-          )
-          brightness(1.06);
-      }
-    `;
-
-    document.head.appendChild(style);
-  }
-
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", applyRoseTheme);
-  } else {
-    applyRoseTheme();
-  }
-})();
-
-
-/* ============================================================
-   DESKTOP SELECTION RECTANGLE
-   ============================================================ */
-
-(function initDesktopSelection() {
-
-  function setupSelection() {
-
-    const desktop = document.getElementById("desktop");
-
-    if (!desktop) return;
-
-    if (document.getElementById("desktop-selection-frame")) return;
-
-    const frame = document.createElement("div");
-
-    frame.id = "desktop-selection-frame";
-
-    document.body.appendChild(frame);
-
-
-    let selecting = false;
-
-    let startX = 0;
-    let startY = 0;
-
-
-    desktop.addEventListener("mousedown", function (event) {
-
-      if (event.button !== 0) return;
-
-      /*
-       * If the user clicked an icon,
-       * let the existing icon dragging system handle it.
-       */
-
-      if (event.target.closest(".icon")) return;
-
-      /*
-       * Don't start desktop selection on windows.
-       */
-
-      if (event.target.closest(".window")) return;
-
-
-      selecting = true;
-
-      startX = event.clientX;
-      startY = event.clientY;
-
-
-      frame.style.display = "block";
-
-      frame.style.left = `${startX}px`;
-      frame.style.top = `${startY}px`;
-
-      frame.style.width = "0px";
-      frame.style.height = "0px";
-
-
-      /*
-       * Clear old selections.
-       */
-
-      desktop
-        .querySelectorAll(".desktop-selected")
-        .forEach((icon) => {
-          icon.classList.remove("desktop-selected");
-        });
-
-
-      event.preventDefault();
-    });
-
-
-    document.addEventListener("mousemove", function (event) {
-
-      if (!selecting) return;
-
-
-      const currentX = event.clientX;
-      const currentY = event.clientY;
-
-
-      const left = Math.min(startX, currentX);
-      const top = Math.min(startY, currentY);
-
-      const width = Math.abs(currentX - startX);
-      const height = Math.abs(currentY - startY);
-
-
-      frame.style.left = `${left}px`;
-      frame.style.top = `${top}px`;
-
-      frame.style.width = `${width}px`;
-      frame.style.height = `${height}px`;
-
-
-      const selectionRect =
-        frame.getBoundingClientRect();
-
-
-      desktop
-        .querySelectorAll(".icon")
-        .forEach((icon) => {
-
-          const iconRect =
-            icon.getBoundingClientRect();
-
-
-          const intersects =
-            iconRect.left < selectionRect.right &&
-            iconRect.right > selectionRect.left &&
-            iconRect.top < selectionRect.bottom &&
-            iconRect.bottom > selectionRect.top;
-
-
-          icon.classList.toggle(
-            "desktop-selected",
-            intersects
-          );
-        });
-    });
-
-
-    document.addEventListener("mouseup", function () {
-
-      if (!selecting) return;
-
-      selecting = false;
-
-      frame.style.display = "none";
-    });
-  }
-
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      setupSelection
-    );
-  } else {
-    setupSelection();
-  }
-
-})();
-
-
-/* ============================================================
-   DESKTOP ICON GRID SNAP
-   ============================================================ */
-
-(function initDesktopGrid() {
-
-  const GRID_X = 90;
-  const GRID_Y = 70;
-
-  const GRID_OFFSET_X = 20;
-  const GRID_OFFSET_Y = 20;
-
-
-  function snapToGrid(value, grid, offset) {
-
-    return (
-      Math.round(
-        (value - offset) / grid
-      ) * grid +
-      offset
-    );
-
-  }
-
-
-  function snapIcon(icon) {
-
-    if (!icon) return;
-
-
-    const currentLeft =
-      parseInt(
-        icon.style.left || "0",
-        10
-      );
-
-
-    const currentTop =
-      parseInt(
-        icon.style.top || "0",
-        10
-      );
-
-
-    const snappedLeft =
-      snapToGrid(
-        currentLeft,
-        GRID_X,
-        GRID_OFFSET_X
-      );
-
-
-    const snappedTop =
-      snapToGrid(
-        currentTop,
-        GRID_Y,
-        GRID_OFFSET_Y
-      );
-
-
-    icon.style.left =
-      `${snappedLeft}px`;
-
-    icon.style.top =
-      `${snappedTop}px`;
-  }
-
-
-  /*
-   * When the mouse is released, find the icon
-   * that was being moved and snap it.
-   */
-
-  document.addEventListener(
-    "mouseup",
-    function () {
-
-      const selectedIcons =
-        document.querySelectorAll(
-          "#desktop .icon"
-        );
-
-
-      selectedIcons.forEach((icon) => {
-
-        /*
-         * Only snap icons that have an explicit
-         * position.
-         */
-
-        if (
-          icon.style.left !== "" &&
-          icon.style.top !== ""
-        ) {
-          snapIcon(icon);
-        }
-
-      });
-
-    },
-    true
-  );
 
 })();
