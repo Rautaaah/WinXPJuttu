@@ -28,12 +28,15 @@ async function loadHTML(filePath) {
 loadHTML("/Start_Menu/Base/Start_Menu.html").then(
   (html) => (startMenuHTML = html)
 );
+
 loadHTML("/Open_Windows/Base/Open_Window.html").then(
   (html) => (openWindowHTML = html)
 );
+
 loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html").then(
   (html) => (openLogOffHTML = html)
 );
+
 loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html").then(
   (html) => (turnOffComputerHTML = html)
 );
@@ -52,12 +55,17 @@ function playSoundOnPage(path, defaultSoundPath, onLoadCallback) {
       }
 
       const guestUser = document.getElementById("guest-user");
+
       if (guestUser && guestUser.querySelector("#loaded")) {
         soundPath = "/Assets/Sounds/Resume_Users.mp3";
       }
 
       const audio = new Audio(soundPath);
-      audio.play().catch((error) => console.error("Audio error:", error));
+
+      audio.play().catch((error) =>
+        console.error("Audio error:", error)
+      );
+
       if (typeof onLoadCallback === "function") {
         onLoadCallback();
       }
@@ -65,14 +73,14 @@ function playSoundOnPage(path, defaultSoundPath, onLoadCallback) {
   }
 }
 
+/*
+ * Windows XP startup sound
+ *
+ * LinkedIn startup opening has been completely removed.
+ */
 playSoundOnPage(
   "/Bureau/Bureau.html",
-  "/Assets/Sounds/windows-xp-startup.mp3",
-  function () {
-    openWindow("LinkedIn");
-    toggleWindow("LinkedIn");
-    toggleWindow("LinkedIn");
-  }
+  "/Assets/Sounds/windows-xp-startup.mp3"
 );
 
 playSoundOnPage(
@@ -84,36 +92,48 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTaskbarVisibility();
 
   function updateClock() {
-    let now = new Date().toLocaleTimeString([], {
+    const now = new Date().toLocaleTimeString([], {
       hour12: true,
       hour: "2-digit",
       minute: "2-digit",
     });
-    document.getElementById("footer-time").textContent = now;
+
+    const footerTime = document.getElementById("footer-time");
+
+    if (footerTime) {
+      footerTime.textContent = now;
+    }
   }
 
   updateClock();
   setInterval(updateClock, 52000);
 
   const startBtn = document.getElementById("start-button");
-  startBtn.addEventListener("mouseenter", () => {
-    startBtn.src = "/Assets/Images/windows_xp_start_button_hover.png";
-  });
 
-  startBtn.addEventListener("mouseleave", () => {
-    startBtn.src = "/Assets/Images/windows_xp_start_button_normal.png";
-  });
+  if (startBtn) {
+    startBtn.addEventListener("mouseenter", () => {
+      startBtn.src =
+        "/Assets/Images/windows_xp_start_button_hover.png";
+    });
 
-  startBtn.addEventListener("mousedown", () => {
-    startBtn.src = "/Assets/Images/windows_xp_start_button_onclick.png";
-  });
+    startBtn.addEventListener("mouseleave", () => {
+      startBtn.src =
+        "/Assets/Images/windows_xp_start_button_normal.png";
+    });
 
-  startBtn.addEventListener("mouseup", () => {
-    const isHovering = startBtn.matches(":hover");
-    startBtn.src = isHovering
-      ? "/Assets/Images/windows_xp_start_button_hover.png"
-      : "/Assets/Images/windows_xp_start_button_normal.png";
-  });
+    startBtn.addEventListener("mousedown", () => {
+      startBtn.src =
+        "/Assets/Images/windows_xp_start_button_onclick.png";
+    });
+
+    startBtn.addEventListener("mouseup", () => {
+      const isHovering = startBtn.matches(":hover");
+
+      startBtn.src = isHovering
+        ? "/Assets/Images/windows_xp_start_button_hover.png"
+        : "/Assets/Images/windows_xp_start_button_normal.png";
+    });
+  }
 });
 
 document.addEventListener("click", function (event) {
@@ -122,6 +142,7 @@ document.addEventListener("click", function (event) {
 
   if (
     menu &&
+    startMenuBtn &&
     !menu.contains(event.target) &&
     !startMenuBtn.contains(event.target)
   ) {
@@ -134,43 +155,66 @@ function openWindow(appName) {
   let windowCurrentLabel = null;
 
   createTaskbar();
-  injectStyle("bureau-styles", "/Open_Windows/Base/Open_Window.css");
-  injectStyle("taskbar-styles", "/Bureau/Taskbar.css");
-  injectStyle(`window-${appName}`, `/Open_Windows/${appName}/${appName}.css`);
 
-  let taskbar = document.getElementById("taskbar");
+  injectStyle(
+    "bureau-styles",
+    "/Open_Windows/Base/Open_Window.css"
+  );
+
+  injectStyle(
+    "taskbar-styles",
+    "/Bureau/Taskbar.css"
+  );
+
+  injectStyle(
+    `window-${appName}`,
+    `/Open_Windows/${appName}/${appName}.css`
+  );
+
+  const taskbar = document.getElementById("taskbar");
 
   if (document.getElementById(`window-${appName}`)) return;
 
-  let windowElement = document.createElement("div");
+  const windowElement = document.createElement("div");
+
   windowElement.id = `window-${appName}`;
   windowElement.classList.add("window");
 
-  const personalizedHTML = openWindowHTML.replace(/\$\{appName\}/g, appName);
+  const personalizedHTML = openWindowHTML.replace(
+    /\$\{appName\}/g,
+    appName
+  );
+
   windowElement.innerHTML = personalizedHTML;
 
   if (appName === "Minesweeper") {
     const maximazeButton = windowElement.querySelector(
       ".header-button--maximaze"
     );
+
     if (maximazeButton) {
       maximazeButton.removeAttribute("onclick");
       maximazeButton.disabled = true;
       maximazeButton.style.opacity = "0.5";
       maximazeButton.style.pointerEvents = "none";
+
       windowElement.style.width = "auto";
       windowElement.style.height = "auto";
     }
   } else {
     makeResizable(windowElement);
+
     const header = windowElement.querySelector(".window-header");
+
     if (header) {
-      header.setAttribute("ondblclick", `maximazeWindow('${appName}')`);
+      header.setAttribute(
+        "ondblclick",
+        `maximazeWindow('${appName}')`
+      );
     }
   }
 
   if (appName === "Space Cadet Pinball") {
-    // Cache la fenêtre au départ
     windowElement.style.visibility = "hidden";
     windowElement.style.opacity = "0";
   }
@@ -180,10 +224,13 @@ function openWindow(appName) {
       if (!response.ok) {
         throw new Error("Fichier introuvable");
       }
+
       return response.text();
     })
     .then((htmlContent) => {
-      const contentContainer = windowElement.querySelector(".window-content");
+      const contentContainer =
+        windowElement.querySelector(".window-content");
+
       if (contentContainer) {
         contentContainer.innerHTML = htmlContent;
       } else {
@@ -196,37 +243,66 @@ function openWindow(appName) {
 
       labelDivs.forEach((labelDiv) => {
         labelDiv.addEventListener("click", function () {
-          if (windowTooltipContainer && windowTooltipContainer.parentNode) {
-            windowTooltipContainer.removeAttribute("data-tooltip-initialized");
+          if (
+            windowTooltipContainer &&
+            windowTooltipContainer.parentNode
+          ) {
+            windowTooltipContainer.removeAttribute(
+              "data-tooltip-initialized"
+            );
+
             windowTooltipContainer.parentNode.removeChild(
               windowTooltipContainer
             );
+
             windowTooltipContainer = null;
           }
+
           windowCurrentLabel = labelDiv;
 
           const fileName = labelDiv.textContent.trim();
-          fetch(`/Open_Windows/${appName}/Tooltip/${fileName}.html`)
+
+          fetch(
+            `/Open_Windows/${appName}/Tooltip/${fileName}.html`
+          )
             .then((response) => response.text())
             .then((htmlContent) => {
               const container = document.createElement("div");
+
               container.className = "window-tooltip";
               container.innerHTML = htmlContent;
+
               observeMinesweeperTooltipLoad();
               observeSecondaryTooltipRows(appName);
-              labelDiv.parentNode.insertBefore(container, labelDiv.nextSibling);
+
+              labelDiv.parentNode.insertBefore(
+                container,
+                labelDiv.nextSibling
+              );
+
               windowTooltipContainer = container;
 
-              const closeDivs = container.querySelectorAll(".drop-down__text");
+              const closeDivs =
+                container.querySelectorAll(".drop-down__text");
+
               closeDivs.forEach((div) => {
-                const txt = div.textContent.trim().toLowerCase();
+                const txt = div.textContent
+                  .trim()
+                  .toLowerCase();
+
                 if (txt === "close" || txt === "exit") {
-                  div.setAttribute("onclick", `closeWindow('${appName}')`);
+                  div.setAttribute(
+                    "onclick",
+                    `closeWindow('${appName}')`
+                  );
                 }
               });
             })
             .catch((err) => {
-              console.error("Erreur de chargement du fichier HTML:", err);
+              console.error(
+                "Erreur de chargement du fichier HTML:",
+                err
+              );
             });
         });
 
@@ -234,37 +310,66 @@ function openWindow(appName) {
           if (!windowTooltipContainer) return;
           if (windowCurrentLabel === labelDiv) return;
 
-          if (windowTooltipContainer && windowTooltipContainer.parentNode) {
-            windowTooltipContainer.removeAttribute("data-tooltip-initialized");
+          if (
+            windowTooltipContainer &&
+            windowTooltipContainer.parentNode
+          ) {
+            windowTooltipContainer.removeAttribute(
+              "data-tooltip-initialized"
+            );
+
             windowTooltipContainer.parentNode.removeChild(
               windowTooltipContainer
             );
+
             windowTooltipContainer = null;
           }
+
           windowCurrentLabel = labelDiv;
 
           const fileName = labelDiv.textContent.trim();
-          fetch(`/Open_Windows/${appName}/Tooltip/${fileName}.html`)
+
+          fetch(
+            `/Open_Windows/${appName}/Tooltip/${fileName}.html`
+          )
             .then((response) => response.text())
             .then((htmlContent) => {
               const container = document.createElement("div");
+
               container.className = "window-tooltip";
               container.innerHTML = htmlContent;
+
               observeMinesweeperTooltipLoad();
               observeSecondaryTooltipRows(appName);
-              labelDiv.parentNode.insertBefore(container, labelDiv.nextSibling);
+
+              labelDiv.parentNode.insertBefore(
+                container,
+                labelDiv.nextSibling
+              );
+
               windowTooltipContainer = container;
 
-              const closeDivs = container.querySelectorAll(".drop-down__text");
+              const closeDivs =
+                container.querySelectorAll(".drop-down__text");
+
               closeDivs.forEach((div) => {
-                const txt = div.textContent.trim().toLowerCase();
+                const txt = div.textContent
+                  .trim()
+                  .toLowerCase();
+
                 if (txt === "close" || txt === "exit") {
-                  div.setAttribute("onclick", `closeWindow('${appName}')`);
+                  div.setAttribute(
+                    "onclick",
+                    `closeWindow('${appName}')`
+                  );
                 }
               });
             })
             .catch((err) => {
-              console.error("Erreur de chargement du fichier HTML:", err);
+              console.error(
+                "Erreur de chargement du fichier HTML:",
+                err
+              );
             });
         });
       });
@@ -273,16 +378,28 @@ function openWindow(appName) {
         const isOnLabel = Array.from(labelDivs).some((label) =>
           label.contains(event.target)
         );
+
         const isOnTooltip =
           windowTooltipContainer &&
           windowTooltipContainer.contains(event.target);
 
-        if (!isOnLabel && !isOnTooltip && windowTooltipContainer) {
-          if (windowTooltipContainer && windowTooltipContainer.parentNode) {
-            windowTooltipContainer.removeAttribute("data-tooltip-initialized");
+        if (
+          !isOnLabel &&
+          !isOnTooltip &&
+          windowTooltipContainer
+        ) {
+          if (
+            windowTooltipContainer &&
+            windowTooltipContainer.parentNode
+          ) {
+            windowTooltipContainer.removeAttribute(
+              "data-tooltip-initialized"
+            );
+
             windowTooltipContainer.parentNode.removeChild(
               windowTooltipContainer
             );
+
             windowTooltipContainer = null;
             windowCurrentLabel = null;
           }
@@ -294,30 +411,54 @@ function openWindow(appName) {
     });
 
   document.body.appendChild(windowElement);
+
   windowElement.style.top = "115px";
   windowElement.style.left = "115px";
+
   makeDraggable(windowElement);
 
   if (!document.getElementById(`taskbar-${appName}`)) {
-    let taskbarItem = document.createElement("div");
+    const taskbarItem = document.createElement("div");
+
     taskbarItem.id = `taskbar-${appName}`;
     taskbarItem.classList.add("taskbar-item");
-    taskbarItem.innerHTML = `<img src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/${appName}.png" width="16"> <span>${appName}</span>`;
-    taskbarItem.onmousedown = () => toggleWindow(appName);
+
+    taskbarItem.innerHTML = `
+      <img
+        src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/${appName}.png"
+        width="16"
+      >
+      <span>${appName}</span>
+    `;
+
+    taskbarItem.onmousedown = () =>
+      toggleWindow(appName);
+
     taskbar.appendChild(taskbarItem);
   }
 
   window.addEventListener("mousedown", function (event) {
     const windowEl = windowElement;
+
     if (!windowEl) return;
 
     const isInWindow = windowEl.contains(event.target);
-    const isInTooltip =
-      windowTooltipContainer && windowTooltipContainer.contains(event.target);
 
-    if (!isInWindow && !isInTooltip && windowTooltipContainer) {
-      windowTooltipContainer.removeAttribute("data-tooltip-initialized");
+    const isInTooltip =
+      windowTooltipContainer &&
+      windowTooltipContainer.contains(event.target);
+
+    if (
+      !isInWindow &&
+      !isInTooltip &&
+      windowTooltipContainer
+    ) {
+      windowTooltipContainer.removeAttribute(
+        "data-tooltip-initialized"
+      );
+
       windowTooltipContainer.remove();
+
       windowTooltipContainer = null;
       windowCurrentLabel = null;
     }
@@ -325,8 +466,12 @@ function openWindow(appName) {
 }
 
 function observeSecondaryTooltipRows(appName) {
-  const windowElement = document.getElementById(`window-${appName}`);
+  const windowElement = document.getElementById(
+    `window-${appName}`
+  );
+
   if (!windowElement) return;
+
   const observer = new MutationObserver(() => {
     const tooltipWindows = Array.from(
       windowElement.querySelectorAll(
@@ -334,27 +479,34 @@ function observeSecondaryTooltipRows(appName) {
       )
     ).filter((el) => el.offsetParent !== null);
 
-    if (tooltipWindows.length > 0) {
-    } else {
-    }
-
     tooltipWindows.forEach((tooltipWindow) => {
-      tooltipWindow.setAttribute("data-tooltip-initialized", "true");
+      tooltipWindow.setAttribute(
+        "data-tooltip-initialized",
+        "true"
+      );
 
-      const dropDownRows = tooltipWindow.querySelectorAll(".drop-down__row");
+      const dropDownRows =
+        tooltipWindow.querySelectorAll(".drop-down__row");
+
       let windowSecondTooltip = null;
       let windowSecondCurrentRow = null;
 
       dropDownRows.forEach((row) => {
         row.addEventListener("mouseenter", function () {
-          const textDiv = row.querySelector(".drop-down__text");
+          const textDiv =
+            row.querySelector(".drop-down__text");
+
           if (!textDiv) return;
 
           const fileName = textDiv.textContent.trim();
+
           if (windowSecondCurrentRow === row) return;
 
           if (windowSecondTooltip?.parentNode) {
-            windowSecondTooltip.parentNode.removeChild(windowSecondTooltip);
+            windowSecondTooltip.parentNode.removeChild(
+              windowSecondTooltip
+            );
+
             windowSecondTooltip = null;
           }
 
@@ -376,41 +528,66 @@ function observeSecondaryTooltipRows(appName) {
 
           if (!allowedTooltips.includes(fileName)) return;
 
-          if (allowedTooltips.includes(fileName)) {
-            fetch(`/Open_Windows/${appName}/Sub_Tooltip/${fileName}.html`)
-              .then((response) => {
-                if (!response.ok) {
-                  if (response.status === 404) return null;
-                  throw new Error(`Erreur HTTP: ${response.status}`);
-                }
-                return response.text();
-              })
-              .then((htmlContent) => {
-                const container = document.createElement("div");
-                container.className = "window-Sub_tooltip";
-                container.innerHTML = htmlContent;
+          fetch(
+            `/Open_Windows/${appName}/Sub_Tooltip/${fileName}.html`
+          )
+            .then((response) => {
+              if (!response.ok) {
+                if (response.status === 404) return null;
 
-                const tooltipWindow = row.closest(".window-tooltip");
-                if (!tooltipWindow) return;
+                throw new Error(
+                  `Erreur HTTP: ${response.status}`
+                );
+              }
 
-                const reference = row.querySelector(".drop-down__text");
-                const rect = reference.getBoundingClientRect();
+              return response.text();
+            })
+            .then((htmlContent) => {
+              if (!htmlContent) return;
 
-                const referenceRect = reference.getBoundingClientRect();
-                const parentRect = tooltipWindow.getBoundingClientRect();
+              const container =
+                document.createElement("div");
 
-                const offsetX = referenceRect.left - parentRect.left;
-                const offsetY = referenceRect.bottom - parentRect.top + 5;
+              container.className =
+                "window-Sub_tooltip";
 
-                container.style.position = "absolute";
-                container.style.left = `${offsetX + 110}px`;
-                container.style.top = `${offsetY - 5}px`;
+              container.innerHTML = htmlContent;
 
-                tooltipWindow.appendChild(container);
-                windowSecondTooltip = container;
-              })
-              .catch(() => {});
-          }
+              const tooltipWindow =
+                row.closest(".window-tooltip");
+
+              if (!tooltipWindow) return;
+
+              const reference =
+                row.querySelector(".drop-down__text");
+
+              const referenceRect =
+                reference.getBoundingClientRect();
+
+              const parentRect =
+                tooltipWindow.getBoundingClientRect();
+
+              const offsetX =
+                referenceRect.left - parentRect.left;
+
+              const offsetY =
+                referenceRect.bottom -
+                parentRect.top +
+                5;
+
+              container.style.position = "absolute";
+
+              container.style.left =
+                `${offsetX + 110}px`;
+
+              container.style.top =
+                `${offsetY - 5}px`;
+
+              tooltipWindow.appendChild(container);
+
+              windowSecondTooltip = container;
+            })
+            .catch(() => {});
         });
       });
     });
@@ -423,29 +600,44 @@ function observeSecondaryTooltipRows(appName) {
 }
 
 function updateCheckmarkInTooltip() {
-  const selectedLevel = localStorage.getItem("SelectedLevel");
+  const selectedLevel =
+    localStorage.getItem("SelectedLevel");
+
   if (!selectedLevel) return;
 
-  const minesweeperMenu = document.querySelector(".Minesweeper_drop_down");
+  const minesweeperMenu =
+    document.querySelector(".Minesweeper_drop_down");
+
   if (!minesweeperMenu) return;
 
-  const rows = minesweeperMenu.querySelectorAll(".drop-down__row");
+  const rows =
+    minesweeperMenu.querySelectorAll(".drop-down__row");
 
   rows.forEach((row) => {
-    const checkContainer = row.querySelector(".drop-down__check");
-    const textContainer = row.querySelector(".drop-down__text");
+    const checkContainer =
+      row.querySelector(".drop-down__check");
+
+    const textContainer =
+      row.querySelector(".drop-down__text");
 
     if (!checkContainer || !textContainer) return;
 
     checkContainer.innerHTML = "";
 
-    const levelText = textContainer.textContent.trim().toLowerCase();
-    const selectedText = selectedLevel.trim().toLowerCase();
+    const levelText =
+      textContainer.textContent.trim().toLowerCase();
+
+    const selectedText =
+      selectedLevel.trim().toLowerCase();
 
     if (levelText === selectedText) {
       const img = document.createElement("img");
-      img.src = "/Assets/Images/Tooltip_CheckMark.png";
+
+      img.src =
+        "/Assets/Images/Tooltip_CheckMark.png";
+
       img.alt = "Check Mark";
+
       checkContainer.appendChild(img);
     }
   });
@@ -453,7 +645,10 @@ function updateCheckmarkInTooltip() {
 
 function observeMinesweeperTooltipLoad() {
   const observer = new MutationObserver(() => {
-    const tooltip = document.querySelector(".Minesweeper_drop_down");
+    const tooltip = document.querySelector(
+      ".Minesweeper_drop_down"
+    );
+
     if (tooltip) {
       updateCheckmarkInTooltip();
       observer.disconnect();
@@ -467,23 +662,36 @@ function observeMinesweeperTooltipLoad() {
 }
 
 function openRawWinamp() {
-  if (document.getElementById("app") || document.getElementById("webamp")) {
+  if (
+    document.getElementById("app") ||
+    document.getElementById("webamp")
+  ) {
     return;
   }
-  const winampDiv = document.createElement("div");
+
+  const winampDiv =
+    document.createElement("div");
+
   winampDiv.id = "app";
+
   winampDiv.style.position = "absolute";
   winampDiv.style.left = "0";
   winampDiv.style.top = "0";
+
   document.body.appendChild(winampDiv);
 
-  const script = document.createElement("script");
-  script.src = "https://unpkg.com/webamp@latest/built/webamp.bundle.min.js";
+  const script =
+    document.createElement("script");
+
+  script.src =
+    "https://unpkg.com/webamp@latest/built/webamp.bundle.min.js";
+
   script.onload = () => {
     if (typeof Webamp === "undefined") {
       console.error("Webamp is not loaded!");
       return;
     }
+
     const webamp = new Webamp({
       initialTracks: [
         {
@@ -491,158 +699,302 @@ function openRawWinamp() {
             artist: "Michael Jackson",
             title: "Billie Jean",
           },
-          url: "/Assets/Sounds/Michael Jackson - Billie Jean (Official Video).mp3",
+          url:
+            "/Assets/Sounds/Michael Jackson - Billie Jean (Official Video).mp3",
         },
         {
           metaData: {
-            artist: "Joe Hisaishi, Royal Philharmonic Orchestra",
+            artist:
+              "Joe Hisaishi, Royal Philharmonic Orchestra",
             title: "The Bygone Days",
           },
-          url: "/Assets/Sounds/The Bygone Days   Porco Rosso.mp3",
+          url:
+            "/Assets/Sounds/The Bygone Days   Porco Rosso.mp3",
         },
         {
           metaData: {
-            artist: "Playboi Carti & The Weeknd",
+            artist:
+              "Playboi Carti & The Weeknd",
             title: "RATHER LIE (Official Audio)",
           },
-          url: "/Assets/Sounds/Playboi Carti & The Weeknd - RATHER LIE (Official Audio).mp3",
+          url:
+            "/Assets/Sounds/Playboi Carti & The Weeknd - RATHER LIE (Official Audio).mp3",
         },
         {
           metaData: {
-            artist: "Kal Banx ft Smino x Buddy",
-            title: "HOP OUT CHO FEELINGS",
+            artist:
+              "Kal Banx ft Smino x Buddy",
+            title:
+              "HOP OUT CHO FEELINGS",
           },
-          url: "/Assets/Sounds/Kal Banx ft Smino x Buddy  - HOP OUT CHO FEELINGS (Official Video).mp3",
+          url:
+            "/Assets/Sounds/Kal Banx ft Smino x Buddy  - HOP OUT CHO FEELINGS (Official Video).mp3",
         },
       ],
     });
-    webamp.renderWhenReady(winampDiv).then(() => {
-      const observer = new MutationObserver(() => {
-        const webampDiv = document.getElementById("webamp");
-        if (webampDiv) {
-          observer.disconnect();
 
-          const classObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.attributeName === "class") {
-                if (webampDiv.classList.contains("window-inactive")) {
-                  webampDiv.classList.remove("window-inactive");
-                }
-                const inactiveChildren =
-                  webampDiv.querySelectorAll(".window-inactive");
-                inactiveChildren.forEach((el) => {
-                  el.classList.remove("window-inactive");
-                  el.style.setProperty("background-color", "none", "important");
+    webamp.renderWhenReady(winampDiv).then(() => {
+      const observer =
+        new MutationObserver(() => {
+          const webampDiv =
+            document.getElementById("webamp");
+
+          if (webampDiv) {
+            observer.disconnect();
+
+            const classObserver =
+              new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                  if (
+                    mutation.attributeName ===
+                    "class"
+                  ) {
+                    if (
+                      webampDiv.classList.contains(
+                        "window-inactive"
+                      )
+                    ) {
+                      webampDiv.classList.remove(
+                        "window-inactive"
+                      );
+                    }
+
+                    const inactiveChildren =
+                      webampDiv.querySelectorAll(
+                        ".window-inactive"
+                      );
+
+                    inactiveChildren.forEach((el) => {
+                      el.classList.remove(
+                        "window-inactive"
+                      );
+
+                      el.style.setProperty(
+                        "background-color",
+                        "none",
+                        "important"
+                      );
+                    });
+
+                    webampDiv.style.setProperty(
+                      "background-color",
+                      "",
+                      "important"
+                    );
+                  }
                 });
-                webampDiv.style.setProperty(
-                  "background-color",
-                  "",
+              });
+
+            classObserver.observe(webampDiv, {
+              attributes: true,
+              subtree: true,
+            });
+
+            zIndexCounter++;
+
+            webampDiv.style.zIndex =
+              zIndexCounter.toString();
+
+            webampDiv.classList.add(
+              "window",
+              "no-bg"
+            );
+
+            updateTaskbarHighlight();
+
+            const windowEl =
+              document.querySelector(
+                "#webamp .window"
+              );
+
+            const styleObserver =
+              new MutationObserver(() => {
+                windowEl.style.setProperty(
+                  "width",
+                  "0",
                   "important"
                 );
-              }
+
+                windowEl.style.setProperty(
+                  "height",
+                  "0",
+                  "important"
+                );
+              });
+
+            styleObserver.observe(windowEl, {
+              attributes: true,
+              attributeFilter: ["style"],
             });
-          });
 
-          classObserver.observe(webampDiv, { attributes: true, subtree: true });
+            webampDiv.addEventListener(
+              "mousedown",
+              () => {
+                zIndexCounter++;
 
-          zIndexCounter++;
-          webampDiv.style.zIndex = zIndexCounter.toString();
-          webampDiv.classList.add("window", "no-bg");
+                webampDiv.style.zIndex =
+                  zIndexCounter;
 
-          updateTaskbarHighlight();
+                updateTaskbarHighlight();
+              }
+            );
+          }
+        });
 
-          const windowEl = document.querySelector("#webamp .window");
-
-          const styleObserver = new MutationObserver(() => {
-            windowEl.style.setProperty("width", "0", "important");
-            windowEl.style.setProperty("height", "0", "important");
-          });
-
-          styleObserver.observe(windowEl, {
-            attributes: true,
-            attributeFilter: ["style"],
-          });
-
-          webampDiv.addEventListener("mousedown", () => {
-            zIndexCounter++;
-            webampDiv.style.zIndex = zIndexCounter.toString();
-            updateTaskbarHighlight();
-          });
-        }
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
       });
-
-      observer.observe(document.body, { childList: true, subtree: true });
     });
 
     webamp.onClose(() => {
       if (taskbarItem) taskbarItem.remove();
-      if (winampDiv.parentNode) winampDiv.parentNode.removeChild(winampDiv);
-      if (script.parentNode) script.parentNode.removeChild(script);
-      const webampContainer = document.getElementById("webamp");
-      if (webampContainer && webampContainer.parentNode) {
-        webampContainer.parentNode.removeChild(webampContainer);
+
+      if (winampDiv.parentNode) {
+        winampDiv.parentNode.removeChild(winampDiv);
+      }
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+      const webampContainer =
+        document.getElementById("webamp");
+
+      if (
+        webampContainer &&
+        webampContainer.parentNode
+      ) {
+        webampContainer.parentNode.removeChild(
+          webampContainer
+        );
       }
     });
 
     setTimeout(() => {
-      const closeBtn = document.getElementById("close");
+      const closeBtn =
+        document.getElementById("close");
+
       if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-          if (winampDiv.parentNode) winampDiv.parentNode.removeChild(winampDiv);
-          if (script.parentNode) script.parentNode.removeChild(script);
-          const webampContainer = document.getElementById("webamp");
-          if (webampContainer && webampContainer.parentNode) {
-            webampContainer.parentNode.removeChild(webampContainer);
-            updateTaskbarHighlight();
+        closeBtn.addEventListener(
+          "click",
+          () => {
+            if (winampDiv.parentNode) {
+              winampDiv.parentNode.removeChild(
+                winampDiv
+              );
+            }
+
+            if (script.parentNode) {
+              script.parentNode.removeChild(
+                script
+              );
+            }
+
+            const webampContainer =
+              document.getElementById("webamp");
+
+            if (
+              webampContainer &&
+              webampContainer.parentNode
+            ) {
+              webampContainer.parentNode.removeChild(
+                webampContainer
+              );
+
+              updateTaskbarHighlight();
+            }
           }
-        });
+        );
       }
     }, 1150);
-  };
 
-  setTimeout(() => {
-    const minimizeBtn = document.querySelector("#webamp #minimize");
-    if (minimizeBtn) {
-      minimizeBtn.addEventListener("click", () => {
-        const win = document.getElementById("webamp");
-        if (win) win.style.display = "none";
-        updateTaskbarHighlight();
-      });
-    }
-  }, 1000);
+    setTimeout(() => {
+      const minimizeBtn =
+        document.querySelector(
+          "#webamp #minimize"
+        );
+
+      if (minimizeBtn) {
+        minimizeBtn.addEventListener(
+          "click",
+          () => {
+            const win =
+              document.getElementById("webamp");
+
+            if (win) {
+              win.style.display = "none";
+            }
+
+            updateTaskbarHighlight();
+          }
+        );
+      }
+    }, 1000);
+  };
 
   winampDiv.appendChild(script);
 
-  let taskbarItem = document.getElementById("taskbar-Winamp");
+  let taskbarItem =
+    document.getElementById("taskbar-Winamp");
 
-  if (!document.getElementById(`taskbar-Winamp`)) {
-    taskbarItem = document.createElement("div");
-    taskbarItem.id = `taskbar-Winamp`;
-    taskbarItem.classList.add("taskbar-item");
-    taskbarItem.innerHTML = `<img src="/Assets/Images/Winamp-logo.png" width="16"> <span>Winamp</span>`;
+  if (!document.getElementById("taskbar-Winamp")) {
+    taskbarItem =
+      document.createElement("div");
+
+    taskbarItem.id = "taskbar-Winamp";
+
+    taskbarItem.classList.add(
+      "taskbar-item"
+    );
+
+    taskbarItem.innerHTML = `
+      <img
+        src="/Assets/Images/Winamp-logo.png"
+        width="16"
+      >
+      <span>Winamp</span>
+    `;
+
     taskbarItem.onmousedown = () => {
-      const winampWindow = document.getElementById("webamp");
+      const winampWindow =
+        document.getElementById("webamp");
+
       if (!winampWindow) return;
 
-      const winampZ = parseInt(winampWindow.style.zIndex || "0", 10);
+      const winampZ =
+        parseInt(
+          winampWindow.style.zIndex || "0",
+          10
+        );
 
       if (
         winampWindow.style.display === "none" ||
-        getComputedStyle(winampWindow).display === "none"
+        getComputedStyle(winampWindow).display ===
+          "none"
       ) {
         winampWindow.style.display = "block";
+
         zIndexCounter++;
-        winampWindow.style.zIndex = zIndexCounter;
+
+        winampWindow.style.zIndex =
+          zIndexCounter;
+
         updateTaskbarHighlight();
       } else if (winampZ < zIndexCounter) {
         zIndexCounter++;
-        winampWindow.style.zIndex = zIndexCounter;
+
+        winampWindow.style.zIndex =
+          zIndexCounter;
+
         updateTaskbarHighlight();
       } else if (winampZ >= zIndexCounter) {
         winampWindow.style.display = "none";
+
         updateTaskbarHighlight();
       }
     };
+
     taskbar.appendChild(taskbarItem);
   }
 }
@@ -650,21 +1002,32 @@ function openRawWinamp() {
 function waitForGameToLoad() {
   console.log("waitForGameToLoad started");
 
-  const iframe = document.getElementById("pinball-frame");
-  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  const iframe =
+    document.getElementById("pinball-frame");
 
-  const observer = new MutationObserver(() => {
-    checkGameReady();
-  });
+  const iframeDoc =
+    iframe.contentDocument ||
+    iframe.contentWindow.document;
 
-  const styleObserver = new MutationObserver(() => {
-    checkGameReady();
-  });
+  const observer =
+    new MutationObserver(() => {
+      checkGameReady();
+    });
+
+  const styleObserver =
+    new MutationObserver(() => {
+      checkGameReady();
+    });
 
   function checkGameReady() {
     try {
-      const canvas = iframeDoc.querySelector("canvas.emscripten#canvas");
-      const statusElement = iframeDoc.querySelector("#status");
+      const canvas =
+        iframeDoc.querySelector(
+          "canvas.emscripten#canvas"
+        );
+
+      const statusElement =
+        iframeDoc.querySelector("#status");
 
       console.log(
         `Canvas found: ${!!canvas}, Status element found: ${!!statusElement}`
@@ -678,29 +1041,45 @@ function waitForGameToLoad() {
 
       const isGameLoaded =
         statusElement &&
-        (statusElement.innerHTML === "" ||
-          statusElement.style.display === "none") &&
+        (
+          statusElement.innerHTML === "" ||
+          statusElement.style.display === "none"
+        ) &&
         canvas &&
         canvas.style.display !== "none" &&
-        (canvas.width > 0 || canvas.clientWidth > 0);
+        (
+          canvas.width > 0 ||
+          canvas.clientWidth > 0
+        );
 
-      console.log(`Game loaded: ${isGameLoaded}`);
+      console.log(
+        `Game loaded: ${isGameLoaded}`
+      );
 
       if (isGameLoaded) {
-        // Arrête les observers
         observer.disconnect();
         styleObserver.disconnect();
 
-        const finalWidth = canvas.width || canvas.clientWidth || 600;
-        const finalHeight = canvas.height || canvas.clientHeight || 440;
+        const finalWidth =
+          canvas.width ||
+          canvas.clientWidth ||
+          600;
 
-        console.log(`Final canvas dimensions: ${finalWidth}x${finalHeight}`);
+        const finalHeight =
+          canvas.height ||
+          canvas.clientHeight ||
+          440;
 
-        // Redimensionne la fenêtre
-        applyCanvasDimensionsToWindow(finalWidth, finalHeight);
-        resizeWindow(finalWidth, finalHeight);
+        applyCanvasDimensionsToWindow(
+          finalWidth,
+          finalHeight
+        );
 
-        // Affiche la fenêtre après redimensionnement
+        resizeWindow(
+          finalWidth,
+          finalHeight
+        );
+
         setTimeout(() => {
           showWindow();
           hideLoading();
@@ -709,21 +1088,40 @@ function waitForGameToLoad() {
         return;
       }
 
-      if (canvas && !canvas.dataset.observed) {
+      if (
+        canvas &&
+        !canvas.dataset.observed
+      ) {
         canvas.dataset.observed = "true";
+
         styleObserver.observe(canvas, {
           attributes: true,
-          attributeFilter: ["style", "width", "height"],
+          attributeFilter: [
+            "style",
+            "width",
+            "height",
+          ],
         });
       }
     } catch (e) {
-      console.error("Error accessing iframe:", e);
+      console.error(
+        "Error accessing iframe:",
+        e
+      );
+
       observer.disconnect();
       styleObserver.disconnect();
 
-      // Utilise les dimensions par défaut et affiche la fenêtre
-      applyCanvasDimensionsToWindow(600, 440);
-      resizeWindow(600, 440);
+      applyCanvasDimensionsToWindow(
+        600,
+        440
+      );
+
+      resizeWindow(
+        600,
+        440
+      );
+
       setTimeout(() => {
         showWindow();
         hideLoading();
@@ -731,7 +1129,6 @@ function waitForGameToLoad() {
     }
   }
 
-  // Démarre l'observation
   observer.observe(iframeDoc.body, {
     childList: true,
     subtree: true,
@@ -741,67 +1138,109 @@ function waitForGameToLoad() {
 
   checkGameReady();
 
-  // Fallback
   const fallbackTimeout = setTimeout(() => {
     observer.disconnect();
     styleObserver.disconnect();
-    console.log("Fallback: using default dimensions");
-    applyCanvasDimensionsToWindow(600, 440);
-    resizeWindow(600, 440);
+
+    console.log(
+      "Fallback: using default dimensions"
+    );
+
+    applyCanvasDimensionsToWindow(
+      600,
+      440
+    );
+
+    resizeWindow(
+      600,
+      440
+    );
+
     showWindow();
     hideLoading();
   }, 30000);
 
-  const originalDisconnect = observer.disconnect;
+  const originalDisconnect =
+    observer.disconnect;
+
   observer.disconnect = function () {
     clearTimeout(fallbackTimeout);
+
     originalDisconnect.call(this);
   };
 }
 
 function showWindow() {
-  const windowElement = window.parent.document.getElementById(
-    "window-Space Cadet Pinball"
-  );
-  const iframe = document.getElementById("pinball-frame");
+  const windowElement =
+    window.parent.document.getElementById(
+      "window-Space Cadet Pinball"
+    );
+
+  const iframe =
+    document.getElementById(
+      "pinball-frame"
+    );
 
   if (windowElement) {
-    windowElement.style.visibility = "visible";
+    windowElement.style.visibility =
+      "visible";
+
     windowElement.style.opacity = "1";
 
-    console.log("Window is now visible");
+    console.log(
+      "Window is now visible"
+    );
   }
 
   if (iframe) {
-    iframe.style.visibility = "visible";
+    iframe.style.visibility =
+      "visible";
   }
 }
 
 function hideLoading() {
-  const loading = document.getElementById("loading");
+  const loading =
+    document.getElementById("loading");
+
   if (loading) {
     loading.style.opacity = "0";
+
     setTimeout(() => {
       loading.style.display = "none";
     }, 300);
   }
 }
 
-function applyCanvasDimensionsToWindow(canvasWidth, canvasHeight) {
+function applyCanvasDimensionsToWindow(
+  canvasWidth,
+  canvasHeight
+) {
   const headerHeight = 30;
   const borderWidth = 3;
-  const totalWidth = canvasWidth + borderWidth;
-  const totalHeight = canvasHeight + headerHeight;
 
-  // Supprime les styles existants
-  const existingStyles = window.parent.document.querySelectorAll(
-    "style[data-pinball-resize]"
+  const totalWidth =
+    canvasWidth + borderWidth;
+
+  const totalHeight =
+    canvasHeight + headerHeight;
+
+  const existingStyles =
+    window.parent.document.querySelectorAll(
+      "style[data-pinball-resize]"
+    );
+
+  existingStyles.forEach((style) =>
+    style.remove()
   );
-  existingStyles.forEach((style) => style.remove());
 
-  // Applique le nouveau style
-  const style = document.createElement("style");
-  style.setAttribute("data-pinball-resize", "true");
+  const style =
+    document.createElement("style");
+
+  style.setAttribute(
+    "data-pinball-resize",
+    "true"
+  );
+
   style.textContent = `
     #window-Space\\ Cadet\\ Pinball.window {
       width: ${totalWidth}px !important;
@@ -811,73 +1250,118 @@ function applyCanvasDimensionsToWindow(canvasWidth, canvasHeight) {
       max-width: ${totalWidth}px !important;
       max-height: ${totalHeight}px !important;
     }
+
     #window-Space\\ Cadet\\ Pinball {
       height: ${canvasHeight}px !important;
       overflow: hidden !important;
     }
   `;
-  window.parent.document.head.appendChild(style);
+
+  window.parent.document.head.appendChild(
+    style
+  );
 
   console.log(
     `Canvas dimensions applied to CSS: ${canvasWidth}x${canvasHeight} -> Window: ${totalWidth}x${totalHeight}`
   );
 
-  // Application immédiate des styles inline (sans setTimeout)
-  applyInlineStyles(canvasWidth, canvasHeight, totalWidth, totalHeight);
+  applyInlineStyles(
+    canvasWidth,
+    canvasHeight,
+    totalWidth,
+    totalHeight
+  );
 }
 
-function applyInlineStyles(canvasWidth, canvasHeight, totalWidth, totalHeight) {
-  const windowElement = window.parent.document.getElementById(
-    "window-Space Cadet Pinball"
-  );
+function applyInlineStyles(
+  canvasWidth,
+  canvasHeight,
+  totalWidth,
+  totalHeight
+) {
+  const windowElement =
+    window.parent.document.getElementById(
+      "window-Space Cadet Pinball"
+    );
 
   if (windowElement) {
-    windowElement.style.setProperty("width", `${totalWidth}px`, "important");
-    windowElement.style.setProperty("height", `${totalHeight}px`, "important");
+    windowElement.style.setProperty(
+      "width",
+      `${totalWidth}px`,
+      "important"
+    );
+
+    windowElement.style.setProperty(
+      "height",
+      `${totalHeight}px`,
+      "important"
+    );
+
     console.log(
       `Inline styles applied to window: ${totalWidth}x${totalHeight}`
     );
   }
 }
 
-function resizeWindow(canvasWidth, canvasHeight) {
-  let windowElement = window.parent.document.getElementById(
-    "window-Space Cadet Pinball"
-  );
+function resizeWindow(
+  canvasWidth,
+  canvasHeight
+) {
+  let windowElement =
+    window.parent.document.getElementById(
+      "window-Space Cadet Pinball"
+    );
 
   if (!windowElement) {
-    windowElement = window.parent.document.querySelector(
-      '[data-app-name="Space Cadet Pinball"]'
-    );
+    windowElement =
+      window.parent.document.querySelector(
+        '[data-app-name="Space Cadet Pinball"]'
+      );
   }
 
   if (windowElement) {
     const headerHeight = 30;
     const borderWidth = 3;
-    const totalWidth = canvasWidth + borderWidth;
-    const totalHeight = canvasHeight + headerHeight;
 
-    windowElement.style.width = totalWidth + "px";
-    windowElement.style.height = totalHeight + "px";
+    const totalWidth =
+      canvasWidth + borderWidth;
+
+    const totalHeight =
+      canvasHeight + headerHeight;
+
+    windowElement.style.width =
+      totalWidth + "px";
+
+    windowElement.style.height =
+      totalHeight + "px";
 
     console.log(
       `Window resized to: ${totalWidth}x${totalHeight} (canvas: ${canvasWidth}x${canvasHeight})`
     );
   } else {
-    console.warn("Could not find window elements");
+    console.warn(
+      "Could not find window elements"
+    );
   }
 }
 
 function openSimpleModal(
   id,
   htmlContent,
-  cssHref = "/Start_Menu/Log_Off/Base/Log_Off.css"
+  cssHref =
+    "/Start_Menu/Log_Off/Base/Log_Off.css"
 ) {
-  injectStyle("Log_Off-styles", cssHref);
+  injectStyle(
+    "Log_Off-styles",
+    cssHref
+  );
 
-  const modalDiv = document.createElement("div");
+  const modalDiv =
+    document.createElement("div");
+
   modalDiv.id = id;
   modalDiv.innerHTML = htmlContent;
+
   modalDiv.style.position = "fixed";
   modalDiv.style.zIndex = "99999";
   modalDiv.style.left = "0";
@@ -885,436 +1369,936 @@ function openSimpleModal(
   modalDiv.style.width = "100vw";
   modalDiv.style.height = "100vh";
 
-  document.body.appendChild(modalDiv);
+  document.body.appendChild(
+    modalDiv
+  );
 
-  Array.from(document.body.children).forEach((child) => {
+  Array.from(
+    document.body.children
+  ).forEach((child) => {
     if (child.id !== id) {
-      child.classList.add("modal-open");
+      child.classList.add(
+        "modal-open"
+      );
     }
   });
 
-  const closeBtn = modalDiv.querySelector(".footer__button");
+  const closeBtn =
+    modalDiv.querySelector(
+      ".footer__button"
+    );
+
   if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      Array.from(document.body.children).forEach((child) => {
-        child.classList.remove("modal-open");
-      });
-      document.body.classList.remove("modal-open");
-      modalDiv.remove();
-    });
+    closeBtn.addEventListener(
+      "click",
+      () => {
+        Array.from(
+          document.body.children
+        ).forEach((child) => {
+          child.classList.remove(
+            "modal-open"
+          );
+        });
+
+        document.body.classList.remove(
+          "modal-open"
+        );
+
+        modalDiv.remove();
+      }
+    );
   }
 }
 
 function openLogOff() {
-  openSimpleModal("Log_Off", openLogOffHTML);
+  openSimpleModal(
+    "Log_Off",
+    openLogOffHTML
+  );
 }
 
 function turnOffComputer() {
-  openSimpleModal("Turn_Off_Computer", turnOffComputerHTML);
+  openSimpleModal(
+    "Turn_Off_Computer",
+    turnOffComputerHTML
+  );
 }
-window.turnOffComputer = turnOffComputer;
+
+window.turnOffComputer =
+  turnOffComputer;
 
 function switchUser() {
-  injectStyle("Switch_User-styles", "/Loader_Login/Login_Screen.css");
+  injectStyle(
+    "Switch_User-styles",
+    "/Loader_Login/Login_Screen.css"
+  );
 
-  const windows = Array.from(document.querySelectorAll('[id^="window-"]'));
-  const windowStates = windows.map((win) => ({
-    appName: win.id.replace("window-", ""),
-    left: win.style.left,
-    top: win.style.top,
-    width: win.style.width,
-    height: win.style.height,
-    display: win.style.display,
-    zIndex: win.style.zIndex,
-  }));
+  const windows =
+    Array.from(
+      document.querySelectorAll(
+        '[id^="window-"]'
+      )
+    );
 
-  localStorage.setItem("openWindows", JSON.stringify(windowStates));
-  localStorage.setItem("zIndexCounter", zIndexCounter);
-  window.location.href = "/Start_Menu/Log_Off/Transition/Switch_User.html";
+  const windowStates =
+    windows.map((win) => ({
+      appName:
+        win.id.replace(
+          "window-",
+          ""
+        ),
+
+      left: win.style.left,
+      top: win.style.top,
+      width: win.style.width,
+      height: win.style.height,
+      display: win.style.display,
+      zIndex: win.style.zIndex,
+    }));
+
+  localStorage.setItem(
+    "openWindows",
+    JSON.stringify(
+      windowStates
+    )
+  );
+
+  localStorage.setItem(
+    "zIndexCounter",
+    zIndexCounter
+  );
+
+  window.location.href =
+    "/Start_Menu/Log_Off/Transition/Switch_User.html";
 }
 
 function logOff() {
-  let icones = document.getElementById("desktop");
-  let taskbarHidden = document.getElementById("Desktop_Footer");
-  let logOff = document.getElementById("Log_Off");
+  const icones =
+    document.getElementById(
+      "desktop"
+    );
+
+  const taskbarHidden =
+    document.getElementById(
+      "Desktop_Footer"
+    );
+
+  const logOff =
+    document.getElementById(
+      "Log_Off"
+    );
 
   let step = 0;
-  const interval = setInterval(() => {
-    switch (step) {
-      case 0:
-        Array.from(document.body.children).forEach((child) => {
-          child.classList.remove("modal-open");
-        });
-        document.body.classList.remove("modal-open");
-        break;
-      case 1:
-        if (logOff) logOff.style.display = "none";
-        if (icones) icones.style.display = "none";
-        break;
-      case 2:
-        if (taskbarHidden) taskbarHidden.style.display = "none";
-        break;
-      case 3:
-        clearInterval(interval);
-        window.location.href = "/Start_Menu/Log_Off/Transition/Login.html";
-        return;
-    }
-    step++;
-  }, 250);
+
+  const interval =
+    setInterval(() => {
+      switch (step) {
+        case 0:
+          Array.from(
+            document.body.children
+          ).forEach((child) => {
+            child.classList.remove(
+              "modal-open"
+            );
+          });
+
+          document.body.classList.remove(
+            "modal-open"
+          );
+          break;
+
+        case 1:
+          if (logOff) {
+            logOff.style.display =
+              "none";
+          }
+
+          if (icones) {
+            icones.style.display =
+              "none";
+          }
+          break;
+
+        case 2:
+          if (taskbarHidden) {
+            taskbarHidden.style.display =
+              "none";
+          }
+          break;
+
+        case 3:
+          clearInterval(interval);
+
+          window.location.href =
+            "/Start_Menu/Log_Off/Transition/Login.html";
+
+          return;
+      }
+
+      step++;
+    }, 250);
 }
 
 function PowerState(event) {
-  const icones = document.getElementById("desktop");
-  const taskbarHidden = document.getElementById("Desktop_Footer");
-  const turnOffComputer = document.getElementById("Turn_Off_Computer");
+  const icones =
+    document.getElementById(
+      "desktop"
+    );
 
-  const targetId = event?.target?.id;
+  const taskbarHidden =
+    document.getElementById(
+      "Desktop_Footer"
+    );
 
-  localStorage.setItem("powerAction", targetId);
+  const turnOffComputer =
+    document.getElementById(
+      "Turn_Off_Computer"
+    );
+
+  const targetId =
+    event?.target?.id;
+
+  localStorage.setItem(
+    "powerAction",
+    targetId
+  );
 
   let step = 0;
-  const interval = setInterval(() => {
-    switch (step) {
-      case 0:
-        Array.from(document.body.children).forEach((child) =>
-          child.classList.remove("modal-open")
-        );
-        document.body.classList.remove("modal-open");
-        break;
-      case 1:
-        if (turnOffComputer) turnOffComputer.style.display = "none";
-        if (icones) icones.style.display = "none";
-        break;
-      case 2:
-        if (taskbarHidden) taskbarHidden.style.display = "none";
-        break;
-      case 3:
-        clearInterval(interval);
-        window.location.href =
-          "/Start_Menu/Turn_Off_Computer/Shut_Down/Shut_Down.html";
-        break;
-    }
-    step++;
-  }, 250);
+
+  const interval =
+    setInterval(() => {
+      switch (step) {
+        case 0:
+          Array.from(
+            document.body.children
+          ).forEach((child) =>
+            child.classList.remove(
+              "modal-open"
+            )
+          );
+
+          document.body.classList.remove(
+            "modal-open"
+          );
+          break;
+
+        case 1:
+          if (turnOffComputer) {
+            turnOffComputer.style.display =
+              "none";
+          }
+
+          if (icones) {
+            icones.style.display =
+              "none";
+          }
+          break;
+
+        case 2:
+          if (taskbarHidden) {
+            taskbarHidden.style.display =
+              "none";
+          }
+          break;
+
+        case 3:
+          clearInterval(interval);
+
+          window.location.href =
+            "/Start_Menu/Turn_Off_Computer/Shut_Down/Shut_Down.html";
+
+          break;
+      }
+
+      step++;
+    }, 250);
 }
 
 function closeWindow(appName) {
-  let windowElement = document.getElementById(`window-${appName}`);
-  let taskbarItem = document.getElementById(`taskbar-${appName}`);
+  const windowElement =
+    document.getElementById(
+      `window-${appName}`
+    );
 
-  if (windowElement) windowElement.remove();
-  if (taskbarItem) taskbarItem.remove();
+  const taskbarItem =
+    document.getElementById(
+      `taskbar-${appName}`
+    );
 
-  const styleLink = document.getElementById(`css-window-${appName}`);
-  if (styleLink && styleLink.tagName === "LINK") styleLink.remove();
+  if (windowElement) {
+    windowElement.remove();
+  }
+
+  if (taskbarItem) {
+    taskbarItem.remove();
+  }
+
+  const styleLink =
+    document.getElementById(
+      `css-window-${appName}`
+    );
+
+  if (
+    styleLink &&
+    styleLink.tagName === "LINK"
+  ) {
+    styleLink.remove();
+  }
 
   updateTaskbarVisibility();
 }
 
 function toggleWindow(appName) {
-  const windowElement = document.getElementById(`window-${appName}`);
-  const taskbarItem = document.getElementById(`taskbar-${appName}`);
+  const windowElement =
+    document.getElementById(
+      `window-${appName}`
+    );
 
-  if (!windowElement || !taskbarItem) return;
+  const taskbarItem =
+    document.getElementById(
+      `taskbar-${appName}`
+    );
 
-  const isHidden = windowElement.style.display === "none";
-  const isInactive = windowElement.classList.contains("window-inactive");
+  if (!windowElement || !taskbarItem) {
+    return;
+  }
+
+  const isHidden =
+    windowElement.style.display ===
+    "none";
+
+  const isInactive =
+    windowElement.classList.contains(
+      "window-inactive"
+    );
 
   if (isInactive && !isHidden) {
     return;
   }
 
-  const isOnTop = parseInt(windowElement.style.zIndex) === zIndexCounter;
+  const isOnTop =
+    parseInt(
+      windowElement.style.zIndex
+    ) === zIndexCounter;
 
   if (isHidden) {
-    windowElement.style.removeProperty("display");
-    windowElement.classList.remove("window-inactive");
-    zIndexCounter++;
-    windowElement.style.zIndex = zIndexCounter;
+    windowElement.style.removeProperty(
+      "display"
+    );
 
-    updateTaskbarHighlight(appName, true);
+    windowElement.classList.remove(
+      "window-inactive"
+    );
+
+    zIndexCounter++;
+
+    windowElement.style.zIndex =
+      zIndexCounter;
+
+    updateTaskbarHighlight(
+      appName,
+      true
+    );
   } else {
     if (isOnTop) {
-      windowElement.style.display = "none";
-      windowElement.classList.add("window-inactive");
+      windowElement.style.display =
+        "none";
 
-      updateTaskbarHighlight(appName, false);
+      windowElement.classList.add(
+        "window-inactive"
+      );
+
+      updateTaskbarHighlight(
+        appName,
+        false
+      );
     } else {
       zIndexCounter++;
-      windowElement.style.zIndex = zIndexCounter;
 
-      updateTaskbarHighlight(appName, true);
+      windowElement.style.zIndex =
+        zIndexCounter;
+
+      updateTaskbarHighlight(
+        appName,
+        true
+      );
     }
   }
 }
 
 function maximazeWindow(appName) {
-  const windowElement = document.getElementById(`window-${appName}`);
-  const taskbarItem = document.getElementById(`taskbar-${appName}`);
+  const windowElement =
+    document.getElementById(
+      `window-${appName}`
+    );
 
-  if (!windowElement || !taskbarItem) return;
+  const taskbarItem =
+    document.getElementById(
+      `taskbar-${appName}`
+    );
+
+  if (!windowElement || !taskbarItem) {
+    return;
+  }
 
   const footerHeight = 35;
 
-  const maxWidth = document.documentElement.clientWidth;
-  const maxHeight = document.documentElement.clientHeight - footerHeight;
+  const maxWidth =
+    document.documentElement.clientWidth;
 
-  const isMaximized = windowElement.dataset.maximized === "true";
+  const maxHeight =
+    document.documentElement.clientHeight -
+    footerHeight;
 
-  const maximizeButton = windowElement.querySelector(
-    ".header-button--maximaze, .header_button--maximized"
-  );
+  const isMaximized =
+    windowElement.dataset.maximized ===
+    "true";
+
+  const maximizeButton =
+    windowElement.querySelector(
+      ".header-button--maximaze, .header_button--maximized"
+    );
 
   if (!isMaximized) {
-    windowElement.dataset.originalWidth = windowElement.offsetWidth;
-    windowElement.dataset.originalHeight = windowElement.offsetHeight;
-    windowElement.dataset.originalLeft = windowElement.style.left;
-    windowElement.dataset.originalTop = windowElement.style.top;
+    windowElement.dataset.originalWidth =
+      windowElement.offsetWidth;
 
-    windowElement.style.left = "0px";
-    windowElement.style.top = "0px";
-    windowElement.style.width = `${maxWidth}px`;
-    windowElement.style.height = `${maxHeight}px`;
+    windowElement.dataset.originalHeight =
+      windowElement.offsetHeight;
 
-    windowElement.dataset.maximized = "true";
+    windowElement.dataset.originalLeft =
+      windowElement.style.left;
 
-    windowElement.style.zIndex = zIndexCounter;
+    windowElement.dataset.originalTop =
+      windowElement.style.top;
 
-    maximizeButton.classList.remove("header-button--maximaze");
-    maximizeButton.classList.remove("header_button--maximaze");
-    maximizeButton.classList.add("header-button--maximized");
-    maximizeButton.classList.add("header_button--maximized");
+    windowElement.style.left =
+      "0px";
 
-    updateTaskbarHighlight(appName, true);
+    windowElement.style.top =
+      "0px";
+
+    windowElement.style.width =
+      `${maxWidth}px`;
+
+    windowElement.style.height =
+      `${maxHeight}px`;
+
+    windowElement.dataset.maximized =
+      "true";
+
+    windowElement.style.zIndex =
+      zIndexCounter;
+
+    if (maximizeButton) {
+      maximizeButton.classList.remove(
+        "header-button--maximaze"
+      );
+
+      maximizeButton.classList.remove(
+        "header_button--maximaze"
+      );
+
+      maximizeButton.classList.add(
+        "header-button--maximized"
+      );
+
+      maximizeButton.classList.add(
+        "header_button--maximized"
+      );
+    }
+
+    updateTaskbarHighlight(
+      appName,
+      true
+    );
   } else {
-    windowElement.style.width = `${windowElement.dataset.originalWidth}px`;
-    windowElement.style.height = `${windowElement.dataset.originalHeight}px`;
-    windowElement.style.left = windowElement.dataset.originalLeft;
-    windowElement.style.top = windowElement.dataset.originalTop;
+    windowElement.style.width =
+      `${windowElement.dataset.originalWidth}px`;
 
-    windowElement.dataset.maximized = "false";
+    windowElement.style.height =
+      `${windowElement.dataset.originalHeight}px`;
 
-    windowElement.style.zIndex = zIndexCounter;
+    windowElement.style.left =
+      windowElement.dataset.originalLeft;
 
-    maximizeButton.classList.remove("header-button--maximized");
-    maximizeButton.classList.remove("header_button--maximized");
-    maximizeButton.classList.add("header-button--maximaze");
-    maximizeButton.classList.add("header_button--maximaze");
+    windowElement.style.top =
+      windowElement.dataset.originalTop;
 
-    updateTaskbarHighlight(appName, false);
+    windowElement.dataset.maximized =
+      "false";
+
+    windowElement.style.zIndex =
+      zIndexCounter;
+
+    if (maximizeButton) {
+      maximizeButton.classList.remove(
+        "header-button--maximized"
+      );
+
+      maximizeButton.classList.remove(
+        "header_button--maximized"
+      );
+
+      maximizeButton.classList.add(
+        "header-button--maximaze"
+      );
+
+      maximizeButton.classList.add(
+        "header_button--maximaze"
+      );
+    }
+
+    updateTaskbarHighlight(
+      appName,
+      false
+    );
   }
 }
 
 function makeDraggable(element) {
-  let header = element.querySelector(".window-header");
+  const header =
+    element.querySelector(
+      ".window-header"
+    );
 
-  let offsetX = 0,
-    offsetY = 0,
-    isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+  let isDragging = false;
 
-  header.addEventListener("mousedown", (e) => {
-    if (isResizingGlobal) return;
+  header.addEventListener(
+    "mousedown",
+    (e) => {
+      if (isResizingGlobal) return;
 
-    isDragging = true;
-    offsetX = e.clientX - element.offsetLeft;
-    offsetY = e.clientY - element.offsetTop;
+      isDragging = true;
 
-    element.style.zIndex = zIndexCounter;
+      offsetX =
+        e.clientX -
+        element.offsetLeft;
 
-    updateTaskbarHighlight();
+      offsetY =
+        e.clientY -
+        element.offsetTop;
 
-    document.addEventListener("mousemove", moveWindow);
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-      document.removeEventListener("mousemove", moveWindow);
-    });
-  });
+      element.style.zIndex =
+        zIndexCounter;
+
+      updateTaskbarHighlight();
+
+      document.addEventListener(
+        "mousemove",
+        moveWindow
+      );
+
+      document.addEventListener(
+        "mouseup",
+        () => {
+          isDragging = false;
+
+          document.removeEventListener(
+            "mousemove",
+            moveWindow
+          );
+        }
+      );
+    }
+  );
 
   function moveWindow(e) {
-    if (isDragging) {
-      let newX = e.clientX - offsetX;
-      let newY = e.clientY - offsetY;
+    if (!isDragging) return;
 
-      let screenWidth = window.innerWidth;
-      let screenHeight = window.innerHeight;
-      let windowWidth = element.offsetWidth;
-      let windowHeight = element.offsetHeight;
+    let newX =
+      e.clientX - offsetX;
 
-      newX = Math.max(0, Math.min(screenWidth - windowWidth, newX));
-      newY = Math.max(0, Math.min(screenHeight - windowHeight, newY));
+    let newY =
+      e.clientY - offsetY;
 
-      element.style.left = `${newX}px`;
-      element.style.top = `${newY}px`;
-    }
+    const screenWidth =
+      window.innerWidth;
+
+    const screenHeight =
+      window.innerHeight;
+
+    const windowWidth =
+      element.offsetWidth;
+
+    const windowHeight =
+      element.offsetHeight;
+
+    newX = Math.max(
+      0,
+      Math.min(
+        screenWidth -
+          windowWidth,
+        newX
+      )
+    );
+
+    newY = Math.max(
+      0,
+      Math.min(
+        screenHeight -
+          windowHeight,
+        newY
+      )
+    );
+
+    element.style.left =
+      `${newX}px`;
+
+    element.style.top =
+      `${newY}px`;
   }
-  element.addEventListener("mousedown", () => {
-    zIndexCounter++;
-    element.style.zIndex = zIndexCounter;
-    updateTaskbarHighlight();
-  });
+
+  element.addEventListener(
+    "mousedown",
+    () => {
+      zIndexCounter++;
+
+      element.style.zIndex =
+        zIndexCounter;
+
+      updateTaskbarHighlight();
+    }
+  );
 }
 
 function makeResizable(windowElement) {
   const minWidth = 150;
   const minHeight = 115;
+
   let isResizing = false;
-  let startX,
-    startY,
-    startWidth,
-    startHeight,
-    startTop,
-    startLeft,
-    resizeDir = "";
+
+  let startX;
+  let startY;
+  let startWidth;
+  let startHeight;
+  let startTop;
+  let startLeft;
+  let resizeDir = "";
+
   let iframe;
 
-  windowElement.addEventListener("mousedown", (e) => {
-    const rect = windowElement.getBoundingClientRect();
-    const borderSize = 2;
+  windowElement.addEventListener(
+    "mousedown",
+    (e) => {
+      const rect =
+        windowElement.getBoundingClientRect();
 
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
+      const borderSize = 2;
 
-    const onLeft = mouseX >= rect.left && mouseX <= rect.left + borderSize;
-    const onRight = mouseX >= rect.right - borderSize && mouseX <= rect.right;
-    const onTop = mouseY >= rect.top && mouseY <= rect.top + borderSize;
-    const onBottom =
-      mouseY >= rect.bottom - borderSize && mouseY <= rect.bottom;
+      const mouseX =
+        e.clientX;
 
-    resizeDir = "";
-    if (onRight) resizeDir += "e";
-    if (onLeft) resizeDir += "w";
-    if (onTop) resizeDir += "n";
-    if (onBottom) resizeDir += "s";
+      const mouseY =
+        e.clientY;
 
-    if (resizeDir !== "") {
-      isResizing = true;
-      isResizingGlobal = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      startWidth = rect.width;
-      startHeight = rect.height;
-      startTop = rect.top;
-      startLeft = rect.left;
+      const onLeft =
+        mouseX >= rect.left &&
+        mouseX <=
+          rect.left +
+            borderSize;
 
-      iframe = windowElement.querySelector("iframe");
-      if (iframe) iframe.style.pointerEvents = "none";
+      const onRight =
+        mouseX >=
+          rect.right -
+            borderSize &&
+        mouseX <=
+          rect.right;
 
-      document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
-      e.preventDefault();
-    }
-  });
+      const onTop =
+        mouseY >= rect.top &&
+        mouseY <=
+          rect.top +
+            borderSize;
 
-  windowElement.addEventListener("mousemove", (e) => {
-    if (isResizing) {
-      if (resizeDir.includes("n") && resizeDir.includes("e")) {
-        windowElement.style.cursor = "nesw-resize";
-      } else if (resizeDir.includes("s") && resizeDir.includes("w")) {
-        windowElement.style.cursor = "nesw-resize";
-      } else if (resizeDir.includes("n") && resizeDir.includes("w")) {
-        windowElement.style.cursor = "nwse-resize";
-      } else if (resizeDir.includes("s") && resizeDir.includes("e")) {
-        windowElement.style.cursor = "nwse-resize";
-      } else if (resizeDir.includes("e") || resizeDir.includes("w")) {
-        windowElement.style.cursor = "ew-resize";
-      } else if (resizeDir.includes("n") || resizeDir.includes("s")) {
-        windowElement.style.cursor = "ns-resize";
+      const onBottom =
+        mouseY >=
+          rect.bottom -
+            borderSize &&
+        mouseY <=
+          rect.bottom;
+
+      resizeDir = "";
+
+      if (onRight) resizeDir += "e";
+      if (onLeft) resizeDir += "w";
+      if (onTop) resizeDir += "n";
+      if (onBottom) resizeDir += "s";
+
+      if (resizeDir !== "") {
+        isResizing = true;
+        isResizingGlobal = true;
+
+        startX = e.clientX;
+        startY = e.clientY;
+
+        startWidth = rect.width;
+        startHeight = rect.height;
+
+        startTop = rect.top;
+        startLeft = rect.left;
+
+        iframe =
+          windowElement.querySelector(
+            "iframe"
+          );
+
+        if (iframe) {
+          iframe.style.pointerEvents =
+            "none";
+        }
+
+        document.addEventListener(
+          "mousemove",
+          onMouseMove
+        );
+
+        document.addEventListener(
+          "mouseup",
+          onMouseUp
+        );
+
+        e.preventDefault();
       }
-      return;
     }
+  );
 
-    const rect = windowElement.getBoundingClientRect();
-    const borderSize = 2;
+  windowElement.addEventListener(
+    "mousemove",
+    (e) => {
+      if (isResizing) {
+        if (
+          resizeDir.includes("n") &&
+          resizeDir.includes("e")
+        ) {
+          windowElement.style.cursor =
+            "nesw-resize";
+        } else if (
+          resizeDir.includes("s") &&
+          resizeDir.includes("w")
+        ) {
+          windowElement.style.cursor =
+            "nesw-resize";
+        } else if (
+          resizeDir.includes("n") &&
+          resizeDir.includes("w")
+        ) {
+          windowElement.style.cursor =
+            "nwse-resize";
+        } else if (
+          resizeDir.includes("s") &&
+          resizeDir.includes("e")
+        ) {
+          windowElement.style.cursor =
+            "nwse-resize";
+        } else if (
+          resizeDir.includes("e") ||
+          resizeDir.includes("w")
+        ) {
+          windowElement.style.cursor =
+            "ew-resize";
+        } else if (
+          resizeDir.includes("n") ||
+          resizeDir.includes("s")
+        ) {
+          windowElement.style.cursor =
+            "ns-resize";
+        }
 
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
+        return;
+      }
 
-    const onLeft = mouseX >= rect.left && mouseX <= rect.left + borderSize;
-    const onRight = mouseX >= rect.right - borderSize && mouseX <= rect.right;
-    const onTop = mouseY >= rect.top && mouseY <= rect.top + borderSize;
-    const onBottom =
-      mouseY >= rect.bottom - borderSize && mouseY <= rect.bottom;
+      const rect =
+        windowElement.getBoundingClientRect();
 
-    if ((onLeft && onTop) || (onRight && onBottom)) {
-      windowElement.style.cursor = "nwse-resize";
-    } else if ((onRight && onTop) || (onLeft && onBottom)) {
-      windowElement.style.cursor = "nesw-resize";
-    } else if (onLeft || onRight) {
-      windowElement.style.cursor = "ew-resize";
-    } else if (onTop || onBottom) {
-      windowElement.style.cursor = "ns-resize";
-    } else {
-      windowElement.style.cursor = "default";
+      const borderSize = 2;
+
+      const mouseX =
+        e.clientX;
+
+      const mouseY =
+        e.clientY;
+
+      const onLeft =
+        mouseX >= rect.left &&
+        mouseX <=
+          rect.left +
+            borderSize;
+
+      const onRight =
+        mouseX >=
+          rect.right -
+            borderSize &&
+        mouseX <=
+          rect.right;
+
+      const onTop =
+        mouseY >= rect.top &&
+        mouseY <=
+          rect.top +
+            borderSize;
+
+      const onBottom =
+        mouseY >=
+          rect.bottom -
+            borderSize &&
+        mouseY <=
+          rect.bottom;
+
+      if (
+        (onLeft && onTop) ||
+        (onRight && onBottom)
+      ) {
+        windowElement.style.cursor =
+          "nwse-resize";
+      } else if (
+        (onRight && onTop) ||
+        (onLeft && onBottom)
+      ) {
+        windowElement.style.cursor =
+          "nesw-resize";
+      } else if (
+        onLeft ||
+        onRight
+      ) {
+        windowElement.style.cursor =
+          "ew-resize";
+      } else if (
+        onTop ||
+        onBottom
+      ) {
+        windowElement.style.cursor =
+          "ns-resize";
+      } else {
+        windowElement.style.cursor =
+          "default";
+      }
     }
-  });
+  );
 
   function onMouseMove(e) {
     if (!isResizing) return;
 
-    let dx = e.clientX - startX;
-    let dy = e.clientY - startY;
+    const dx =
+      e.clientX - startX;
+
+    const dy =
+      e.clientY - startY;
 
     if (resizeDir.includes("e")) {
-      let newWidth = startWidth + dx;
+      let newWidth =
+        startWidth + dx;
+
       if (newWidth < minWidth) {
         newWidth = minWidth;
       }
-      windowElement.style.width = newWidth + "px";
+
+      windowElement.style.width =
+        newWidth + "px";
     }
 
     if (resizeDir.includes("s")) {
-      let newHeight = startHeight + dy;
+      let newHeight =
+        startHeight + dy;
+
       if (newHeight < minHeight) {
         newHeight = minHeight;
       }
-      windowElement.style.height = newHeight + "px";
+
+      windowElement.style.height =
+        newHeight + "px";
     }
 
     if (resizeDir.includes("w")) {
-      let newWidth = startWidth - dx;
-      let newLeft = startLeft + dx;
+      let newWidth =
+        startWidth - dx;
+
+      let newLeft =
+        startLeft + dx;
 
       if (newWidth < minWidth) {
-        newLeft -= minWidth - newWidth;
-        newWidth = minWidth;
+        newLeft -=
+          minWidth -
+          newWidth;
+
+        newWidth =
+          minWidth;
       }
 
-      windowElement.style.width = newWidth + "px";
-      windowElement.style.left = newLeft + "px";
+      windowElement.style.width =
+        newWidth + "px";
+
+      windowElement.style.left =
+        newLeft + "px";
     }
 
     if (resizeDir.includes("n")) {
-      let newHeight = startHeight - dy;
-      let newTop = startTop + dy;
+      let newHeight =
+        startHeight - dy;
+
+      let newTop =
+        startTop + dy;
 
       if (newHeight < minHeight) {
-        newTop -= minHeight - newHeight;
-        newHeight = minHeight;
+        newTop -=
+          minHeight -
+          newHeight;
+
+        newHeight =
+          minHeight;
       }
 
-      windowElement.style.height = newHeight + "px";
-      windowElement.style.top = newTop + "px";
+      windowElement.style.height =
+        newHeight + "px";
+
+      windowElement.style.top =
+        newTop + "px";
     }
   }
 
   function onMouseUp() {
     isResizing = false;
     isResizingGlobal = false;
-    if (iframe) iframe.style.pointerEvents = "auto";
-    document.removeEventListener("mousemove", onMouseMove);
-    document.removeEventListener("mouseup", onMouseUp);
+
+    if (iframe) {
+      iframe.style.pointerEvents =
+        "auto";
+    }
+
+    document.removeEventListener(
+      "mousemove",
+      onMouseMove
+    );
+
+    document.removeEventListener(
+      "mouseup",
+      onMouseUp
+    );
   }
 }
 
 function updateTaskbarHighlight() {
-  const windows = Array.from(document.querySelectorAll(".window")).filter(
-    (win) => win.style.display !== "none"
-  );
+  const windows =
+    Array.from(
+      document.querySelectorAll(
+        ".window"
+      )
+    ).filter(
+      (win) =>
+        win.style.display !== "none"
+    );
 
-  const webampDiv = document.getElementById("webamp");
+  const webampDiv =
+    document.getElementById(
+      "webamp"
+    );
+
   if (
     webampDiv &&
-    webampDiv.style.display !== "none" &&
+    webampDiv.style.display !==
+      "none" &&
     !windows.includes(webampDiv)
   ) {
     windows.push(webampDiv);
@@ -1322,178 +2306,430 @@ function updateTaskbarHighlight() {
 
   let topWindow = null;
   let maxZ = -1;
+
   windows.forEach((win) => {
-    const z = parseInt(win.style.zIndex || 0, 10);
+    const z =
+      parseInt(
+        win.style.zIndex || 0,
+        10
+      );
+
     if (z > maxZ) {
       maxZ = z;
       topWindow = win;
     }
   });
 
-  document.querySelectorAll(".taskbar-item").forEach((item) => {
-    item.style.backgroundColor = "";
-    item.style.boxShadow = "";
-  });
+  document
+    .querySelectorAll(
+      ".taskbar-item"
+    )
+    .forEach((item) => {
+      item.style.background = "";
+      item.style.backgroundColor = "";
+      item.style.boxShadow = "";
+    });
 
   windows.forEach((win) => {
-    const isTop = win === topWindow;
+    const isTop =
+      win === topWindow;
+
     const headerBg =
-      win.querySelector && win.querySelector(".window-header-background");
+      win.querySelector &&
+      win.querySelector(
+        ".window-header-background"
+      );
+
     const headerButtons =
-      win.querySelector && win.querySelector(".window-header-buttons");
+      win.querySelector &&
+      win.querySelector(
+        ".window-header-buttons"
+      );
 
     if (isTop) {
-      win.classList.remove("window-inactive");
-      win.style.backgroundColor = "";
-      if (headerBg) headerBg.style.background = "";
-      if (headerButtons) headerButtons.style.opacity = "1";
-    } else {
-      win.classList.add("window-inactive");
+      win.classList.remove(
+        "window-inactive"
+      );
+
+      win.style.backgroundColor =
+        "";
+
       if (headerBg) {
         headerBg.style.background =
-          "linear-gradient(rgb(118, 151, 231) 0%, rgb(126, 158, 227) 3%, rgb(148, 175, 232) 6%, rgb(151, 180, 233) 8%, rgb(130, 165, 228) 14%, rgb(124, 159, 226) 17%, rgb(121, 150, 222) 25%, rgb(123, 153, 225) 56%, rgb(130, 169, 233) 81%, rgb(128, 165, 231) 89%, rgb(123, 150, 225) 94%, rgb(122, 147, 223) 97%, rgb(171, 186, 227) 115%)";
+          "";
       }
-      if (headerButtons) headerButtons.style.opacity = "0.4";
+
+      if (headerButtons) {
+        headerButtons.style.opacity =
+          "1";
+      }
+    } else {
+      win.classList.add(
+        "window-inactive"
+      );
+
+      if (headerBg) {
+        headerBg.style.background =
+          `
+          linear-gradient(
+            rgb(205, 115, 145) 0%,
+            rgb(215, 125, 155) 3%,
+            rgb(225, 145, 170) 6%,
+            rgb(228, 150, 175) 8%,
+            rgb(220, 135, 165) 14%,
+            rgb(215, 125, 155) 17%,
+            rgb(208, 110, 145) 25%,
+            rgb(210, 115, 150) 56%,
+            rgb(220, 135, 165) 81%,
+            rgb(215, 125, 155) 89%,
+            rgb(205, 105, 140) 94%,
+            rgb(200, 100, 135) 97%,
+            rgb(235, 175, 195) 115%
+          )
+        `;
+      }
+
+      if (headerButtons) {
+        headerButtons.style.opacity =
+          "0.4";
+      }
     }
   });
 
   if (topWindow) {
     let topAppId;
+
     if (topWindow.id === "webamp") {
       topAppId = "Winamp";
     } else {
-      topAppId = topWindow.id.replace("window-", "");
+      topAppId =
+        topWindow.id.replace(
+          "window-",
+          ""
+        );
     }
-    const taskbarItem = document.getElementById(`taskbar-${topAppId}`);
+
+    const taskbarItem =
+      document.getElementById(
+        `taskbar-${topAppId}`
+      );
+
     if (taskbarItem) {
-      taskbarItem.style.backgroundColor = "rgba(26, 80, 183, 1)";
+      taskbarItem.style.background =
+        `
+        linear-gradient(
+          180deg,
+          rgba(255, 195, 218, 0.95) 0%,
+          rgba(235, 100, 145, 0.95) 45%,
+          rgba(185, 45, 95, 0.98) 100%
+        )
+      `;
+
       taskbarItem.style.boxShadow =
-        "rgba(0, 0, 0, 0.2) 0px 0px 1px 1px inset, rgba(0, 0, 0, 0.7) 1px 0px 1px inset";
+        `
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -1px 0 rgba(100,15,45,.3),
+        0 0 8px rgba(255,120,165,.35)
+      `;
     }
   }
 
-  if (!updateTaskbarHighlight._blurListenerAdded) {
-    document.addEventListener("mousedown", (event) => {
-      const windows = Array.from(document.querySelectorAll(".window")).filter(
-        (win) => win.style.display !== "none"
-      );
-      const webampDiv = document.getElementById("webamp");
-      if (
-        webampDiv &&
-        webampDiv.style.display !== "none" &&
-        !windows.includes(webampDiv)
-      ) {
-        windows.push(webampDiv);
-      }
+  if (
+    !updateTaskbarHighlight._blurListenerAdded
+  ) {
+    document.addEventListener(
+      "mousedown",
+      (event) => {
+        const windows =
+          Array.from(
+            document.querySelectorAll(
+              ".window"
+            )
+          ).filter(
+            (win) =>
+              win.style.display !==
+              "none"
+          );
 
-      let clickedOnWindow = null;
-      let clickedOnTaskbar = null;
+        const webampDiv =
+          document.getElementById(
+            "webamp"
+          );
 
-      windows.forEach((win) => {
-        let appId;
-        if (win.id === "webamp") {
-          appId = "Winamp";
-        } else {
-          appId = win.id.replace("window-", "");
+        if (
+          webampDiv &&
+          webampDiv.style.display !==
+            "none" &&
+          !windows.includes(
+            webampDiv
+          )
+        ) {
+          windows.push(webampDiv);
         }
-        const taskbarItem = document.getElementById(`taskbar-${appId}`);
-        if (win.contains(event.target)) {
-          clickedOnWindow = win;
-        }
-        if (taskbarItem && taskbarItem.contains(event.target)) {
-          clickedOnTaskbar = win;
-        }
-      });
 
-      if (!clickedOnWindow && !clickedOnTaskbar) {
+        let clickedOnWindow =
+          null;
+
+        let clickedOnTaskbar =
+          null;
+
         windows.forEach((win) => {
-          win.classList.add("window-inactive");
-          const headerBg =
-            win.querySelector && win.querySelector(".window-header-background");
-          const headerButtons =
-            win.querySelector && win.querySelector(".window-header-buttons");
-          if (headerBg) {
-            headerBg.style.background =
-              "linear-gradient(rgb(118, 151, 231) 0%, rgb(126, 158, 227) 3%, rgb(148, 175, 232) 6%, rgb(151, 180, 233) 8%, rgb(130, 165, 228) 14%, rgb(124, 159, 226) 17%, rgb(121, 150, 222) 25%, rgb(123, 153, 225) 56%, rgb(130, 169, 233) 81%, rgb(128, 165, 231) 89%, rgb(123, 150, 225) 94%, rgb(122, 147, 223) 97%, rgb(171, 186, 227) 115%)";
+          let appId;
+
+          if (win.id === "webamp") {
+            appId = "Winamp";
+          } else {
+            appId =
+              win.id.replace(
+                "window-",
+                ""
+              );
           }
-          if (headerButtons) headerButtons.style.opacity = "0.4";
+
+          const taskbarItem =
+            document.getElementById(
+              `taskbar-${appId}`
+            );
+
+          if (
+            win.contains(
+              event.target
+            )
+          ) {
+            clickedOnWindow = win;
+          }
+
+          if (
+            taskbarItem &&
+            taskbarItem.contains(
+              event.target
+            )
+          ) {
+            clickedOnTaskbar = win;
+          }
         });
-        document.querySelectorAll(".taskbar-item").forEach((item) => {
-          item.style.backgroundColor = "";
-          item.style.boxShadow = "";
-        });
-      } else {
-        const win = clickedOnWindow || clickedOnTaskbar;
-        if (win && win.classList.contains("window-inactive")) {
-          win.classList.remove("window-inactive");
-          zIndexCounter++;
-          win.style.zIndex = zIndexCounter;
-          updateTaskbarHighlight();
+
+        if (
+          !clickedOnWindow &&
+          !clickedOnTaskbar
+        ) {
+          windows.forEach((win) => {
+            win.classList.add(
+              "window-inactive"
+            );
+
+            const headerBg =
+              win.querySelector &&
+              win.querySelector(
+                ".window-header-background"
+              );
+
+            const headerButtons =
+              win.querySelector &&
+              win.querySelector(
+                ".window-header-buttons"
+              );
+
+            if (headerBg) {
+              headerBg.style.background =
+                `
+                linear-gradient(
+                  rgb(205, 115, 145) 0%,
+                  rgb(215, 125, 155) 3%,
+                  rgb(225, 145, 170) 6%,
+                  rgb(228, 150, 175) 8%,
+                  rgb(220, 135, 165) 14%,
+                  rgb(215, 125, 155) 17%,
+                  rgb(208, 110, 145) 25%,
+                  rgb(210, 115, 150) 56%,
+                  rgb(220, 135, 165) 81%,
+                  rgb(215, 125, 155) 89%,
+                  rgb(205, 105, 140) 94%,
+                  rgb(200, 100, 135) 97%,
+                  rgb(235, 175, 195) 115%
+                )
+              `;
+            }
+
+            if (headerButtons) {
+              headerButtons.style.opacity =
+                "0.4";
+            }
+          });
+
+          document
+            .querySelectorAll(
+              ".taskbar-item"
+            )
+            .forEach((item) => {
+              item.style.background =
+                "";
+
+              item.style.backgroundColor =
+                "";
+
+              item.style.boxShadow =
+                "";
+            });
+        } else {
+          const win =
+            clickedOnWindow ||
+            clickedOnTaskbar;
+
+          if (
+            win &&
+            win.classList.contains(
+              "window-inactive"
+            )
+          ) {
+            win.classList.remove(
+              "window-inactive"
+            );
+
+            zIndexCounter++;
+
+            win.style.zIndex =
+              zIndexCounter;
+
+            updateTaskbarHighlight();
+          }
         }
       }
-    });
-    updateTaskbarHighlight._blurListenerAdded = true;
+    );
+
+    updateTaskbarHighlight._blurListenerAdded =
+      true;
   }
 }
 
 function createTaskbar() {
-  if (!document.getElementById("taskbar")) {
-    let taskbar = document.createElement("div");
+  if (
+    !document.getElementById(
+      "taskbar"
+    )
+  ) {
+    const taskbar =
+      document.createElement(
+        "div"
+      );
+
     taskbar.id = "taskbar";
 
-    let start_menu = document.querySelector(".footer__start_menu");
+    const start_menu =
+      document.querySelector(
+        ".footer__start_menu"
+      );
 
-    start_menu.insertAdjacentElement("afterend", taskbar);
+    if (start_menu) {
+      start_menu.insertAdjacentElement(
+        "afterend",
+        taskbar
+      );
+    }
   }
 }
 
 function updateTaskbarVisibility() {
-  let taskbar = document.getElementById("taskbar");
-  if (taskbar && taskbar.children.length === 0) {
+  const taskbar =
+    document.getElementById(
+      "taskbar"
+    );
+
+  if (
+    taskbar &&
+    taskbar.children.length ===
+      0
+  ) {
     taskbar.remove();
   }
 }
 
 function openStartMenu() {
-  if (recentlyClosedStartMenu) return;
-  injectStyle("StartMenu-styles", "/Start_Menu/Base/Start_Menu.css");
-
-  if (!startMenuHTML) return;
-
-  const container = document.querySelector(".footer__start_menu");
-  if (!container) return;
-
-  const existingMenu = container.querySelector("#StartMenu");
-  if (existingMenu) {
-    existingMenu.remove();
-    recentlyClosedStartMenu = true;
-    setTimeout(() => {
-      recentlyClosedStartMenu = false;
-    }, 115);
+  if (recentlyClosedStartMenu) {
     return;
   }
 
-  const StartMenu = document.createElement("div");
+  injectStyle(
+    "StartMenu-styles",
+    "/Start_Menu/Base/Start_Menu.css"
+  );
+
+  if (!startMenuHTML) return;
+
+  const container =
+    document.querySelector(
+      ".footer__start_menu"
+    );
+
+  if (!container) return;
+
+  const existingMenu =
+    container.querySelector(
+      "#StartMenu"
+    );
+
+  if (existingMenu) {
+    existingMenu.remove();
+
+    recentlyClosedStartMenu =
+      true;
+
+    setTimeout(() => {
+      recentlyClosedStartMenu =
+        false;
+    }, 115);
+
+    return;
+  }
+
+  const StartMenu =
+    document.createElement(
+      "div"
+    );
+
   StartMenu.id = "StartMenu";
-  StartMenu.innerHTML = startMenuHTML;
+  StartMenu.innerHTML =
+    startMenuHTML;
 
   setTimeout(() => {
-    container.appendChild(StartMenu);
+    container.appendChild(
+      StartMenu
+    );
+
     attachHoverTooltip();
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
   }, 10);
 
   function handleOutsideClick(e) {
     setTimeout(() => {
-      const startMenu = document.getElementById("StartMenu");
-      if (startMenu && !startMenu.contains(e.target)) {
-        startMenu.remove();
-        document.removeEventListener("mousedown", handleOutsideClick);
+      const startMenu =
+        document.getElementById(
+          "StartMenu"
+        );
 
-        recentlyClosedStartMenu = true;
+      if (
+        startMenu &&
+        !startMenu.contains(
+          e.target
+        )
+      ) {
+        startMenu.remove();
+
+        document.removeEventListener(
+          "mousedown",
+          handleOutsideClick
+        );
+
+        recentlyClosedStartMenu =
+          true;
+
         setTimeout(() => {
-          recentlyClosedStartMenu = false;
+          recentlyClosedStartMenu =
+            false;
         }, 115);
       }
     }, 0);
@@ -1505,259 +2741,571 @@ function attachHoverTooltip() {
     "hover-info-styles",
     "/Start_Menu/All_Programs/Tooltip/tooltip.css"
   );
+
   let tooltipHierarchy = [];
 
   const menu =
-    document.querySelector(".AllProgMenu") ||
-    document.querySelector(".ItemMenu");
+    document.querySelector(
+      ".AllProgMenu"
+    ) ||
+    document.querySelector(
+      ".ItemMenu"
+    );
 
   if (!menu) return;
 
-  const createTooltip = (content, parent) => {
+  const createTooltip = (
+    content,
+    parent
+  ) => {
     let level = 0;
 
-    const tooltip = document.createElement("div");
-    tooltip.className = "hover-info";
-    tooltip.innerHTML = content;
+    const tooltip =
+      document.createElement(
+        "div"
+      );
 
-    const infoitm = parent.closest(".hover-infoitm");
-    const tooltipParent = parent.closest(".hover-info");
+    tooltip.className =
+      "hover-info";
 
-    if (infoitm && tooltipParent) {
-      const rectInfoitm = infoitm.getBoundingClientRect();
-      const rectTooltip = tooltipParent.getBoundingClientRect();
+    tooltip.innerHTML =
+      content;
 
-      const ecart = rectTooltip.bottom - rectInfoitm.bottom;
+    const infoitm =
+      parent.closest(
+        ".hover-infoitm"
+      );
 
-      //console.log("Écart (info - itm) :", ecart);
+    const tooltipParent =
+      parent.closest(
+        ".hover-info"
+      );
+
+    if (
+      infoitm &&
+      tooltipParent
+    ) {
+      const rectInfoitm =
+        infoitm.getBoundingClientRect();
+
+      const rectTooltip =
+        tooltipParent.getBoundingClientRect();
+
+      const ecart =
+        rectTooltip.bottom -
+        rectInfoitm.bottom;
     }
 
-    const rect = parent.getBoundingClientRect();
-    console.log("Parent Rect:", rect);
+    const rect =
+      parent.getBoundingClientRect();
 
-    tooltip.style.visibility = "hidden";
-    tooltip.style.position = "absolute";
-    document.body.appendChild(tooltip);
+    console.log(
+      "Parent Rect:",
+      rect
+    );
 
-    const parentTooltip = parent.closest(".hover-info");
-    const specificTooltip = parent.closest(".hover-infotxt");
+    tooltip.style.visibility =
+      "hidden";
 
-    if (parentTooltip && parentTooltip.dataset.level) {
-      level = parseInt(parentTooltip.dataset.level, 10) + 1;
+    tooltip.style.position =
+      "absolute";
+
+    document.body.appendChild(
+      tooltip
+    );
+
+    const parentTooltip =
+      parent.closest(
+        ".hover-info"
+      );
+
+    const specificTooltip =
+      parent.closest(
+        ".hover-infotxt"
+      );
+
+    if (
+      parentTooltip &&
+      parentTooltip.dataset.level
+    ) {
+      level =
+        parseInt(
+          parentTooltip.dataset.level,
+          10
+        ) + 1;
     }
 
-    tooltip.dataset.level = level.toString();
+    tooltip.dataset.level =
+      level.toString();
 
     let tooltipName = "";
-    const infotxt = parent.querySelector(".hover-infotxt");
+
+    const infotxt =
+      parent.querySelector(
+        ".hover-infotxt"
+      );
+
     if (infotxt) {
-      tooltipName = infotxt.textContent.trim();
+      tooltipName =
+        infotxt.textContent.trim();
     }
 
     if (level === 0) {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right}px`;
-      tooltip.style.top = `${405 - rect.height}px`;
-    } else if (tooltipName === "Accessories") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 112}px`;
-      tooltip.style.top = `${rect.height - 30}px`;
-    } else if (tooltipName === "Games") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 112}px`;
-      tooltip.style.top = `${rect.height - 22}px`;
-    } else if (tooltipName === "Startup") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 112}px`;
-      tooltip.style.top = `${rect.height - 3}px`;
-    } else if (tooltipName === "Accessibility") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 329}px`;
-      tooltip.style.top = `${rect.height + 90}px`;
-    } else if (tooltipName === "Communication") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 329}px`;
-      tooltip.style.top = `${rect.height + 90}px`;
-    } else if (tooltipName === "Entertainement") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 329}px`;
-      tooltip.style.top = `${rect.height + 44}px`;
-    } else if (tooltipName === "System Tools") {
-      tooltip.style.visibility = "";
-      tooltip.style.left = `${rect.right - 329}px`;
-      tooltip.style.top = `${rect.height + 182}px`;
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right}px`;
+
+      tooltip.style.top =
+        `${405 - rect.height}px`;
+    } else if (
+      tooltipName ===
+      "Accessories"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 112}px`;
+
+      tooltip.style.top =
+        `${rect.height - 30}px`;
+    } else if (
+      tooltipName ===
+      "Games"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 112}px`;
+
+      tooltip.style.top =
+        `${rect.height - 22}px`;
+    } else if (
+      tooltipName ===
+      "Startup"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 112}px`;
+
+      tooltip.style.top =
+        `${rect.height - 3}px`;
+    } else if (
+      tooltipName ===
+      "Accessibility"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 329}px`;
+
+      tooltip.style.top =
+        `${rect.height + 90}px`;
+    } else if (
+      tooltipName ===
+      "Communication"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 329}px`;
+
+      tooltip.style.top =
+        `${rect.height + 90}px`;
+    } else if (
+      tooltipName ===
+      "Entertainement"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 329}px`;
+
+      tooltip.style.top =
+        `${rect.height + 44}px`;
+    } else if (
+      tooltipName ===
+      "System Tools"
+    ) {
+      tooltip.style.visibility =
+        "";
+
+      tooltip.style.left =
+        `${rect.right - 329}px`;
+
+      tooltip.style.top =
+        `${rect.height + 182}px`;
     }
 
-    const itemMenu = parent.closest(".ItemMenu");
-    if (itemMenu && itemMenu.id === "Connect To") {
-      tooltip.style.left = `${rect.right + 48}px`;
-      tooltip.style.top = `${rect.height + 256}px`;
-    } else if (itemMenu && itemMenu.id === "My Recent Documents") {
-      tooltip.style.left = `${rect.right + 48}px`;
-      tooltip.style.top = `${rect.height + 34}px`;
+    const itemMenu =
+      parent.closest(
+        ".ItemMenu"
+      );
+
+    if (
+      itemMenu &&
+      itemMenu.id ===
+        "Connect To"
+    ) {
+      tooltip.style.left =
+        `${rect.right + 48}px`;
+
+      tooltip.style.top =
+        `${rect.height + 256}px`;
+    } else if (
+      itemMenu &&
+      itemMenu.id ===
+        "My Recent Documents"
+    ) {
+      tooltip.style.left =
+        `${rect.right + 48}px`;
+
+      tooltip.style.top =
+        `${rect.height + 34}px`;
     }
 
-    tooltip.style.zIndex = 9999;
+    tooltip.style.zIndex =
+      9999;
 
-    if (parent.classList.contains("AllProgTxt")) {
-      parent.appendChild(tooltip);
-    } else if (parent.classList.contains("hover-infotxt")) {
-      parent.appendChild(tooltip);
-    } else if (specificTooltip) {
-      specificTooltip.appendChild(tooltip);
+    if (
+      parent.classList.contains(
+        "AllProgTxt"
+      )
+    ) {
+      parent.appendChild(
+        tooltip
+      );
+    } else if (
+      parent.classList.contains(
+        "hover-infotxt"
+      )
+    ) {
+      parent.appendChild(
+        tooltip
+      );
+    } else if (
+      specificTooltip
+    ) {
+      specificTooltip.appendChild(
+        tooltip
+      );
     } else {
-      parent.appendChild(tooltip);
+      parent.appendChild(
+        tooltip
+      );
     }
+
     return tooltip;
   };
 
-  const closeAllTooltips = () => {
-    tooltipHierarchy.forEach((t) => t.remove());
-    tooltipHierarchy = [];
-  };
+  const closeAllTooltips =
+    () => {
+      tooltipHierarchy.forEach(
+        (t) => t.remove()
+      );
 
-  const isMouseOverAnyTooltip = () => {
-    return (
-      tooltipHierarchy.some((t) => t.matches(":hover")) ||
-      menu.matches(":hover") ||
-      document.querySelector(".ItemMenu:hover") ||
-      document.querySelector(".hover-infoitm:hover") ||
-      document.querySelector(".hover-infotxt:hover")
-    );
-  };
-  const scheduleTooltipClose = () => {
-    if (!isMouseOverAnyTooltip()) {
-      closeAllTooltips();
-    }
-  };
+      tooltipHierarchy = [];
+    };
 
-  const handleMouseEnter = async (e) => {
-    const target = e.target.closest(".AllProgMenu, .ItemMenu, .hover-infoitm");
-    if (!target) return;
+  const isMouseOverAnyTooltip =
+    () => {
+      return (
+        tooltipHierarchy.some(
+          (t) =>
+            t.matches(
+              ":hover"
+            )
+        ) ||
+        menu.matches(":hover") ||
+        document.querySelector(
+          ".ItemMenu:hover"
+        ) ||
+        document.querySelector(
+          ".hover-infoitm:hover"
+        ) ||
+        document.querySelector(
+          ".hover-infotxt:hover"
+        )
+      );
+    };
 
-    let contentFile = null;
-
-    const textElement = target.querySelector(".hover-infotxt");
-    const allowedTexts = [
-      "Accessories",
-      "Games",
-      "Startup",
-      "Accessibility",
-      "Communication",
-      "Entertainement",
-      "System Tools",
-    ];
-
-    if (textElement) {
-      const text = textElement.textContent.trim();
-      if (allowedTexts.includes(text)) {
-        contentFile = `/Start_Menu/All_Programs/Sub_Tooltip/${text}.html`;
+  const scheduleTooltipClose =
+    () => {
+      if (
+        !isMouseOverAnyTooltip()
+      ) {
+        closeAllTooltips();
       }
-    }
+    };
 
-    if (!contentFile) {
-      const textTest = target.querySelector(".AllProgTxt");
-      if (textTest) {
-        const text = textTest.textContent.trim();
-        if (text === "All Programs") {
-          contentFile = "/Start_Menu/All_Programs/Tooltip/Tooltip.html";
+  const handleMouseEnter =
+    async (e) => {
+      const target =
+        e.target.closest(
+          ".AllProgMenu, .ItemMenu, .hover-infoitm"
+        );
+
+      if (!target) return;
+
+      let contentFile = null;
+
+      const textElement =
+        target.querySelector(
+          ".hover-infotxt"
+        );
+
+      const allowedTexts = [
+        "Accessories",
+        "Games",
+        "Startup",
+        "Accessibility",
+        "Communication",
+        "Entertainement",
+        "System Tools",
+      ];
+
+      if (textElement) {
+        const text =
+          textElement.textContent.trim();
+
+        if (
+          allowedTexts.includes(
+            text
+          )
+        ) {
+          contentFile =
+            `/Start_Menu/All_Programs/Sub_Tooltip/${text}.html`;
         }
       }
-    }
 
-    if (!contentFile) {
-      let itemMenu = null;
+      if (!contentFile) {
+        const textTest =
+          target.querySelector(
+            ".AllProgTxt"
+          );
+
+        if (textTest) {
+          const text =
+            textTest.textContent.trim();
+
+          if (
+            text ===
+            "All Programs"
+          ) {
+            contentFile =
+              "/Start_Menu/All_Programs/Tooltip/Tooltip.html";
+          }
+        }
+      }
+
+      if (!contentFile) {
+        let itemMenu = null;
+
+        if (
+          target.classList &&
+          target.classList.contains(
+            "ItemMenu"
+          ) &&
+          (
+            target.id ===
+              "Connect To" ||
+            target.id ===
+              "My Recent Documents"
+          )
+        ) {
+          itemMenu = target;
+
+          contentFile =
+            `/Start_Menu/Tooltip/${itemMenu.id}.html`;
+        }
+
+        if (!itemMenu) return;
+      }
+
+      if (!contentFile) return;
+
+      if (!target.dataset.tooltipId) {
+        target.dataset.tooltipId =
+          `tt-${Date.now()}-${Math.random()
+            .toString(36)}`;
+      }
+
+      const existing =
+        tooltipHierarchy.find(
+          (t) =>
+            t.dataset.parent ===
+              target.dataset.tooltipId &&
+            t.dataset.file ===
+              contentFile
+        );
+
+      if (existing) return;
+
+      const content =
+        await loadHTML(
+          contentFile
+        );
+
+      const tooltip =
+        createTooltip(
+          content,
+          target
+        );
+
+      attachTooltipListeners(
+        tooltip
+      );
+
+      const text =
+        textElement
+          ? textElement.textContent.trim()
+          : "";
+
       if (
-        target.classList &&
-        target.classList.contains("ItemMenu") &&
-        (target.id === "Connect To" || target.id === "My Recent Documents")
+        allowedTexts.includes(
+          text
+        )
       ) {
-        itemMenu = target;
-        contentFile = `/Start_Menu/Tooltip/${itemMenu.id}.html`;
+        target.addEventListener(
+          "mouseleave",
+          function onLeave() {
+            tooltip.remove();
+
+            tooltipHierarchy =
+              tooltipHierarchy.filter(
+                (t) =>
+                  t !== tooltip
+              );
+
+            target.removeEventListener(
+              "mouseleave",
+              onLeave
+            );
+          }
+        );
       }
-      if (!itemMenu) return;
-    }
 
-    if (!contentFile) return;
+      const currentLevel =
+        parseInt(
+          tooltip.dataset.level,
+          10
+        );
 
-    if (!target.dataset.tooltipId) {
-      target.dataset.tooltipId = `tt-${Date.now()}-${Math.random().toString(
-        36
-      )}`;
-    }
+      tooltipHierarchy =
+        tooltipHierarchy.filter(
+          (t) => {
+            const tooltipLevel =
+              parseInt(
+                t.dataset.level,
+                10
+              );
 
-    const existing = tooltipHierarchy.find(
-      (t) =>
-        t.dataset.parent === target.dataset.tooltipId &&
-        t.dataset.file === contentFile
-    );
-    if (existing) return;
-
-    const content = await loadHTML(contentFile);
-    const tooltip = createTooltip(content, target);
-
-    attachTooltipListeners(tooltip);
-
-    const text = textElement ? textElement.textContent.trim() : "";
-    if (allowedTexts.includes(text)) {
-      target.addEventListener("mouseleave", function onLeave() {
-        tooltip.remove();
-        tooltipHierarchy = tooltipHierarchy.filter((t) => t !== tooltip);
-        target.removeEventListener("mouseleave", onLeave);
-      });
-    }
-
-    const currentLevel = parseInt(tooltip.dataset.level, 10);
-
-    tooltipHierarchy = tooltipHierarchy.filter((t) => {
-      const tooltipLevel = parseInt(t.dataset.level, 10);
-      if (tooltipLevel === currentLevel && t !== tooltip) {
-        t.remove();
-        return false;
-      }
-      return true;
-    });
-
-    tooltip.dataset.parent = target.dataset.tooltipId;
-    tooltip.dataset.file = contentFile;
-
-    tooltipHierarchy.push(tooltip);
-  };
-
-  let lastActiveLevel = null;
-
-  const attachTooltipListeners = (tooltip) => {
-    tooltip.addEventListener("mouseenter", (e) => {
-      const currentLevel = parseInt(e.currentTarget.dataset.level, 10);
-
-      if (lastActiveLevel !== null && currentLevel < lastActiveLevel) {
-        setTimeout(() => {
-          tooltipHierarchy = tooltipHierarchy.filter((t) => {
-            const tooltipLevel = parseInt(t.dataset.level, 10);
-            if (tooltipLevel > currentLevel) {
+            if (
+              tooltipLevel ===
+                currentLevel &&
+              t !== tooltip
+            ) {
               t.remove();
               return false;
             }
+
             return true;
-          });
-        }, 250);
-      }
-    });
+          }
+        );
 
-    tooltip.addEventListener("mouseleave", (e) => {
-      const leavingLevel = parseInt(e.currentTarget.dataset.level, 10);
-      lastActiveLevel = leavingLevel;
-    });
-  };
+      tooltip.dataset.parent =
+        target.dataset.tooltipId;
 
-  if (hoverTooltipMouseEnterHandler) {
+      tooltip.dataset.file =
+        contentFile;
+
+      tooltipHierarchy.push(
+        tooltip
+      );
+    };
+
+  let lastActiveLevel =
+    null;
+
+  const attachTooltipListeners =
+    (tooltip) => {
+      tooltip.addEventListener(
+        "mouseenter",
+        (e) => {
+          const currentLevel =
+            parseInt(
+              e.currentTarget.dataset.level,
+              10
+            );
+
+          if (
+            lastActiveLevel !==
+              null &&
+            currentLevel <
+              lastActiveLevel
+          ) {
+            setTimeout(() => {
+              tooltipHierarchy =
+                tooltipHierarchy.filter(
+                  (t) => {
+                    const tooltipLevel =
+                      parseInt(
+                        t.dataset.level,
+                        10
+                      );
+
+                    if (
+                      tooltipLevel >
+                      currentLevel
+                    ) {
+                      t.remove();
+                      return false;
+                    }
+
+                    return true;
+                  }
+                );
+            }, 250);
+          }
+        }
+      );
+
+      tooltip.addEventListener(
+        "mouseleave",
+        (e) => {
+          const leavingLevel =
+            parseInt(
+              e.currentTarget.dataset.level,
+              10
+            );
+
+          lastActiveLevel =
+            leavingLevel;
+        }
+      );
+    };
+
+  if (
+    hoverTooltipMouseEnterHandler
+  ) {
     document.body.removeEventListener(
       "mouseenter",
       hoverTooltipMouseEnterHandler,
       true
     );
   }
-  if (hoverTooltipMouseLeaveHandler) {
+
+  if (
+    hoverTooltipMouseLeaveHandler
+  ) {
     document.body.removeEventListener(
       "mouseleave",
       hoverTooltipMouseLeaveHandler,
@@ -1765,20 +3313,28 @@ function attachHoverTooltip() {
     );
   }
 
-  hoverTooltipMouseEnterHandler = function (e) {
-    if (e.target.closest(".AllProgMenu, .ItemMenu, .hover-infoitm")) {
-      handleMouseEnter(e);
-    }
-  };
-  hoverTooltipMouseLeaveHandler = function () {
-    scheduleTooltipClose();
-  };
+  hoverTooltipMouseEnterHandler =
+    function (e) {
+      if (
+        e.target.closest(
+          ".AllProgMenu, .ItemMenu, .hover-infoitm"
+        )
+      ) {
+        handleMouseEnter(e);
+      }
+    };
+
+  hoverTooltipMouseLeaveHandler =
+    function () {
+      scheduleTooltipClose();
+    };
 
   document.body.addEventListener(
     "mouseenter",
     hoverTooltipMouseEnterHandler,
     true
   );
+
   document.body.addEventListener(
     "mouseleave",
     hoverTooltipMouseLeaveHandler,
@@ -1786,77 +3342,204 @@ function attachHoverTooltip() {
   );
 }
 
-function injectStyle(id, href) {
-  const cssId = `css-${id}`;
-  if (!document.getElementById(cssId)) {
-    const link = document.createElement("link");
+function injectStyle(
+  id,
+  href
+) {
+  const cssId =
+    `css-${id}`;
+
+  if (
+    !document.getElementById(
+      cssId
+    )
+  ) {
+    const link =
+      document.createElement(
+        "link"
+      );
+
     link.id = cssId;
-    link.rel = "stylesheet";
-    link.href = href;
-    document.head.appendChild(link);
+    link.rel =
+      "stylesheet";
+
+    link.href =
+      href;
+
+    document.head.appendChild(
+      link
+    );
   }
 }
 
-document.addEventListener("mousedown", function (event) {
-  document.querySelectorAll(".window").forEach((windowEl) => {
-    const labelDivs = windowEl.querySelectorAll(".drop_down_label");
-    let tooltip = windowEl.querySelector(
-      ".tooltip, .window-tooltip, .hover-info"
-    );
-    if (!tooltip) return;
+document.addEventListener(
+  "mousedown",
+  function (event) {
+    document
+      .querySelectorAll(
+        ".window"
+      )
+      .forEach((windowEl) => {
+        const labelDivs =
+          windowEl.querySelectorAll(
+            ".drop_down_label"
+          );
 
-    const isOnLabel = Array.from(labelDivs).some((label) =>
-      label.contains(event.target)
-    );
-    const isOnTooltip = tooltip.contains(event.target);
+        const tooltip =
+          windowEl.querySelector(
+            ".tooltip, .window-tooltip, .hover-info"
+          );
 
-    if (!isOnLabel && !isOnTooltip) {
-      tooltip.parentNode.removeChild(tooltip);
-    }
-  });
-});
+        if (!tooltip) return;
 
-document.addEventListener("click", function (event) {
-  const tooltip = event.target.closest(".window-tooltip");
-  if (tooltip) {
-    tooltip.remove();
+        const isOnLabel =
+          Array.from(
+            labelDivs
+          ).some((label) =>
+            label.contains(
+              event.target
+            )
+          );
+
+        const isOnTooltip =
+          tooltip.contains(
+            event.target
+          );
+
+        if (
+          !isOnLabel &&
+          !isOnTooltip
+        ) {
+          tooltip.parentNode.removeChild(
+            tooltip
+          );
+        }
+      });
   }
-});
+);
+
+document.addEventListener(
+  "click",
+  function (event) {
+    const tooltip =
+      event.target.closest(
+        ".window-tooltip"
+      );
+
+    if (tooltip) {
+      tooltip.remove();
+    }
+  }
+);
 
 setTimeout(() => {
-  const windowStates = JSON.parse(localStorage.getItem("openWindows") || "[]");
-  windowStates.forEach(
-    ({ appName, left, top, width, height, display, zIndex }) => {
-      openWindow(appName);
+  const windowStates =
+    JSON.parse(
+      localStorage.getItem(
+        "openWindows"
+      ) || "[]"
+    );
 
-      const win = document.getElementById(`window-${appName}`);
+  windowStates.forEach(
+    ({
+      appName,
+      left,
+      top,
+      width,
+      height,
+      display,
+      zIndex,
+    }) => {
+      openWindow(
+        appName
+      );
+
+      const win =
+        document.getElementById(
+          `window-${appName}`
+        );
+
       if (win) {
-        win.classList.add("window-inactive");
-        if (left) win.style.left = left;
-        if (top) win.style.top = top;
-        if (width) win.style.width = width;
-        if (height) win.style.height = height;
-        if (display) win.style.display = display;
-        if (zIndex) win.style.zIndex = zIndex;
+        win.classList.add(
+          "window-inactive"
+        );
+
+        if (left) {
+          win.style.left =
+            left;
+        }
+
+        if (top) {
+          win.style.top =
+            top;
+        }
+
+        if (width) {
+          win.style.width =
+            width;
+        }
+
+        if (height) {
+          win.style.height =
+            height;
+        }
+
+        if (display) {
+          win.style.display =
+            display;
+        }
+
+        if (zIndex) {
+          win.style.zIndex =
+            zIndex;
+        }
       }
     }
   );
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-  }
-  localStorage.removeItem("openWindows");
-  localStorage.removeItem("zIndexCounter");
+
+  localStorage.removeItem(
+    "openWindows"
+  );
+
+  localStorage.removeItem(
+    "zIndexCounter"
+  );
 }, 200);
 
 function writeDateTime() {
-  const textarea = document.querySelector(".write");
-  const now = new Date();
+  const textarea =
+    document.querySelector(
+      ".write"
+    );
 
-  const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
-  const timeOptions = { hour: "2-digit", minute: "2-digit" };
+  if (!textarea) return;
 
-  const dateStr = now.toLocaleDateString("en-US", dateOptions);
-  const timeStr = now.toLocaleTimeString("en-US", timeOptions);
+  const now =
+    new Date();
 
-  textarea.value += `${timeStr} ${dateStr} \n`;
+  const dateOptions = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  };
+
+  const timeOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const dateStr =
+    now.toLocaleDateString(
+      "en-US",
+      dateOptions
+    );
+
+  const timeStr =
+    now.toLocaleTimeString(
+      "en-US",
+      timeOptions
+    );
+
+  textarea.value +=
+    `${timeStr} ${dateStr} \n`;
 }
