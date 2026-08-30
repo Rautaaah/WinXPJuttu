@@ -63,7 +63,7 @@
 
       <img
         src="/Assets/Images/Microsoft logo démarrage.png"
-        alt="Logo Microsoft en bas à droite sur l'écran de démarrage"
+        alt="Logo Microsoft en bas à right on the startup screen"
         id="Copyright"
       />
 
@@ -96,7 +96,7 @@
             />
 
             <div class="user-text">
-              <span>YOUUU!!! :3 <3</span>
+              <span>YOUUU!!! :3 &lt;3</span>
             </div>
           </div>
         </div>
@@ -137,12 +137,12 @@
           titleIndex = 1;
         }
 
-        // Faster when the tab is active,
-        // slower when the tab is inactive.
+        // FAST when the tab is active
+        // SLOWER when the tab is inactive
         const delay =
           document.visibilityState === "visible"
-            ? 500
-            : 1200;
+            ? 100
+            : 300;
 
         setTimeout(animateTitle, delay);
       }
