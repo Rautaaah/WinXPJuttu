@@ -5746,3 +5746,53 @@ function writeDateTime() {
   }
 
 })();
+
+
+
+/* ============================================================
+   ONEKO
+   ============================================================ */
+
+(function initOneko() {
+
+  /*
+   * Prevent loading Oneko twice.
+   */
+
+  if (
+    document.querySelector(
+      'script[data-oneko="true"]'
+    )
+  ) {
+    return;
+  }
+
+
+  /*
+   * Load Oneko from:
+   *
+   * /Oneko/oneko.js
+   */
+
+  const oneko =
+    document.createElement(
+      "script"
+    );
+
+
+  oneko.src =
+    "/Oneko/oneko.js";
+
+
+  oneko.dataset.oneko =
+    "true";
+
+
+  oneko.async = true;
+
+
+  document.body.appendChild(
+    oneko
+  );
+
+})();
