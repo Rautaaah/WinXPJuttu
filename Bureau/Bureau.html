@@ -1,219 +1,377 @@
 <!DOCTYPE html>
 
-<html lang="fr"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="fr">
+<head>
 
-<title>Windows XPortfolio</title>
+  <meta charset="UTF-8" />
 
-<link
-  rel="icon"
-  type="image/ico"
-  sizes="32x32"
-  href="/Assets/Images/Windows_XP-min.ico"
-/>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
-<link
-  rel="preload"
-  href="/Start_Menu/Log_Off/Base/Log_Off.css"
-  as="style"
-  onload="this.onload=null;this.rel='stylesheet';"
-/>
+  <title>Windows XPortfolio</title>
 
-<link
-  rel="preload"
-  href="/Start_Menu/Base/Start_Menu.css"
-  as="style"
-  onload="this.onload=null;this.rel='stylesheet';"
-/>
+  <link
+    rel="icon"
+    type="image/ico"
+    sizes="32x32"
+    href="/Assets/Images/Windows_XP-min.ico"
+  />
 
-<link
-  rel="preload"
-  href="/Open_Windows/Base/OpenWindow_Tooltip.css"
-  as="style"
-  onload="this.onload=null;this.rel='stylesheet';"
-/>
+  <link
+    rel="preload"
+    href="/Start_Menu/Log_Off/Base/Log_Off.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet';"
+  />
 
-<link
-  rel="preload"
-  href="/Start_Menu/All_Programs/Tooltip/Tooltip.css"
-  as="style"
-  onload="this.onload=null;this.rel='stylesheet';"
-/>
+  <link
+    rel="preload"
+    href="/Start_Menu/Base/Start_Menu.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet';"
+  />
 
-<link
-  rel="preload"
-  href="/Bureau/Taskbar.css"
-  as="style"
-  onload="this.onload=null;this.rel='stylesheet';"
-/>
+  <link
+    rel="preload"
+    href="/Open_Windows/Base/OpenWindow_Tooltip.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet';"
+  />
 
-<link
-  rel="preload"
-  href="/Open_Windows/Base/Open_Window.css"
-  as="style"
-  onload="this.onload=null;this.rel='stylesheet';"
-/>
+  <link
+    rel="preload"
+    href="/Start_Menu/All_Programs/Tooltip/Tooltip.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet';"
+  />
 
-<link rel="stylesheet" href="/Bureau/Bureau.css" />
+  <link
+    rel="preload"
+    href="/Bureau/Taskbar.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet';"
+  />
 
-<script src="/Bureau/Bureau.js"></script>
-<script src="/Open_Windows/Minesweeper/Minesweeper.js"></script>
+  <link
+    rel="preload"
+    href="/Open_Windows/Base/Open_Window.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet';"
+  />
 
-<style>
-  /*
-   * =====================================================
-   * DRAGGABLE DESKTOP ICONS
-   * =====================================================
-   */
+  <link
+    rel="stylesheet"
+    href="/Bureau/Bureau.css"
+  />
 
-  #desktop {
-    position: relative;
-    width: 100vw;
-    height: calc(100vh - 30px);
-    padding: 0;
-  }
+  <script src="/Bureau/Bureau.js"></script>
+  <script src="/Open_Windows/Minesweeper/Minesweeper.js"></script>
 
-  #desktop .icon {
-    position: absolute;
-    margin: 0;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-  }
+  <style>
 
-  #desktop .icon.dragging {
-    z-index: 9999;
-    opacity: 0.85;
-  }
+    /*
+     * =====================================================
+     * DRAGGABLE DESKTOP ICONS
+     * =====================================================
+     */
 
-  /*
-   * Prevent the centered folder from being controlled
-   * by the old fixed positioning.
-   */
+    #desktop {
 
-  #centered-folder {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
+      position: relative;
 
-  /*
-   * =====================================================
-   * KRIS COMPANION
-   * =====================================================
-   */
+      width: 100vw;
 
-  #kris-companion {
-    position: absolute;
-    left: 300px;
-    top: 180px;
-    width: 260px;
-    height: 340px;
-    z-index: 50000;
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-  }
+      height: calc(100vh - 30px);
 
-  #kris-companion.dragging {
-    cursor: grabbing;
-    z-index: 99999;
-  }
+      padding: 0;
 
-  #kris-gif {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    width: 230px;
-    height: auto;
-    transform: translateX(-50%);
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
+      overflow: hidden;
+    }
 
-  #kris-dialogue {
-    position: absolute;
-    left: 50%;
-    bottom: 250px;
-    transform: translateX(-50%);
-    min-width: 220px;
-    max-width: 320px;
-    padding: 14px 16px;
-    box-sizing: border-box;
-    background: #000;
-    border: 4px solid #fff;
-    color: #fff;
-    font-family: "Courier New", monospace;
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 1.3;
-    z-index: 10000;
-    pointer-events: none;
-  }
+    #desktop .icon {
 
-  #kris-dialogue.hidden {
-    display: none;
-  }
+      position: absolute;
 
-  #kris-dialogue::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -9px;
-    width: 12px;
-    height: 12px;
-    background: #000;
-    border-right: 3px solid #fff;
-    border-bottom: 3px solid #fff;
-    transform: translateX(-50%) rotate(45deg);
-  }
-</style>
+      margin: 0;
+
+      user-select: none;
+
+      -webkit-user-select: none;
+
+      touch-action: none;
+    }
+
+    #desktop .icon.dragging {
+
+      z-index: 9999;
+
+      opacity: 0.85;
+    }
+
+    /*
+     * =====================================================
+     * PROJECTS FOLDER
+     * =====================================================
+     */
+
+    #centered-folder {
+
+      position: absolute;
+
+      left: 50%;
+
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+    }
+
+    /*
+     * =====================================================
+     * KRIS COMPANION
+     * =====================================================
+     */
+
+    #kris-companion {
+
+      position: absolute;
+
+      left: 300px;
+
+      top: 180px;
+
+      width: 260px;
+
+      height: 340px;
+
+      z-index: 50000;
+
+      cursor: grab;
+
+      user-select: none;
+
+      -webkit-user-select: none;
+
+      touch-action: none;
+
+      box-sizing: border-box;
+    }
+
+    #kris-companion.dragging {
+
+      cursor: grabbing;
+
+      z-index: 99999;
+    }
+
+    #kris-gif {
+
+      position: absolute;
+
+      left: 50%;
+
+      bottom: 0;
+
+      width: 230px;
+
+      height: auto;
+
+      transform: translateX(-50%);
+
+      pointer-events: none;
+
+      user-select: none;
+
+      -webkit-user-drag: none;
+    }
+
+    /*
+     * =====================================================
+     * KRIS DIALOGUE
+     * =====================================================
+     */
+
+    #kris-dialogue {
+
+      position: absolute;
+
+      left: 50%;
+
+      bottom: 250px;
+
+      transform: translateX(-50%);
+
+      min-width: 220px;
+
+      max-width: 340px;
+
+      padding: 14px 16px;
+
+      box-sizing: border-box;
+
+      background: #000;
+
+      border: 4px solid #fff;
+
+      color: #fff;
+
+      font-family: "Courier New", monospace;
+
+      font-size: 18px;
+
+      font-weight: bold;
+
+      line-height: 1.3;
+
+      z-index: 10000;
+
+      pointer-events: none;
+
+      white-space: normal;
+
+      text-align: left;
+
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+    }
+
+    #kris-dialogue.hidden {
+
+      display: none;
+    }
+
+    #kris-dialogue::after {
+
+      content: "";
+
+      position: absolute;
+
+      left: 50%;
+
+      bottom: -9px;
+
+      width: 12px;
+
+      height: 12px;
+
+      background: #000;
+
+      border-right: 3px solid #fff;
+
+      border-bottom: 3px solid #fff;
+
+      transform:
+        translateX(-50%)
+        rotate(45deg);
+    }
+
+    /*
+     * =====================================================
+     * KRIS GRID SNAP PREVIEW
+     * =====================================================
+     */
+
+    #kris-companion.grid-preview {
+
+      filter:
+        drop-shadow(0 0 6px rgba(255,255,255,0.8));
+    }
+
+  </style>
 
 </head>
 
-<body> <div id="main-content" style=" background-repeat: no-repeat; background-position: center center; background-attachment: fixed; background-size: cover; min-height: 100vh; " >
+
+<body>
+
+<div
+  id="main-content"
+  style="
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    min-height: 100vh;
+  "
+>
+
 
   <!-- =================================================
        TIME-BASED WALLPAPER
        ================================================= -->
 
   <script>
+
     function updateDesktopWallpaper() {
-      const hour = new Date().getHours();
+
+      const hour =
+        new Date().getHours();
 
       let wallpaper;
 
-      // MORNING — 06:00 to 11:59
+
+      /*
+       * MORNING
+       */
+
       if (hour >= 6 && hour < 12) {
+
         wallpaper =
           "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHV6ZTR1Zzg4NTF3dHZsOW1vNGtoOGxncTRybGpsamw1bHQzMWt0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13ZzYXkeIjcZy0/giphy.gif";
+
       }
 
-      // AFTERNOON — 12:00 to 17:59
+
+      /*
+       * AFTERNOON
+       */
+
       else if (hour >= 12 && hour < 18) {
+
         wallpaper =
           "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExam5kM2l4bGt3bzZnZWRxbGR2MWxsZ2VuNzVsdmczZ2d4Z2J1bjRtMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NKicvKt6iisXS/giphy.gif";
+
       }
 
-      // NIGHT — 18:00 to 05:59
+
+      /*
+       * NIGHT
+       */
+
       else {
+
         wallpaper =
           "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmhsaDV5eDc4am52aXA3YzBlN21jNnRrOWt0c2xlbjBnZWNiaGJ0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lR5poYluERnRuaGQOd/giphy.gif";
+
       }
 
-      const desktop = document.getElementById("main-content");
+
+      const desktop =
+        document.getElementById(
+          "main-content"
+        );
+
 
       if (desktop) {
-        desktop.style.backgroundImage = `url("${wallpaper}")`;
+
+        desktop.style.backgroundImage =
+          `url("${wallpaper}")`;
+
       }
+
     }
+
 
     updateDesktopWallpaper();
 
-    setInterval(updateDesktopWallpaper, 60000);
+
+    setInterval(
+      updateDesktopWallpaper,
+      60000
+    );
+
   </script>
+
 
   <!-- =================================================
        DESKTOP
@@ -221,150 +379,209 @@
 
   <div id="desktop">
 
-    <!-- My Computer -->
+
+    <!-- =================================================
+         MY COMPUTER
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="my-computer"
       ondblclick="openWindow('My Computer')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/My Computer.png"
         alt="My Computer"
       />
 
       <span>My Computer</span>
+
     </div>
 
-    <!-- Recycle Bin -->
+
+    <!-- =================================================
+         RECYCLE BIN
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="recycle-bin"
       ondblclick="openWindow('Recycle Bin (empty)')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Recycle Bin (empty).png"
         alt="Recycle Bin"
       />
 
       <span>Recycle Bin</span>
+
     </div>
 
-    <!-- Internet Explorer -->
+
+    <!-- =================================================
+         INTERNET EXPLORER
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="internet-explorer"
       ondblclick="openWindow('Internet Explorer 6')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Internet Explorer 6.png"
         alt="Internet Explorer"
       />
 
       <span>Internet Explorer</span>
+
     </div>
 
-    <!-- Minesweeper -->
+
+    <!-- =================================================
+         MINESWEEPER
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="minesweeper"
       ondblclick="openWindow('Minesweeper'); SetLvl('Beginner')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Minesweeper.png"
         alt="Minesweeper"
       />
 
       <span>Minesweeper</span>
+
     </div>
 
-    <!-- Pinball -->
+
+    <!-- =================================================
+         PINBALL
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="pinball"
       ondblclick="openWindow('Space Cadet Pinball')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Space Cadet Pinball.png"
         alt="Pinball"
       />
 
       <span>Pinball</span>
+
     </div>
 
-    <!-- Paint -->
+
+    <!-- =================================================
+         PAINT
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="paint"
       ondblclick="openWindow('Paint')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Paint.png"
         alt="Paint"
       />
 
       <span>Paint</span>
+
     </div>
 
-    <!-- Notepad -->
+
+    <!-- =================================================
+         NOTEPAD
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="notepad"
       ondblclick="openWindow('Notepad')"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Notepad.png"
         alt="Notepad"
       />
 
       <span>Notepad</span>
+
     </div>
 
-    <!-- Winamp -->
+
+    <!-- =================================================
+         WINAMP
+         ================================================= -->
 
     <div
       class="icon"
       data-icon="winamp"
       ondblclick="openRawWinamp()"
     >
+
       <img
         src="/Assets/Images/Winamp-logo.png"
         alt="Winamp"
       />
 
       <span>Winamp</span>
+
     </div>
 
-    <!-- Projects Folder -->
+
+    <!-- =================================================
+         PROJECTS FOLDER
+         ================================================= -->
 
     <div
       class="icon"
       id="centered-folder"
       data-icon="projects"
     >
+
       <img
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Folder Closed.png"
         alt="Projects Under Construct ! Folder"
       />
 
       <span>Projects Under Construct !</span>
+
     </div>
+
 
     <!-- =================================================
          KRIS COMPANION
-         IMPORTANT: Separate from ALL .icon elements
+
+         IMPORTANT:
+         This is NOT an .icon.
+         It therefore cannot trigger the
+         desktop icon drag system.
          ================================================= -->
 
     <div id="kris-companion">
-      <div id="kris-dialogue" class="hidden">
-        <span id="kris-dialogue-text"></span>
+
+      <div
+        id="kris-dialogue"
+        class="hidden"
+      >
+
+        <span
+          id="kris-dialogue-text"
+        ></span>
+
       </div>
+
 
       <img
         id="kris-gif"
@@ -372,9 +589,11 @@
         alt="Dancing Kris"
         draggable="false"
       />
+
     </div>
 
   </div>
+
 
   <!-- =================================================
        TASKBAR
@@ -386,18 +605,23 @@
   >
 
     <div class="footer__items left">
+
       <div
         class="footer__start_menu"
         onclick="openStartMenu()"
       >
+
         <img
           src="/Assets/Images/windows_xp_start_button_normal.png"
           id="start-button"
           class="footer__start"
           alt="start"
         />
+
       </div>
+
     </div>
+
 
     <div class="footer__items right">
 
@@ -430,495 +654,1811 @@
 
 </div>
 
-<!-- =================================================
+
+<!-- =====================================================
      DESKTOP ICON DRAG & DROP SYSTEM
-     ================================================= -->
+     ===================================================== -->
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
 
-    const desktop = document.getElementById("desktop");
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    const desktop =
+      document.getElementById(
+        "desktop"
+      );
 
     if (!desktop) return;
 
-    const icons = desktop.querySelectorAll(".icon");
 
-    let draggedIcon = null;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    const defaultPositions = [
-      [20, 20],
-      [20, 90],
-      [20, 160],
-      [20, 230],
-      [20, 300],
-      [20, 370],
-      [20, 440],
-      [20, 510],
-    ];
-
-    icons.forEach((icon, index) => {
-
-      const key =
-        "desktop-icon-" +
-        (icon.dataset.icon || index);
-
-      const savedPosition =
-        localStorage.getItem(key);
-
-      if (savedPosition) {
-
-        try {
-
-          const position =
-            JSON.parse(savedPosition);
-
-          icon.style.left =
-            position.x + "px";
-
-          icon.style.top =
-            position.y + "px";
-
-        } catch (error) {
-
-          console.warn(
-            "Could not restore icon position:",
-            error
-          );
-
-        }
-
-      } else {
-
-        if (defaultPositions[index]) {
-
-          icon.style.left =
-            defaultPositions[index][0] + "px";
-
-          icon.style.top =
-            defaultPositions[index][1] + "px";
-        }
-      }
-
-      icon.addEventListener("mousedown", function (event) {
-
-        if (event.button !== 0) return;
-
-        draggedIcon = icon;
-
-        const rect =
-          icon.getBoundingClientRect();
-
-        offsetX =
-          event.clientX - rect.left;
-
-        offsetY =
-          event.clientY - rect.top;
-
-        icon.classList.add("dragging");
-
-        event.preventDefault();
-      });
-
-      icon.addEventListener(
-        "touchstart",
-        function (event) {
-
-          const touch =
-            event.touches[0];
-
-          const rect =
-            icon.getBoundingClientRect();
-
-          draggedIcon = icon;
-
-          offsetX =
-            touch.clientX - rect.left;
-
-          offsetY =
-            touch.clientY - rect.top;
-
-          icon.classList.add("dragging");
-
-        },
-        { passive: true }
+    const icons =
+      desktop.querySelectorAll(
+        ".icon"
       );
 
-    });
 
-    document.addEventListener("mousemove", function (event) {
+    let draggedIcon = null;
 
-      if (!draggedIcon) return;
+    let offsetX = 0;
 
-      const desktopRect =
-        desktop.getBoundingClientRect();
+    let offsetY = 0;
 
-      let x =
-        event.clientX -
-        desktopRect.left -
-        offsetX;
 
-      let y =
-        event.clientY -
-        desktopRect.top -
-        offsetY;
+    /*
+     * =================================================
+     * DESKTOP GRID
+     * =================================================
+     *
+     * Change these values if you want the grid
+     * spacing to be different.
+     */
 
-      const maxX =
-        desktop.clientWidth -
-        draggedIcon.offsetWidth;
+    const GRID_X = 20;
 
-      const maxY =
-        desktop.clientHeight -
-        draggedIcon.offsetHeight;
+    const GRID_Y = 70;
 
-      x =
-        Math.max(
-          0,
-          Math.min(x, maxX)
+
+    /*
+     * Snap a position to the desktop grid.
+     */
+
+    function snapToGrid(
+      x,
+      y
+    ) {
+
+      return {
+
+        x:
+          Math.round(
+            x / GRID_X
+          ) * GRID_X,
+
+        y:
+          Math.round(
+            y / GRID_Y
+          ) * GRID_Y
+
+      };
+
+    }
+
+
+    const defaultPositions = [
+
+      [20, 20],
+
+      [20, 90],
+
+      [20, 160],
+
+      [20, 230],
+
+      [20, 300],
+
+      [20, 370],
+
+      [20, 440],
+
+      [20, 510],
+
+    ];
+
+
+    /*
+     * =================================================
+     * LOAD DESKTOP ICON POSITIONS
+     * =================================================
+     */
+
+    icons.forEach(
+      function (
+        icon,
+        index
+      ) {
+
+        const key =
+          "desktop-icon-" +
+          (
+            icon.dataset.icon ||
+            index
+          );
+
+
+        const savedPosition =
+          localStorage.getItem(
+            key
+          );
+
+
+        if (savedPosition) {
+
+          try {
+
+            const position =
+              JSON.parse(
+                savedPosition
+              );
+
+
+            icon.style.left =
+              position.x +
+              "px";
+
+
+            icon.style.top =
+              position.y +
+              "px";
+
+
+          }
+
+          catch (error) {
+
+            console.warn(
+              "Could not restore icon position:",
+              error
+            );
+
+          }
+
+        }
+
+        else {
+
+          if (
+            defaultPositions[index]
+          ) {
+
+            icon.style.left =
+              defaultPositions[index][0] +
+              "px";
+
+
+            icon.style.top =
+              defaultPositions[index][1] +
+              "px";
+
+          }
+
+        }
+
+
+        /*
+         * =================================================
+         * MOUSE DRAG
+         * =================================================
+         */
+
+        icon.addEventListener(
+          "mousedown",
+          function (event) {
+
+            if (
+              event.button !== 0
+            ) return;
+
+
+            draggedIcon =
+              icon;
+
+
+            const rect =
+              icon.getBoundingClientRect();
+
+
+            offsetX =
+              event.clientX -
+              rect.left;
+
+
+            offsetY =
+              event.clientY -
+              rect.top;
+
+
+            icon.classList.add(
+              "dragging"
+            );
+
+
+            event.preventDefault();
+
+          }
         );
 
-      y =
-        Math.max(
-          0,
-          Math.min(y, maxY)
+
+        /*
+         * =================================================
+         * TOUCH DRAG
+         * =================================================
+         */
+
+        icon.addEventListener(
+          "touchstart",
+          function (event) {
+
+            const touch =
+              event.touches[0];
+
+
+            const rect =
+              icon.getBoundingClientRect();
+
+
+            draggedIcon =
+              icon;
+
+
+            offsetX =
+              touch.clientX -
+              rect.left;
+
+
+            offsetY =
+              touch.clientY -
+              rect.top;
+
+
+            icon.classList.add(
+              "dragging"
+            );
+
+          },
+          {
+            passive: true
+          }
         );
 
-      draggedIcon.style.left =
-        x + "px";
+      }
+    );
 
-      draggedIcon.style.top =
-        y + "px";
-    });
+
+    /*
+     * =================================================
+     * MOUSE MOVE
+     * =================================================
+     */
+
+    document.addEventListener(
+      "mousemove",
+      function (event) {
+
+        if (
+          !draggedIcon
+        ) return;
+
+
+        const desktopRect =
+          desktop.getBoundingClientRect();
+
+
+        let x =
+          event.clientX -
+          desktopRect.left -
+          offsetX;
+
+
+        let y =
+          event.clientY -
+          desktopRect.top -
+          offsetY;
+
+
+        const maxX =
+          desktop.clientWidth -
+          draggedIcon.offsetWidth;
+
+
+        const maxY =
+          desktop.clientHeight -
+          draggedIcon.offsetHeight;
+
+
+        x =
+          Math.max(
+            0,
+            Math.min(
+              x,
+              maxX
+            )
+          );
+
+
+        y =
+          Math.max(
+            0,
+            Math.min(
+              y,
+              maxY
+            )
+          );
+
+
+        draggedIcon.style.left =
+          x + "px";
+
+
+        draggedIcon.style.top =
+          y + "px";
+
+      }
+    );
+
+
+    /*
+     * =================================================
+     * TOUCH MOVE
+     * =================================================
+     */
 
     document.addEventListener(
       "touchmove",
       function (event) {
 
-        if (!draggedIcon) return;
+        if (
+          !draggedIcon
+        ) return;
+
 
         const touch =
           event.touches[0];
 
+
         const desktopRect =
           desktop.getBoundingClientRect();
+
 
         let x =
           touch.clientX -
           desktopRect.left -
           offsetX;
 
+
         let y =
           touch.clientY -
           desktopRect.top -
           offsetY;
 
+
         const maxX =
           desktop.clientWidth -
           draggedIcon.offsetWidth;
+
 
         const maxY =
           desktop.clientHeight -
           draggedIcon.offsetHeight;
 
+
         x =
           Math.max(
             0,
-            Math.min(x, maxX)
+            Math.min(
+              x,
+              maxX
+            )
           );
+
 
         y =
           Math.max(
             0,
-            Math.min(y, maxY)
+            Math.min(
+              y,
+              maxY
+            )
           );
+
 
         draggedIcon.style.left =
           x + "px";
 
+
         draggedIcon.style.top =
           y + "px";
 
+
       },
-      { passive: false }
+      {
+        passive: false
+      }
     );
 
-    document.addEventListener("mouseup", function () {
 
-      if (!draggedIcon) return;
+    /*
+     * =================================================
+     * RELEASE ICON
+     * =================================================
+     */
 
-      saveIconPosition(draggedIcon);
+    document.addEventListener(
+      "mouseup",
+      function () {
 
-      draggedIcon.classList.remove("dragging");
+        if (
+          !draggedIcon
+        ) return;
 
-      draggedIcon = null;
-    });
 
-    document.addEventListener("touchend", function () {
+        /*
+         * Snap the icon when released.
+         */
 
-      if (!draggedIcon) return;
+        const currentX =
+          parseInt(
+            draggedIcon.style.left
+          ) || 0;
 
-      saveIconPosition(draggedIcon);
 
-      draggedIcon.classList.remove("dragging");
+        const currentY =
+          parseInt(
+            draggedIcon.style.top
+          ) || 0;
 
-      draggedIcon = null;
-    });
 
-    function saveIconPosition(icon) {
+        const snapped =
+          snapToGrid(
+            currentX,
+            currentY
+          );
+
+
+        draggedIcon.style.left =
+          snapped.x + "px";
+
+
+        draggedIcon.style.top =
+          snapped.y + "px";
+
+
+        saveIconPosition(
+          draggedIcon
+        );
+
+
+        draggedIcon.classList.remove(
+          "dragging"
+        );
+
+
+        draggedIcon =
+          null;
+
+      }
+    );
+
+
+    /*
+     * =================================================
+     * RELEASE TOUCH
+     * =================================================
+     */
+
+    document.addEventListener(
+      "touchend",
+      function () {
+
+        if (
+          !draggedIcon
+        ) return;
+
+
+        const currentX =
+          parseInt(
+            draggedIcon.style.left
+          ) || 0;
+
+
+        const currentY =
+          parseInt(
+            draggedIcon.style.top
+          ) || 0;
+
+
+        const snapped =
+          snapToGrid(
+            currentX,
+            currentY
+          );
+
+
+        draggedIcon.style.left =
+          snapped.x + "px";
+
+
+        draggedIcon.style.top =
+          snapped.y + "px";
+
+
+        saveIconPosition(
+          draggedIcon
+        );
+
+
+        draggedIcon.classList.remove(
+          "dragging"
+        );
+
+
+        draggedIcon =
+          null;
+
+      }
+    );
+
+
+    /*
+     * =================================================
+     * SAVE ICON POSITION
+     * =================================================
+     */
+
+    function saveIconPosition(
+      icon
+    ) {
 
       const key =
         "desktop-icon-" +
-        (icon.dataset.icon || "unknown");
+        (
+          icon.dataset.icon ||
+          "unknown"
+        );
+
 
       const position = {
 
-        x: parseInt(icon.style.left) || 0,
+        x:
+          parseInt(
+            icon.style.left
+          ) || 0,
 
-        y: parseInt(icon.style.top) || 0
+        y:
+          parseInt(
+            icon.style.top
+          ) || 0
+
       };
+
 
       localStorage.setItem(
         key,
-        JSON.stringify(position)
+        JSON.stringify(
+          position
+        )
       );
+
     }
 
-  });
+  }
+);
+
 </script>
 
-<!-- =================================================
+
+<!-- =====================================================
      KRIS COMPANION SYSTEM
-     ================================================= -->
+     ===================================================== -->
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
 
     const kris =
-      document.getElementById("kris-companion");
+      document.getElementById(
+        "kris-companion"
+      );
+
 
     const desktop =
-      document.getElementById("desktop");
+      document.getElementById(
+        "desktop"
+      );
+
 
     const dialogue =
-      document.getElementById("kris-dialogue");
+      document.getElementById(
+        "kris-dialogue"
+      );
+
 
     const dialogueText =
-      document.getElementById("kris-dialogue-text");
+      document.getElementById(
+        "kris-dialogue-text"
+      );
 
-    if (!kris || !desktop || !dialogue || !dialogueText) {
+
+    if (
+      !kris ||
+      !desktop ||
+      !dialogue ||
+      !dialogueText
+    ) {
+
       console.error(
         "Kris Companion: Missing required element."
       );
+
       return;
+
     }
+
+
+    /*
+     * =================================================
+     * KRIS SETTINGS
+     * =================================================
+     */
+
+    const KRIS_GRID_X = 20;
+
+    const KRIS_GRID_Y = 70;
+
+
+    /*
+     * How long Kris keeps talking.
+     *
+     * VERY FAST.
+     */
+
+    const NORMAL_TALK_TIME = 1500;
+
+    const REACTION_TIME = 1800;
+
 
     let dragging = false;
+
     let offsetX = 0;
+
     let offsetY = 0;
+
     let dialogueTimer = null;
 
- const quotes = [
-  "what are you doing.",
-  "you opened that?",
-  "wow.",
-  "i'm watching you.",
-  "this is productive.",
-  "you have too much free time.",
-  "i'm judging you.",
+    let randomCommentTimer = null;
 
-  // DELTARUNE REFERENCES
-  "have you tried pressing X?",
-  "the world is revolving.",
-  "don't forget your [HeartShapedObject].",
-  "you look like someone who would trust Spamton.",
-  "NOELLE WOULD NOT APPROVE OF THIS.",
-  "where's Susie when you need her?",
-  "i wonder what Ralsei is baking.",
-  "this desktop feels like a Dark World.",
-  "did you just open another window?",
-  "that's not very [[BIG SHOT]] of you.",
-  "HEY EVERY !! IT'S ME.",
-  "CHAOS, CHAOS!",
-  "you ever wonder why the fountain is still there?",
-  "Kris... where are we?",
-  "this isn't Castle Town.",
-  "the prophecy did not mention Windows XP.",
-  "Susie would probably break this computer.",
-  "Ralsei would probably say something nice.",
-  "Lancer would probably eat the mouse.",
-  "Queen would probably buy this computer.",
-  "Berdly would explain why he's better at Minesweeper.",
-  "Noelle is probably nervous about something right now.",
 
-  // RANDOM YAPPING
-  "okay, serious question. why are there so many icons?",
-  "you know you can just close the window, right?",
-  "i've been dancing this entire time.",
-  "my legs are getting tired. probably.",
-  "do you think the Recycle Bin actually recycles anything?",
-  "Internet Explorer? In this economy?",
-  "wait. you actually use this?",
-  "i have questions. many questions.",
-  "you could be doing literally anything else right now.",
-  "don't mind me. i'm just standing here.",
-  "...",
-  "... okay.",
-  "this feels like a side quest.",
-  "is this your save file?",
-  "i think we're both lost.",
-  "maybe try turning it off and on again.",
-  "i've seen worse desktops.",
-  "actually, no i haven't."
-];
+    /*
+     * =================================================
+     * RANDOM KRIS QUOTES
+     * =================================================
+     */
 
-    function randomQuote(list) {
+    const quotes = [
+
+      "what are you doing.",
+
+      "you opened that?",
+
+      "wow.",
+
+      "i'm watching you.",
+
+      "this is productive.",
+
+      "you have too much free time.",
+
+      "i'm judging you.",
+
+      "have you tried pressing X?",
+
+      "the world is revolving.",
+
+      "don't forget your [HeartShapedObject].",
+
+      "you look like someone who would trust Spamton.",
+
+      "NOELLE WOULD NOT APPROVE OF THIS.",
+
+      "where's Susie when you need her?",
+
+      "i wonder what Ralsei is baking.",
+
+      "this desktop feels like a Dark World.",
+
+      "did you just open another window?",
+
+      "that's not very [[BIG SHOT]] of you.",
+
+      "HEY EVERY !! IT'S ME.",
+
+      "CHAOS, CHAOS!",
+
+      "you ever wonder why the fountain is still there?",
+
+      "Kris... where are we?",
+
+      "this isn't Castle Town.",
+
+      "the prophecy did not mention Windows XP.",
+
+      "Susie would probably break this computer.",
+
+      "Ralsei would probably say something nice.",
+
+      "Lancer would probably eat the mouse.",
+
+      "Queen would probably buy this computer.",
+
+      "Berdly would explain why he's better at Minesweeper.",
+
+      "Noelle is probably nervous about something right now.",
+
+      "okay, serious question. why are there so many icons?",
+
+      "you know you can just close the window, right?",
+
+      "i've been dancing this entire time.",
+
+      "my legs are getting tired. probably.",
+
+      "do you think the Recycle Bin actually recycles anything?",
+
+      "Internet Explorer? In this economy?",
+
+      "wait. you actually use this?",
+
+      "i have questions. many questions.",
+
+      "you could be doing literally anything else right now.",
+
+      "don't mind me. i'm just standing here.",
+
+      "...",
+
+      "... okay.",
+
+      "this feels like a side quest.",
+
+      "is this your save file?",
+
+      "i think we're both lost.",
+
+      "maybe try turning it off and on again.",
+
+      "i've seen worse desktops.",
+
+      "actually, no i haven't.",
+
+      "WHY ARE YOU CLICKING THAT.",
+
+      "hello???",
+
+      "what is that.",
+
+      "WHY.",
+
+      "interesting choice.",
+
+      "fascinating.",
+
+      "i'm concerned.",
+
+      "this computer has seen things.",
+
+      "you are really committed to this.",
+
+      "stop opening things.",
+
+      "please.",
+
+      "Kris.exe has stopped responding.",
+
+      "my patience.exe has stopped responding.",
+
+      "this is getting out of hand.",
+
+      "okay this is actually kinda funny.",
+
+      "i wasn't expecting that.",
+
+      "you did WHAT.",
+
+      "bruh.",
+
+      "no way.",
+
+      "what.",
+
+      "what.",
+
+      "WHAT.",
+
+      "i'm just a little guy.",
+
+      "i live here now.",
+
+      "don't close me.",
+
+      "i know what you did.",
+
+      "i saw that.",
+
+      "I SAW THAT."
+
+    ];
+
+
+    /*
+     * =================================================
+     * DRAG QUOTES
+     * =================================================
+     */
+
+    const dragQuotes = [
+
+      "HEY.",
+
+      "WAIT.",
+
+      "WHERE ARE WE GOING.",
+
+      "why are you dragging me.",
+
+      "put me down.",
+
+      "NO.",
+
+      "STOP.",
+
+      "okay this is kinda fun.",
+
+      "weeeeee.",
+
+      "KRIS AIRLINES.",
+
+      "i am being relocated.",
+
+      "WHERE IS MY HOUSE.",
+
+      "you can't just move me around.",
+
+      "bro i'm not an icon.",
+
+      "okay okay okay.",
+
+      "let me dance over here.",
+
+      "destination: unknown.",
+
+      "this is not Castle Town."
+
+    ];
+
+
+    /*
+     * =================================================
+     * OPENING REACTIONS
+     * =================================================
+     */
+
+    const openingReactions = {
+
+      "My Computer": [
+
+        "MY COMPUTER??",
+
+        "you opened your own computer.",
+
+        "very meta.",
+
+        "welcome to My Computer.",
+
+        "wow. computers inside computers.",
+
+        "is this where i live now?"
+
+      ],
+
+
+      "Recycle Bin (empty)": [
+
+        "the void.",
+
+        "there is NOTHING in there.",
+
+        "you threw nothing away.",
+
+        "empty. just like my soul.",
+
+        "the Recycle Bin has been spared.",
+
+        "what were you expecting to find?"
+
+      ],
+
+
+      "Internet Explorer 6": [
+
+        "INTERNET EXPLORER?!",
+
+        "WHY.",
+
+        "you actually opened Internet Explorer.",
+
+        "this browser is older than half the internet.",
+
+        "please don't browse anything.",
+
+        "the internet is not ready for this."
+
+      ],
+
+
+      "Minesweeper": [
+
+        "MINESWEEPER.",
+
+        "don't click the bombs.",
+
+        "this is serious business.",
+
+        "Berdly would be screaming right now.",
+
+        "okay. time to gamble.",
+
+        "one wrong click and it's over."
+
+      ],
+
+
+      "Space Cadet Pinball": [
+
+        "PINBALL?!",
+
+        "SPACE CADET.",
+
+        "now THIS is a good game.",
+
+        "send it.",
+
+        "FLIPPERS.",
+
+        "i'm rooting for you."
+
+      ],
+
+
+      "Paint": [
+
+        "PAINT.",
+
+        "time to draw something stupid.",
+
+        "MS Paint my beloved.",
+
+        "make me a masterpiece.",
+
+        "i hope you draw me.",
+
+        "pixel art time."
+
+      ],
+
+
+      "Notepad": [
+
+        "NOTEPAD.",
+
+        "time to write secrets.",
+
+        "don't type anything embarrassing.",
+
+        "i can see what you're writing.",
+
+        "probably.",
+
+        "this is where lore begins."
+
+      ]
+
+    };
+
+
+    /*
+     * =================================================
+     * SPECIAL WINAMP REACTIONS
+     * =================================================
+     */
+
+    const winampReactions = [
+
+      "WINAMP.",
+
+      "IT REALLY WHIPS THE LLAMA'S ASS.",
+
+      "oh we're listening to music now.",
+
+      "music time.",
+
+      "WINAMP?? in 2026??",
+
+      "excellent choice.",
+
+      "play something good."
+
+    ];
+
+
+    /*
+     * =================================================
+     * RANDOM QUOTE
+     * =================================================
+     */
+
+    function randomQuote(
+      list
+    ) {
+
       return list[
         Math.floor(
-          Math.random() * list.length
+          Math.random() *
+          list.length
         )
       ];
+
     }
 
-    function talk(message, duration = 3500) {
 
-      clearTimeout(dialogueTimer);
+    /*
+     * =================================================
+     * TALK
+     * =================================================
+     */
 
-      dialogueText.textContent = message;
+    function talk(
+      message,
+      duration = NORMAL_TALK_TIME
+    ) {
 
-      dialogue.classList.remove("hidden");
+      clearTimeout(
+        dialogueTimer
+      );
 
-      dialogueTimer = setTimeout(function () {
-        dialogue.classList.add("hidden");
-      }, duration);
+
+      dialogueText.textContent =
+        message;
+
+
+      dialogue.classList.remove(
+        "hidden"
+      );
+
+
+      dialogueTimer =
+        setTimeout(
+          function () {
+
+            dialogue.classList.add(
+              "hidden"
+            );
+
+          },
+          duration
+        );
+
     }
 
-    /* DRAG KRIS */
 
-    kris.addEventListener("mousedown", function (event) {
+    /*
+     * =================================================
+     * REACT TO WINDOW
+     * =================================================
+     */
 
-      if (event.button !== 0) return;
+    window.krisReactToWindow =
+      function (
+        windowName
+      ) {
 
-      /* Stop Kris clicks from ever reaching the desktop/icon drag system */
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
+        let reaction;
 
-      dragging = true;
 
-      const rect =
-        kris.getBoundingClientRect();
+        if (
+          openingReactions[
+            windowName
+          ]
+        ) {
 
-      offsetX =
-        event.clientX - rect.left;
+          reaction =
+            randomQuote(
+              openingReactions[
+                windowName
+              ]
+            );
 
-      offsetY =
-        event.clientY - rect.top;
+        }
 
-      kris.classList.add("dragging");
+        else {
 
-      talk(
-        randomQuote(dragQuotes),
-        1800
-      );
-    }, true);
+          reaction =
+            randomQuote(
+              quotes
+            );
 
-    document.addEventListener("mousemove", function (event) {
+        }
 
-      if (!dragging) return;
 
-      event.preventDefault();
-      event.stopPropagation();
+        /*
+         * React VERY quickly.
+         */
 
-      const desktopRect =
-        desktop.getBoundingClientRect();
-
-      let x =
-        event.clientX -
-        desktopRect.left -
-        offsetX;
-
-      let y =
-        event.clientY -
-        desktopRect.top -
-        offsetY;
-
-      const maxX =
-        Math.max(
-          0,
-          desktop.clientWidth -
-          kris.offsetWidth
+        talk(
+          reaction,
+          REACTION_TIME
         );
 
-      const maxY =
-        Math.max(
-          0,
-          desktop.clientHeight -
-          kris.offsetHeight
+      };
+
+
+    /*
+     * =================================================
+     * INTERCEPT openWindow
+     * =================================================
+     *
+     * This makes Kris react whenever your existing
+     * openWindow() function is called.
+     */
+
+    if (
+      typeof window.openWindow ===
+      "function"
+    ) {
+
+      const originalOpenWindow =
+        window.openWindow;
+
+
+      window.openWindow =
+        function (
+          windowName
+        ) {
+
+          /*
+           * First let the actual website
+           * open the window.
+           */
+
+          const result =
+            originalOpenWindow.apply(
+              this,
+              arguments
+            );
+
+
+          /*
+           * Then let Kris react.
+           */
+
+          setTimeout(
+            function () {
+
+              if (
+                window.krisReactToWindow
+              ) {
+
+                window.krisReactToWindow(
+                  windowName
+                );
+
+              }
+
+            },
+            80
+          );
+
+
+          return result;
+
+        };
+
+    }
+
+
+    /*
+     * =================================================
+     * INTERCEPT WINAMP
+     * =================================================
+     */
+
+    if (
+      typeof window.openRawWinamp ===
+      "function"
+    ) {
+
+      const originalWinamp =
+        window.openRawWinamp;
+
+
+      window.openRawWinamp =
+        function () {
+
+          const result =
+            originalWinamp.apply(
+              this,
+              arguments
+            );
+
+
+          setTimeout(
+            function () {
+
+              talk(
+                randomQuote(
+                  winampReactions
+                ),
+                REACTION_TIME
+              );
+
+            },
+            80
+          );
+
+
+          return result;
+
+        };
+
+    }
+
+
+    /*
+     * =================================================
+     * KRIS GRID SNAP
+     * =================================================
+     */
+
+    function snapKrisToGrid(
+      x,
+      y
+    ) {
+
+      return {
+
+        x:
+          Math.round(
+            x / KRIS_GRID_X
+          ) * KRIS_GRID_X,
+
+        y:
+          Math.round(
+            y / KRIS_GRID_Y
+          ) * KRIS_GRID_Y
+
+      };
+
+    }
+
+
+    /*
+     * =================================================
+     * DRAG KRIS
+     * =================================================
+     */
+
+    kris.addEventListener(
+      "mousedown",
+      function (event) {
+
+        if (
+          event.button !== 0
+        ) return;
+
+
+        /*
+         * CRITICAL:
+         *
+         * Stop the event BEFORE the desktop icon
+         * drag system can see it.
+         *
+         * This prevents My Computer or another icon
+         * from being dragged together with Kris.
+         */
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        event.stopImmediatePropagation();
+
+
+        dragging = true;
+
+
+        const rect =
+          kris.getBoundingClientRect();
+
+
+        offsetX =
+          event.clientX -
+          rect.left;
+
+
+        offsetY =
+          event.clientY -
+          rect.top;
+
+
+        kris.classList.add(
+          "dragging"
         );
 
-      x =
-        Math.max(
-          0,
-          Math.min(x, maxX)
+
+        kris.classList.add(
+          "grid-preview"
         );
 
-      y =
-        Math.max(
-          0,
-          Math.min(y, maxY)
+
+        talk(
+          randomQuote(
+            dragQuotes
+          ),
+          1200
         );
 
-      kris.style.left =
-        x + "px";
+      },
+      true
+    );
 
-      kris.style.top =
-        y + "px";
-    }, true);
 
-    document.addEventListener("mouseup", function (event) {
+    /*
+     * =================================================
+     * DRAG KRIS WITH MOUSE
+     * =================================================
+     */
 
-      if (!dragging) return;
+    document.addEventListener(
+      "mousemove",
+      function (event) {
 
-      event.preventDefault();
-      event.stopPropagation();
+        if (!dragging) return;
 
-      dragging = false;
 
-      kris.classList.remove("dragging");
+        event.preventDefault();
 
-      localStorage.setItem(
-        "kris-companion-position",
-        JSON.stringify({
-          x:
-            parseInt(kris.style.left) || 0,
-          y:
-            parseInt(kris.style.top) || 0
-        })
-      );
-    }, true);
+        event.stopPropagation();
 
-    /* RESTORE KRIS POSITION */
+
+        const desktopRect =
+          desktop.getBoundingClientRect();
+
+
+        let x =
+          event.clientX -
+          desktopRect.left -
+          offsetX;
+
+
+        let y =
+          event.clientY -
+          desktopRect.top -
+          offsetY;
+
+
+        const maxX =
+          Math.max(
+            0,
+            desktop.clientWidth -
+            kris.offsetWidth
+          );
+
+
+        const maxY =
+          Math.max(
+            0,
+            desktop.clientHeight -
+            kris.offsetHeight
+          );
+
+
+        x =
+          Math.max(
+            0,
+            Math.min(
+              x,
+              maxX
+            )
+          );
+
+
+        y =
+          Math.max(
+            0,
+            Math.min(
+              y,
+              maxY
+            )
+          );
+
+
+        /*
+         * =================================================
+         * LIVE GRID SNAP
+         * =================================================
+         *
+         * Kris actually moves along the same grid
+         * instead of only snapping when released.
+         */
+
+        const snapped =
+          snapKrisToGrid(
+            x,
+            y
+          );
+
+
+        kris.style.left =
+          snapped.x +
+          "px";
+
+
+        kris.style.top =
+          snapped.y +
+          "px";
+
+      },
+      true
+    );
+
+
+    /*
+     * =================================================
+     * RELEASE KRIS
+     * =================================================
+     */
+
+    document.addEventListener(
+      "mouseup",
+      function (event) {
+
+        if (!dragging) return;
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        dragging = false;
+
+
+        /*
+         * Make absolutely sure the final position
+         * is on the grid.
+         */
+
+        const currentX =
+          parseInt(
+            kris.style.left
+          ) || 0;
+
+
+        const currentY =
+          parseInt(
+            kris.style.top
+          ) || 0;
+
+
+        const snapped =
+          snapKrisToGrid(
+            currentX,
+            currentY
+          );
+
+
+        kris.style.left =
+          snapped.x +
+          "px";
+
+
+        kris.style.top =
+          snapped.y +
+          "px";
+
+
+        kris.classList.remove(
+          "dragging"
+        );
+
+
+        kris.classList.remove(
+          "grid-preview"
+        );
+
+
+        /*
+         * Save Kris position.
+         */
+
+        localStorage.setItem(
+          "kris-companion-position",
+          JSON.stringify({
+
+            x:
+              snapped.x,
+
+            y:
+              snapped.y
+
+          })
+        );
+
+
+        /*
+         * Immediately yap after being placed.
+         */
+
+        talk(
+          randomQuote(
+            dragQuotes
+          ),
+          1000
+        );
+
+      },
+      true
+    );
+
+
+    /*
+     * =================================================
+     * TOUCH SUPPORT
+     * =================================================
+     */
+
+    kris.addEventListener(
+      "touchstart",
+      function (event) {
+
+        const touch =
+          event.touches[0];
+
+
+        const rect =
+          kris.getBoundingClientRect();
+
+
+        dragging = true;
+
+
+        offsetX =
+          touch.clientX -
+          rect.left;
+
+
+        offsetY =
+          touch.clientY -
+          rect.top;
+
+
+        kris.classList.add(
+          "dragging"
+        );
+
+
+        kris.classList.add(
+          "grid-preview"
+        );
+
+
+        talk(
+          randomQuote(
+            dragQuotes
+          ),
+          1200
+        );
+
+      },
+      {
+        passive: true
+      }
+    );
+
+
+    /*
+     * =================================================
+     * TOUCH MOVE
+     * =================================================
+     */
+
+    document.addEventListener(
+      "touchmove",
+      function (event) {
+
+        if (!dragging) return;
+
+
+        event.preventDefault();
+
+
+        const touch =
+          event.touches[0];
+
+
+        const desktopRect =
+          desktop.getBoundingClientRect();
+
+
+        let x =
+          touch.clientX -
+          desktopRect.left -
+          offsetX;
+
+
+        let y =
+          touch.clientY -
+          desktopRect.top -
+          offsetY;
+
+
+        const maxX =
+          Math.max(
+            0,
+            desktop.clientWidth -
+            kris.offsetWidth
+          );
+
+
+        const maxY =
+          Math.max(
+            0,
+            desktop.clientHeight -
+            kris.offsetHeight
+          );
+
+
+        x =
+          Math.max(
+            0,
+            Math.min(
+              x,
+              maxX
+            )
+          );
+
+
+        y =
+          Math.max(
+            0,
+            Math.min(
+              y,
+              maxY
+            )
+          );
+
+
+        const snapped =
+          snapKrisToGrid(
+            x,
+            y
+          );
+
+
+        kris.style.left =
+          snapped.x +
+          "px";
+
+
+        kris.style.top =
+          snapped.y +
+          "px";
+
+      },
+      {
+        passive: false
+      }
+    );
+
+
+    /*
+     * =================================================
+     * TOUCH END
+     * =================================================
+     */
+
+    document.addEventListener(
+      "touchend",
+      function (event) {
+
+        if (!dragging) return;
+
+
+        dragging = false;
+
+
+        const currentX =
+          parseInt(
+            kris.style.left
+          ) || 0;
+
+
+        const currentY =
+          parseInt(
+            kris.style.top
+          ) || 0;
+
+
+        const snapped =
+          snapKrisToGrid(
+            currentX,
+            currentY
+          );
+
+
+        kris.style.left =
+          snapped.x +
+          "px";
+
+
+        kris.style.top =
+          snapped.y +
+          "px";
+
+
+        kris.classList.remove(
+          "dragging"
+        );
+
+
+        kris.classList.remove(
+          "grid-preview"
+        );
+
+
+        localStorage.setItem(
+          "kris-companion-position",
+          JSON.stringify({
+
+            x:
+              snapped.x,
+
+            y:
+              snapped.y
+
+          })
+        );
+
+      }
+    );
+
+
+    /*
+     * =================================================
+     * RESTORE KRIS POSITION
+     * =================================================
+     */
 
     const savedPosition =
       localStorage.getItem(
         "kris-companion-position"
       );
 
+
     if (savedPosition) {
 
       try {
 
         const position =
-          JSON.parse(savedPosition);
+          JSON.parse(
+            savedPosition
+          );
+
 
         kris.style.left =
-          position.x + "px";
+          position.x +
+          "px";
+
 
         kris.style.top =
-          position.y + "px";
+          position.y +
+          "px";
 
-      } catch (error) {
+      }
+
+      catch (error) {
 
         console.warn(
           "Kris Companion: Couldn't restore position.",
@@ -929,39 +2469,118 @@
 
     }
 
-    /* FIRST MESSAGE */
 
-    setTimeout(function () {
-      talk(
-        "oh. you found me.",
-        4000
-      );
-    }, 1500);
+    /*
+     * =================================================
+     * FIRST MESSAGE
+     * =================================================
+     */
 
-    /* RANDOM COMMENTS */
+    setTimeout(
+      function () {
+
+        talk(
+          "oh. you found me.",
+          2500
+        );
+
+      },
+      1000
+    );
+
+
+    /*
+     * =================================================
+     * FAST RANDOM YAPPING
+     * =================================================
+     *
+     * Kris now talks MUCH more frequently.
+     *
+     * Instead of waiting a long time between
+     * comments, he picks a new random delay
+     * between roughly 3 and 7 seconds.
+     */
 
     function randomComment() {
 
       if (!dragging) {
+
         talk(
-          randomQuote(quotes)
+          randomQuote(
+            quotes
+          ),
+          NORMAL_TALK_TIME
         );
+
       }
 
-      const nextDelay =
-        100 +
-        Math.random() * 50;
 
-      setTimeout(
-        randomComment,
-        nextDelay
-      );
+      const nextDelay =
+        3000 +
+        Math.random() * 4000;
+
+
+      randomCommentTimer =
+        setTimeout(
+          randomComment,
+          nextDelay
+        );
+
     }
+
 
     setTimeout(
       randomComment,
-      8000
+      3500
     );
 
-  });
+
+    /*
+     * =================================================
+     * EXTRA ULTRA-FAST BURSTS
+     * =================================================
+     *
+     * Sometimes Kris gets REALLY annoying and
+     * starts yapping multiple times in quick
+     * succession.
+     */
+
+    function yapBurst() {
+
+      if (!dragging) {
+
+        talk(
+          randomQuote(
+            quotes
+          ),
+          900
+        );
+
+      }
+
+
+      const nextBurst =
+        15000 +
+        Math.random() * 25000;
+
+
+      setTimeout(
+        yapBurst,
+        nextBurst
+      );
+
+    }
+
+
+    setTimeout(
+      yapBurst,
+      12000
+    );
+
+  }
+);
+
 </script>
+
+</body>
+</html>
