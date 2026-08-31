@@ -27,7 +27,9 @@
   padding-left: 10px;
   -webkit-box-align: center;
   align-items: center;
-  background: rgb(9, 33, 120);
+
+  /* Rose */
+  background: rgb(134, 31, 67);
 }
 
 .hAvTsp .header__text {
@@ -44,13 +46,16 @@
 
 .hAvTsp .content {
   flex: 1 1 0%;
+
+  /* Rose XP gradient */
   background: linear-gradient(
     to right,
-    rgb(51, 73, 224) 0%,
-    rgb(97, 126, 230) 47%,
-    rgb(97, 126, 230) 53%,
-    rgb(51, 73, 224) 100%
+    rgb(196, 49, 101) 0%,
+    rgb(229, 54, 130) 47%,
+    rgb(229, 54, 130) 53%,
+    rgb(196, 49, 101) 100%
   );
+
   display: flex;
   -webkit-box-align: center;
   align-items: center;
@@ -67,6 +72,7 @@
   top: 0px;
   left: 0px;
   right: 0px;
+
   background: linear-gradient(
     to right,
     transparent 0px,
@@ -110,7 +116,10 @@ element.style {
 
 .hAvTsp .Log_Off_Footer {
   height: 42px;
-  background: rgb(9, 33, 120);
+
+  /* Rose */
+  background: rgb(134, 31, 67);
+
   display: flex;
   -webkit-box-pack: end;
   justify-content: flex-end;
@@ -126,15 +135,23 @@ element.style {
   margin-right: 10px;
   height: 16px;
   border-radius: 1px;
-  box-shadow: rgb(0, 5, 176) 2px 2px 4px 1px, white 2px 2px 2px 0px,
-    skyblue 0px 0px 0px 1px inset, skyblue 2px -2px inset;
+
+  box-shadow:
+    rgb(176, 40, 82) 2px 2px 4px 1px,
+    white 2px 2px 2px 0px,
+    rgb(255, 137, 171) 0px 0px 0px 1px inset,
+    rgb(255, 137, 171) 2px -2px inset;
+
   border: none;
   outline: none;
 }
 
 .hAvTsp .footer__button:hover {
-  box-shadow: black 1px 1px, white 1px 1px 2px 0px, orange 0px 0px 0px 1px inset,
-    orange 2px -2px inset;
+  box-shadow:
+    black 1px 1px,
+    white 1px 1px 2px 0px,
+    rgb(218, 91, 130) 0px 0px 0px 1px inset,
+    rgb(218, 91, 130) 2px -2px inset;
 }
 
 .hAvTsp .footer__button:hover:active {
@@ -153,6 +170,7 @@ element.style {
 .button-container.disable .button-img:hover {
   filter: none;
 }
+
 .button-container.disable .button-img:active {
   filter: none;
 }
