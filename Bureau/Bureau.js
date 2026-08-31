@@ -806,10 +806,15 @@ webamp.renderWhenReady(winampDiv).then(() => {
 
           updateTaskbarHighlight();
         }
-      );
-    }
+      );    }
   });
-    });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+});
+
 
     webamp.onClose(() => {
       if (taskbarItem) taskbarItem.remove();
@@ -5775,11 +5780,17 @@ function writeDateTime() {
 
 
   oneko.src =
-    "/Oneko/oneko.js";
+    "https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.js";
 
 
   oneko.dataset.oneko =
     "true";
+
+  // The upstream script defaults to oneko.gif beside itself.
+  // Point it explicitly at the upstream image so a missing local
+  // /Oneko/oneko.gif cannot produce a 404.
+  oneko.dataset.cat =
+    "https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif";
 
 
   oneko.async = true;
@@ -5791,202 +5802,3 @@ function writeDateTime() {
 
 })();
   
-
-
-/* ============================================================
-   FINAL ICON COLLISION GUARD
-   ============================================================ */
-(function installFinalIconCollisionGuard() {
-  "use strict";
-
-  const COLUMNS = 19;
-  const ROWS = 8;
-
-  function init() {
-    const desktop = document.getElementById("desktop");
-    if (!desktop) return;
-
-    const icons = () => Array.from(desktop.querySelectorAll(".icon"));
-
-    function grid() {
-      return {
-        w: desktop.clientWidth / COLUMNS,
-        h: desktop.clientHeight / ROWS
-      };
-    }
-
-    function getPos(icon) {
-      const x = parseFloat(icon.style.left);
-      const y = parseFloat(icon.style.top);
-      return {
-        x: Number.isFinite(x) ? x : icon.offsetLeft,
-        y: Number.isFinite(y) ? y : icon.offsetTop
-      };
-    }
-
-    function rect(icon, x, y) {
-      return {
-        left: x,
-        top: y,
-        right: x + icon.offsetWidth,
-        bottom: y + icon.offsetHeight
-      };
-    }
-
-    function overlaps(a, b) {
-      return (
-        a.left < b.right &&
-        a.right > b.left &&
-        a.top < b.bottom &&
-        a.bottom > b.top
-      );
-    }
-
-    function inside(icon, x, y) {
-      return (
-        x >= 0 &&
-        y >= 0 &&
-        x + icon.offsetWidth <= desktop.clientWidth &&
-        y + icon.offsetHeight <= desktop.clientHeight
-      );
-    }
-
-    function nearestFree(icon, wantedX, wantedY, blocked) {
-      const { w, h } = grid();
-      const wantedCol = Math.round(wantedX / w);
-      const wantedRow = Math.round(wantedY / h);
-      const candidates = [];
-
-      for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLUMNS; col++) {
-          const x = Math.round(col * w);
-          const y = Math.round(row * h);
-          if (!inside(icon, x, y)) continue;
-
-          candidates.push({
-            x,
-            y,
-            distance:
-              (col - wantedCol) ** 2 +
-              (row - wantedRow) ** 2
-          });
-        }
-      }
-
-      candidates.sort((a, b) => a.distance - b.distance);
-
-      return (
-        candidates.find((candidate) => {
-          const r = rect(icon, candidate.x, candidate.y);
-          return !blocked.some((b) => overlaps(r, b));
-        }) ||
-        candidates[0] ||
-        { x: 0, y: 0 }
-      );
-    }
-
-    function save(icon) {
-      if (!icon.dataset.icon) return;
-
-      localStorage.setItem(
-        "desktop-icon-" + icon.dataset.icon,
-        JSON.stringify({
-          x: Math.round(parseFloat(icon.style.left) || 0),
-          y: Math.round(parseFloat(icon.style.top) || 0)
-        })
-      );
-    }
-
-    function resolveAfterDrag() {
-      const all = icons();
-      const selected = all.filter((icon) =>
-        icon.classList.contains("desktop-selected")
-      );
-
-      if (!selected.length) return;
-
-      const selectedSet = new Set(selected);
-      const blocked = [];
-
-      // Non-selected icons are hard obstacles.
-      for (const icon of all) {
-        if (selectedSet.has(icon)) continue;
-        const p = getPos(icon);
-        blocked.push(rect(icon, p.x, p.y));
-      }
-
-      // Keep the group together as much as possible by processing
-      // icons in their current top-to-bottom / left-to-right order.
-      selected.sort((a, b) => {
-        const pa = getPos(a);
-        const pb = getPos(b);
-        return pa.y - pb.y || pa.x - pb.x;
-      });
-
-      for (const icon of selected) {
-        const p = getPos(icon);
-        const target = nearestFree(icon, p.x, p.y, blocked);
-
-        icon.style.left = target.x + "px";
-        icon.style.top = target.y + "px";
-        icon.classList.remove("dragging");
-
-        blocked.push(rect(icon, target.x, target.y));
-        save(icon);
-      }
-    }
-
-    function normalizeInitialLayout() {
-      const blocked = [];
-
-      for (const icon of icons()) {
-        const p = getPos(icon);
-        const target = nearestFree(icon, p.x, p.y, blocked);
-
-        icon.style.left = target.x + "px";
-        icon.style.top = target.y + "px";
-
-        blocked.push(rect(icon, target.x, target.y));
-        save(icon);
-      }
-    }
-
-    // Runs after the existing drag system finishes.
-    document.addEventListener("mouseup", resolveAfterDrag, true);
-
-    // Prevent duplicate saved positions from making icons overlap on load.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(normalizeInitialLayout);
-    });
-
-    // Keep icons on-screen after resizing without randomly rearranging them.
-    window.addEventListener("resize", () => {
-      for (const icon of icons()) {
-        const p = getPos(icon);
-        const x = Math.max(
-          0,
-          Math.min(
-            p.x,
-            Math.max(0, desktop.clientWidth - icon.offsetWidth)
-          )
-        );
-        const y = Math.max(
-          0,
-          Math.min(
-            p.y,
-            Math.max(0, desktop.clientHeight - icon.offsetHeight)
-          )
-        );
-
-        icon.style.left = Math.round(x) + "px";
-        icon.style.top = Math.round(y) + "px";
-      }
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
-  }
-})();
