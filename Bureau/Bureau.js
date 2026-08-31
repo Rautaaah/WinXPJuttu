@@ -1,4 +1,3 @@
-
 let startMenuHTML = "";
 let openWindowHTML = "";
 let openLogOffHTML = "";
@@ -26,21 +25,21 @@ async function loadHTML(filePath) {
   return await res.text();
 }
 
-loadHTML("/Start_Menu/Base/Start_Menu.html")
-  .then((html) => (startMenuHTML = html))
-  .catch((error) => console.error("Start Menu failed to load:", error));
+loadHTML("/Start_Menu/Base/Start_Menu.html").then(
+  (html) => (startMenuHTML = html)
+);
 
-loadHTML("/Open_Windows/Base/Open_Window.html")
-  .then((html) => (openWindowHTML = html))
-  .catch((error) => console.error("Window template failed to load:", error));
+loadHTML("/Open_Windows/Base/Open_Window.html").then(
+  (html) => (openWindowHTML = html)
+);
 
-loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html")
-  .then((html) => (openLogOffHTML = html))
-  .catch((error) => console.error("Log Off failed to load:", error));
+loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html").then(
+  (html) => (openLogOffHTML = html)
+);
 
-loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html")
-  .then((html) => (turnOffComputerHTML = html))
-  .catch((error) => console.error("Turn Off Computer failed to load:", error));
+loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html").then(
+  (html) => (turnOffComputerHTML = html)
+);
 
 function playSoundOnPage(path, defaultSoundPath, onLoadCallback) {
   if (window.location.pathname.endsWith(path)) {
@@ -663,335 +662,93 @@ function observeMinesweeperTooltipLoad() {
 }
 
 function openRawWinamp() {
-  if (
-    document.getElementById("app") ||
-    document.getElementById("webamp")
-  ) {
-    return;
-  }
+  if (document.getElementById("app") || document.getElementById("webamp")) return;
 
-  const winampDiv =
-    document.createElement("div");
-
+  const winampDiv = document.createElement("div");
   winampDiv.id = "app";
-
   winampDiv.style.position = "absolute";
   winampDiv.style.left = "0";
   winampDiv.style.top = "0";
-
   document.body.appendChild(winampDiv);
 
-  const script =
-    document.createElement("script");
+  const taskbarId = "taskbar-Winamp";
+  const script = document.createElement("script");
+  script.src = "https://unpkg.com/webamp@latest/built/webamp.bundle.min.js";
 
-  script.src =
-    "https://unpkg.com/webamp@latest/built/webamp.bundle.min.js";
+  const cleanup = () => {
+    const item = document.getElementById(taskbarId);
+    if (item) item.remove();
+    if (winampDiv.parentNode) winampDiv.remove();
+    if (script.parentNode) script.remove();
+    const container = document.getElementById("webamp");
+    if (container && container.parentNode) container.remove();
+    if (typeof updateTaskbarHighlight === "function") updateTaskbarHighlight();
+  };
+
+  script.onerror = () => {
+    console.error("Failed to load Webamp.");
+    cleanup();
+  };
 
   script.onload = () => {
     if (typeof Webamp === "undefined") {
-      console.error("Webamp is not loaded!");
+      console.error("Webamp is not loaded.");
+      cleanup();
       return;
     }
 
-// Clear Webamp's saved playlist/state so it starts fresh
-localStorage.removeItem("webamp");
-sessionStorage.removeItem("webamp");
-
-const webamp = new Webamp({
-  initialTracks: [
-    {
-      metaData: {
-        artist: "Aikakone",
-        title: "Anna mun bailaa",
-      },
-      url: "/Assets/Sounds/Anna mun bailaa.mp3",
-    },
-    {
-      metaData: {
-        artist: "Aikakone",
-        title: "Odota",
-      },
-      url: "/Assets/Sounds/Odota.mp3",
-    },
-    {
-      metaData: {
-        artist: "Movetron",
-        title: "Romeo Ja Julia (Original Mix)",
-      },
-      url: "/Assets/Sounds/Romeo Ja Julia (Original Mix).mp3",
-    },
-        {
-      metaData: {
-        artist: "Evangelion Finally",
-        title: "KOMM, SUSSER TOD M-10 Director's Edit Version",
-      },
-      url: "/Assets/Sounds/KOMM, SUSSER TOD M-10 Directors Edit Version _ Evangelion Finally.mp3",
-    },
-  ],
-});
-
-webamp.renderWhenReady(winampDiv).then(() => {
-  const observer = new MutationObserver(() => {
-    const webampDiv = document.getElementById("webamp");
-
-    if (webampDiv) {
-      observer.disconnect();
-
-      const classObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.attributeName === "class") {
-            if (
-              webampDiv.classList.contains("window-inactive")
-            ) {
-              webampDiv.classList.remove("window-inactive");
-            }
-
-            const inactiveChildren =
-              webampDiv.querySelectorAll(".window-inactive");
-
-            inactiveChildren.forEach((el) => {
-              el.classList.remove("window-inactive");
-
-              el.style.setProperty(
-                "background-color",
-                "transparent",
-                "important"
-              );
-            });
-
-            webampDiv.style.setProperty(
-              "background-color",
-              "",
-              "important"
-            );
-          }
-        });
-      });
-
-      classObserver.observe(webampDiv, {
-        attributes: true,
-        subtree: true,
-      });
-
-      zIndexCounter++;
-
-      webampDiv.style.zIndex =
-        zIndexCounter.toString();
-
-      webampDiv.classList.add(
-        "window",
-        "no-bg"
-      );
-
-      updateTaskbarHighlight();
-
-      const windowEl =
-        document.querySelector(
-          "#webamp .window"
-        );
-
-      // Do not force Webamp's dimensions. Webamp manages its own window size.
-      // The previous observer repeatedly forced width/height to 0px.
-      if (!windowEl) {
-        console.warn("Webamp window element was not found after render.");
-      }
-
-      webampDiv.addEventListener(
-        "mousedown",
-        () => {
-          zIndexCounter++;
-
-          webampDiv.style.zIndex =
-            zIndexCounter;
-
-          updateTaskbarHighlight();
-        }
-      );    }
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-});
-
-
-    webamp.onClose(() => {
-      if (taskbarItem) taskbarItem.remove();
-
-      if (winampDiv.parentNode) {
-        winampDiv.parentNode.removeChild(winampDiv);
-      }
-
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-
-      const webampContainer =
-        document.getElementById("webamp");
-
-      if (
-        webampContainer &&
-        webampContainer.parentNode
-      ) {
-        webampContainer.parentNode.removeChild(
-          webampContainer
-        );
-      }
+    const webamp = new Webamp({
+      initialTracks: [
+        { metaData: { artist: "Aikakone", title: "Anna mun bailaa" }, url: "/Assets/Sounds/Anna mun bailaa.mp3" },
+        { metaData: { artist: "Aikakone", title: "Odota" }, url: "/Assets/Sounds/Odota.mp3" },
+        { metaData: { artist: "Movetron", title: "Romeo Ja Julia (Original Mix)" }, url: "/Assets/Sounds/Romeo Ja Julia (Original Mix).mp3" },
+        { metaData: { artist: "Evangelion Finally", title: "KOMM, SUSSER TOD M-10 Director's Edit Version" }, url: "/Assets/Sounds/KOMM, SUSSER TOD M-10 Directors Edit Version _ Evangelion Finally.mp3" }
+      ]
     });
 
-    setTimeout(() => {
-      const closeBtn =
-        document.getElementById("close");
+    webamp.renderWhenReady(winampDiv).then(() => {
+      const webampEl = document.getElementById("webamp");
+      if (!webampEl) return;
 
-      if (closeBtn) {
-        closeBtn.addEventListener(
-          "click",
-          () => {
-            if (winampDiv.parentNode) {
-              winampDiv.parentNode.removeChild(
-                winampDiv
-              );
-            }
+      zIndexCounter++;
+      webampEl.style.zIndex = String(zIndexCounter);
+      webampEl.classList.add("window", "no-bg");
 
-            if (script.parentNode) {
-              script.parentNode.removeChild(
-                script
-              );
-            }
+      const item = document.getElementById(taskbarId);
+      if (item) item.remove();
 
-            const webampContainer =
-              document.getElementById("webamp");
+      const taskbarItem = document.createElement("div");
+      taskbarItem.id = taskbarId;
+      taskbarItem.className = "taskbar-item";
+      taskbarItem.innerHTML = '<img src="/Assets/Images/Winamp-logo.png" width="16"><span>Winamp</span>';
+      taskbarItem.onmousedown = () => {
+        const win = document.getElementById("webamp");
+        if (!win) return;
+        if (getComputedStyle(win).display === "none") win.style.display = "block";
+        zIndexCounter++;
+        win.style.zIndex = String(zIndexCounter);
+        if (typeof updateTaskbarHighlight === "function") updateTaskbarHighlight();
+      };
 
-            if (
-              webampContainer &&
-              webampContainer.parentNode
-            ) {
-              webampContainer.parentNode.removeChild(
-                webampContainer
-              );
+      const taskbar = document.getElementById("taskbar");
+      if (taskbar) taskbar.appendChild(taskbarItem);
 
-              updateTaskbarHighlight();
-            }
-          }
-        );
-      }
-    }, 1150);
+      webampEl.addEventListener("mousedown", () => {
+        zIndexCounter++;
+        webampEl.style.zIndex = String(zIndexCounter);
+        if (typeof updateTaskbarHighlight === "function") updateTaskbarHighlight();
+      });
 
-    setTimeout(() => {
-      const minimizeBtn =
-        document.querySelector(
-          "#webamp #minimize"
-        );
-
-      if (minimizeBtn) {
-        minimizeBtn.addEventListener(
-          "click",
-          () => {
-            const win =
-              document.getElementById("webamp");
-
-            if (win) {
-              win.style.display = "none";
-            }
-
-            updateTaskbarHighlight();
-          }
-        );
-      }
-    }, 1000);
+      webamp.onClose(cleanup);
+      if (typeof updateTaskbarHighlight === "function") updateTaskbarHighlight();
+    }).catch((err) => {
+      console.error("Webamp failed to render:", err);
+      cleanup();
+    });
   };
 
   winampDiv.appendChild(script);
-
-  let taskbarItem =
-    document.getElementById("taskbar-Winamp");
-
-  if (!document.getElementById("taskbar-Winamp")) {
-    taskbarItem =
-      document.createElement("div");
-
-    taskbarItem.id = "taskbar-Winamp";
-
-    taskbarItem.classList.add(
-      "taskbar-item"
-    );
-
-    taskbarItem.innerHTML = `
-      <img
-        src="/Assets/Images/Winamp-logo.png"
-        width="16"
-      >
-      <span>Winamp</span>
-    `;
-
-    taskbarItem.onmousedown = () => {
-      const winampWindow =
-        document.getElementById("webamp");
-
-      if (!winampWindow) return;
-
-      const winampZ =
-        parseInt(
-          winampWindow.style.zIndex || "0",
-          10
-        );
-
-      if (
-        winampWindow.style.display === "none" ||
-        getComputedStyle(winampWindow).display ===
-          "none"
-      ) {
-        winampWindow.style.display = "block";
-
-        zIndexCounter++;
-
-        winampWindow.style.zIndex =
-          zIndexCounter;
-
-        updateTaskbarHighlight();
-      } else if (winampZ < zIndexCounter) {
-        zIndexCounter++;
-
-        winampWindow.style.zIndex =
-          zIndexCounter;
-
-        updateTaskbarHighlight();
-      } else if (winampZ >= zIndexCounter) {
-        winampWindow.style.display = "none";
-
-        updateTaskbarHighlight();
-      }
-    };
-
-    taskbar.appendChild(taskbarItem);
-  }
 }
-
-
-/* ============================================================
-   AUTO-START WEBAMP
-   ============================================================ */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  /*
-   * Wait a moment for the desktop to finish loading.
-   * This uses your EXISTING openRawWinamp() function,
-   * so there is still only one Webamp implementation.
-   */
-
-  setTimeout(function () {
-
-    if (typeof window.openRawWinamp === "function") {
-      window.openRawWinamp();
-    }
-
-  }, 500);
-
-});
-
-
 
 function waitForGameToLoad() {
   console.log("waitForGameToLoad started");
@@ -4667,13 +4424,7 @@ function writeDateTime() {
 
     installDesktopSelection();
 
-    /*
-     * The original icon drag system below owns dragging,
-     * collision prevention and grid snapping. Do not install
-     * the older overlay snap listener here; it fights the main
-     * drag handler and causes icons to jump/collide.
-     */
-
+    /* The main desktop drag system below owns movement and snapping. */
     installDynamicObserver();
 
     /*
@@ -5780,17 +5531,11 @@ function writeDateTime() {
 
 
   oneko.src =
-    "https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.js";
+    "/Oneko/oneko.js";
 
 
   oneko.dataset.oneko =
     "true";
-
-  // The upstream script defaults to oneko.gif beside itself.
-  // Point it explicitly at the upstream image so a missing local
-  // /Oneko/oneko.gif cannot produce a 404.
-  oneko.dataset.cat =
-    "https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif";
 
 
   oneko.async = true;
@@ -5801,4 +5546,3 @@ function writeDateTime() {
   );
 
 })();
-  
