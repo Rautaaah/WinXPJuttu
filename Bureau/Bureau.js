@@ -25,21 +25,21 @@ async function loadHTML(filePath) {
   return await res.text();
 }
 
-loadHTML("/Start_Menu/Base/Start_Menu.html").then(
-  (html) => (startMenuHTML = html)
-);
+loadHTML("/Start_Menu/Base/Start_Menu.html")
+  .then((html) => (startMenuHTML = html))
+  .catch((error) => console.error("Failed to load Start Menu:", error));
 
-loadHTML("/Open_Windows/Base/Open_Window.html").then(
-  (html) => (openWindowHTML = html)
-);
+loadHTML("/Open_Windows/Base/Open_Window.html")
+  .then((html) => (openWindowHTML = html))
+  .catch((error) => console.error("Failed to load base window template:", error));
 
-loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html").then(
-  (html) => (openLogOffHTML = html)
-);
+loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html")
+  .then((html) => (openLogOffHTML = html))
+  .catch((error) => console.error("Failed to load Log Off modal:", error));
 
-loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html").then(
-  (html) => (turnOffComputerHTML = html)
-);
+loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html")
+  .then((html) => (turnOffComputerHTML = html))
+  .catch((error) => console.error("Failed to load Turn Off modal:", error));
 
 function playSoundOnPage(path, defaultSoundPath, onLoadCallback) {
   if (window.location.pathname.endsWith(path)) {
@@ -151,6 +151,20 @@ document.addEventListener("click", function (event) {
 });
 
 function openWindow(appName) {
+  // The base window template loads asynchronously. If a user clicks an app
+  // before it is ready, wait for it instead of creating an empty/broken window.
+  if (!openWindowHTML) {
+    loadHTML("/Open_Windows/Base/Open_Window.html")
+      .then((html) => {
+        openWindowHTML = html;
+        openWindow(appName);
+      })
+      .catch((error) => {
+        console.error("Unable to load the base window template:", error);
+      });
+    return;
+  }
+
   let windowTooltipContainer = null;
   let windowCurrentLabel = null;
 
@@ -731,78 +745,62 @@ const webamp = new Webamp({
 });
 
 webamp.renderWhenReady(winampDiv).then(() => {
-  const observer = new MutationObserver(() => {
-    const webampDiv = document.getElementById("webamp");
+  const initializeWebampWindow = () => {
+    const webampWindow = document.getElementById("webamp");
+    if (!webampWindow) return false;
 
-    if (webampDiv) {
-      observer.disconnect();
+    zIndexCounter++;
+    webampWindow.style.zIndex = String(zIndexCounter);
+    webampWindow.classList.add("window", "no-bg");
 
-      const classObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.attributeName === "class") {
-            if (
-              webampDiv.classList.contains("window-inactive")
-            ) {
-              webampDiv.classList.remove("window-inactive");
-            }
-
-            const inactiveChildren =
-              webampDiv.querySelectorAll(".window-inactive");
-
-            inactiveChildren.forEach((el) => {
-              el.classList.remove("window-inactive");
-
-              el.style.setProperty(
-                "background-color",
-                "transparent",
-                "important"
-              );
-            });
-
-            webampDiv.style.setProperty(
-              "background-color",
-              "",
-              "important"
-            );
-          }
-        });
+    // Webamp can add/remove its own inactive classes. Keep the visible window
+    // from inheriting the desktop's inactive-window appearance.
+    const normalizeClasses = () => {
+      webampWindow.classList.remove("window-inactive");
+      webampWindow.querySelectorAll(".window-inactive").forEach((el) => {
+        el.classList.remove("window-inactive");
+        el.style.setProperty("background-color", "transparent", "important");
       });
+    };
 
-      classObserver.observe(webampDiv, {
-        attributes: true,
-        subtree: true,
-      });
+    normalizeClasses();
 
+    const classObserver = new MutationObserver((mutations) => {
+      if (mutations.some((mutation) => mutation.type === "attributes" && mutation.attributeName === "class")) {
+        normalizeClasses();
+      }
+    });
+
+    classObserver.observe(webampWindow, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ["class"],
+    });
+
+    webampWindow.addEventListener("mousedown", () => {
       zIndexCounter++;
-
-      webampDiv.style.zIndex =
-        zIndexCounter.toString();
-
-      webampDiv.classList.add(
-        "window",
-        "no-bg"
-      );
-
+      webampWindow.style.zIndex = String(zIndexCounter);
       updateTaskbarHighlight();
+    });
 
-      webampDiv.addEventListener(
-        "mousedown",
-        () => {
-          zIndexCounter++;
+    updateTaskbarHighlight();
+    return true;
+  };
 
-          webampDiv.style.zIndex =
-            zIndexCounter;
+  // renderWhenReady() may resolve after Webamp has already inserted #webamp,
+  // so check immediately first. Only observe the body if it is not there yet.
+  if (!initializeWebampWindow()) {
+    const observer = new MutationObserver(() => {
+      if (initializeWebampWindow()) observer.disconnect();
+    });
 
-          updateTaskbarHighlight();
-        }
-      );
-    }
-  });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
+    setTimeout(() => observer.disconnect(), 10000);
+  }
 }).catch((error) => {
   console.error("Webamp failed to render:", error);
   if (winampDiv.parentNode) winampDiv.remove();
@@ -1000,7 +998,8 @@ function waitForGameToLoad() {
     document.getElementById("pinball-frame");
 
   if (!iframe) {
-    console.warn("Pinball iframe not found; skipping game-load watcher.");
+    console.warn("Pinball iframe not found yet; retrying shortly.");
+    setTimeout(waitForGameToLoad, 250);
     return;
   }
 
@@ -1009,7 +1008,8 @@ function waitForGameToLoad() {
     iframe.contentWindow?.document;
 
   if (!iframeDoc || !iframeDoc.body) {
-    console.warn("Pinball iframe document is not ready; skipping game-load watcher.");
+    console.warn("Pinball iframe document is not ready yet; retrying shortly.");
+    setTimeout(waitForGameToLoad, 250);
     return;
   }
 
@@ -1869,6 +1869,11 @@ function makeDraggable(element) {
   let offsetX = 0;
   let offsetY = 0;
   let isDragging = false;
+
+  if (!header) {
+    console.warn("Cannot make window draggable: .window-header is missing.", element);
+    return;
+  }
 
   header.addEventListener(
     "mousedown",
