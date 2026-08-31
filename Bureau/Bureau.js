@@ -1,3 +1,4 @@
+
 let startMenuHTML = "";
 let openWindowHTML = "";
 let openLogOffHTML = "";
@@ -27,19 +28,19 @@ async function loadHTML(filePath) {
 
 loadHTML("/Start_Menu/Base/Start_Menu.html")
   .then((html) => (startMenuHTML = html))
-  .catch((error) => console.error("Failed to load Start Menu:", error));
+  .catch((error) => console.error("Start Menu failed to load:", error));
 
 loadHTML("/Open_Windows/Base/Open_Window.html")
   .then((html) => (openWindowHTML = html))
-  .catch((error) => console.error("Failed to load base window template:", error));
+  .catch((error) => console.error("Window template failed to load:", error));
 
 loadHTML("/Start_Menu/Log_Off/Base/Log_Off.html")
   .then((html) => (openLogOffHTML = html))
-  .catch((error) => console.error("Failed to load Log Off modal:", error));
+  .catch((error) => console.error("Log Off failed to load:", error));
 
 loadHTML("/Start_Menu/Turn_Off_Computer/Turn_Off_Computer.html")
   .then((html) => (turnOffComputerHTML = html))
-  .catch((error) => console.error("Failed to load Turn Off modal:", error));
+  .catch((error) => console.error("Turn Off Computer failed to load:", error));
 
 function playSoundOnPage(path, defaultSoundPath, onLoadCallback) {
   if (window.location.pathname.endsWith(path)) {
@@ -151,20 +152,6 @@ document.addEventListener("click", function (event) {
 });
 
 function openWindow(appName) {
-  // The base window template loads asynchronously. If a user clicks an app
-  // before it is ready, wait for it instead of creating an empty/broken window.
-  if (!openWindowHTML) {
-    loadHTML("/Open_Windows/Base/Open_Window.html")
-      .then((html) => {
-        openWindowHTML = html;
-        openWindow(appName);
-      })
-      .catch((error) => {
-        console.error("Unable to load the base window template:", error);
-      });
-    return;
-  }
-
   let windowTooltipContainer = null;
   let windowCurrentLabel = null;
 
@@ -703,7 +690,6 @@ function openRawWinamp() {
   script.onload = () => {
     if (typeof Webamp === "undefined") {
       console.error("Webamp is not loaded!");
-      if (winampDiv.parentNode) winampDiv.remove();
       return;
     }
 
@@ -745,68 +731,85 @@ const webamp = new Webamp({
 });
 
 webamp.renderWhenReady(winampDiv).then(() => {
-  const initializeWebampWindow = () => {
-    const webampWindow = document.getElementById("webamp");
-    if (!webampWindow) return false;
+  const observer = new MutationObserver(() => {
+    const webampDiv = document.getElementById("webamp");
 
-    zIndexCounter++;
-    webampWindow.style.zIndex = String(zIndexCounter);
-    webampWindow.classList.add("window", "no-bg");
+    if (webampDiv) {
+      observer.disconnect();
 
-    // Webamp can add/remove its own inactive classes. Keep the visible window
-    // from inheriting the desktop's inactive-window appearance.
-    const normalizeClasses = () => {
-      webampWindow.classList.remove("window-inactive");
-      webampWindow.querySelectorAll(".window-inactive").forEach((el) => {
-        el.classList.remove("window-inactive");
-        el.style.setProperty("background-color", "transparent", "important");
+      const classObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "class") {
+            if (
+              webampDiv.classList.contains("window-inactive")
+            ) {
+              webampDiv.classList.remove("window-inactive");
+            }
+
+            const inactiveChildren =
+              webampDiv.querySelectorAll(".window-inactive");
+
+            inactiveChildren.forEach((el) => {
+              el.classList.remove("window-inactive");
+
+              el.style.setProperty(
+                "background-color",
+                "transparent",
+                "important"
+              );
+            });
+
+            webampDiv.style.setProperty(
+              "background-color",
+              "",
+              "important"
+            );
+          }
+        });
       });
-    };
 
-    normalizeClasses();
+      classObserver.observe(webampDiv, {
+        attributes: true,
+        subtree: true,
+      });
 
-    const classObserver = new MutationObserver((mutations) => {
-      if (mutations.some((mutation) => mutation.type === "attributes" && mutation.attributeName === "class")) {
-        normalizeClasses();
-      }
-    });
-
-    classObserver.observe(webampWindow, {
-      attributes: true,
-      subtree: true,
-      attributeFilter: ["class"],
-    });
-
-    webampWindow.addEventListener("mousedown", () => {
       zIndexCounter++;
-      webampWindow.style.zIndex = String(zIndexCounter);
+
+      webampDiv.style.zIndex =
+        zIndexCounter.toString();
+
+      webampDiv.classList.add(
+        "window",
+        "no-bg"
+      );
+
       updateTaskbarHighlight();
+
+      const windowEl =
+        document.querySelector(
+          "#webamp .window"
+        );
+
+      // Do not force Webamp's dimensions. Webamp manages its own window size.
+      // The previous observer repeatedly forced width/height to 0px.
+      if (!windowEl) {
+        console.warn("Webamp window element was not found after render.");
+      }
+
+      webampDiv.addEventListener(
+        "mousedown",
+        () => {
+          zIndexCounter++;
+
+          webampDiv.style.zIndex =
+            zIndexCounter;
+
+          updateTaskbarHighlight();
+        }
+      );
+    }
+  });
     });
-
-    updateTaskbarHighlight();
-    return true;
-  };
-
-  // renderWhenReady() may resolve after Webamp has already inserted #webamp,
-  // so check immediately first. Only observe the body if it is not there yet.
-  if (!initializeWebampWindow()) {
-    const observer = new MutationObserver(() => {
-      if (initializeWebampWindow()) observer.disconnect();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    setTimeout(() => observer.disconnect(), 10000);
-  }
-}).catch((error) => {
-  console.error("Webamp failed to render:", error);
-  if (winampDiv.parentNode) winampDiv.remove();
-  updateTaskbarHighlight();
-});
-
 
     webamp.onClose(() => {
       if (taskbarItem) taskbarItem.remove();
@@ -892,12 +895,6 @@ webamp.renderWhenReady(winampDiv).then(() => {
         );
       }
     }, 1000);
-  };
-
-  script.onerror = () => {
-    console.error("Failed to load Webamp from the CDN.");
-    if (winampDiv.parentNode) winampDiv.remove();
-    updateTaskbarHighlight();
   };
 
   winampDiv.appendChild(script);
@@ -997,21 +994,9 @@ function waitForGameToLoad() {
   const iframe =
     document.getElementById("pinball-frame");
 
-  if (!iframe) {
-    console.warn("Pinball iframe not found yet; retrying shortly.");
-    setTimeout(waitForGameToLoad, 250);
-    return;
-  }
-
   const iframeDoc =
     iframe.contentDocument ||
-    iframe.contentWindow?.document;
-
-  if (!iframeDoc || !iframeDoc.body) {
-    console.warn("Pinball iframe document is not ready yet; retrying shortly.");
-    setTimeout(waitForGameToLoad, 250);
-    return;
-  }
+    iframe.contentWindow.document;
 
   const observer =
     new MutationObserver(() => {
@@ -1870,11 +1855,6 @@ function makeDraggable(element) {
   let offsetY = 0;
   let isDragging = false;
 
-  if (!header) {
-    console.warn("Cannot make window draggable: .window-header is missing.", element);
-    return;
-  }
-
   header.addEventListener(
     "mousedown",
     (e) => {
@@ -2653,7 +2633,7 @@ function updateTaskbarVisibility() {
   }
 }
 
-function openStartMenu() {
+async function openStartMenu() {
   if (recentlyClosedStartMenu) {
     return;
   }
@@ -2663,7 +2643,16 @@ function openStartMenu() {
     "/Start_Menu/Base/Start_Menu.css"
   );
 
-  if (!startMenuHTML) return;
+  if (!startMenuHTML) {
+    try {
+      startMenuHTML = await loadHTML(
+        "/Start_Menu/Base/Start_Menu.html"
+      );
+    } catch (error) {
+      console.error("Start Menu failed to load:", error);
+      return;
+    }
+  }
 
   const container =
     document.querySelector(
@@ -4673,7 +4662,12 @@ function writeDateTime() {
 
     installDesktopSelection();
 
-    installIconSnapSystem();
+    /*
+     * The original icon drag system below owns dragging,
+     * collision prevention and grid snapping. Do not install
+     * the older overlay snap listener here; it fights the main
+     * drag handler and causes icons to jump/collide.
+     */
 
     installDynamicObserver();
 
@@ -5795,4 +5789,204 @@ function writeDateTime() {
     oneko
   );
 
+})();
+  
+
+
+/* ============================================================
+   FINAL ICON COLLISION GUARD
+   ============================================================ */
+(function installFinalIconCollisionGuard() {
+  "use strict";
+
+  const COLUMNS = 19;
+  const ROWS = 8;
+
+  function init() {
+    const desktop = document.getElementById("desktop");
+    if (!desktop) return;
+
+    const icons = () => Array.from(desktop.querySelectorAll(".icon"));
+
+    function grid() {
+      return {
+        w: desktop.clientWidth / COLUMNS,
+        h: desktop.clientHeight / ROWS
+      };
+    }
+
+    function getPos(icon) {
+      const x = parseFloat(icon.style.left);
+      const y = parseFloat(icon.style.top);
+      return {
+        x: Number.isFinite(x) ? x : icon.offsetLeft,
+        y: Number.isFinite(y) ? y : icon.offsetTop
+      };
+    }
+
+    function rect(icon, x, y) {
+      return {
+        left: x,
+        top: y,
+        right: x + icon.offsetWidth,
+        bottom: y + icon.offsetHeight
+      };
+    }
+
+    function overlaps(a, b) {
+      return (
+        a.left < b.right &&
+        a.right > b.left &&
+        a.top < b.bottom &&
+        a.bottom > b.top
+      );
+    }
+
+    function inside(icon, x, y) {
+      return (
+        x >= 0 &&
+        y >= 0 &&
+        x + icon.offsetWidth <= desktop.clientWidth &&
+        y + icon.offsetHeight <= desktop.clientHeight
+      );
+    }
+
+    function nearestFree(icon, wantedX, wantedY, blocked) {
+      const { w, h } = grid();
+      const wantedCol = Math.round(wantedX / w);
+      const wantedRow = Math.round(wantedY / h);
+      const candidates = [];
+
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLUMNS; col++) {
+          const x = Math.round(col * w);
+          const y = Math.round(row * h);
+          if (!inside(icon, x, y)) continue;
+
+          candidates.push({
+            x,
+            y,
+            distance:
+              (col - wantedCol) ** 2 +
+              (row - wantedRow) ** 2
+          });
+        }
+      }
+
+      candidates.sort((a, b) => a.distance - b.distance);
+
+      return (
+        candidates.find((candidate) => {
+          const r = rect(icon, candidate.x, candidate.y);
+          return !blocked.some((b) => overlaps(r, b));
+        }) ||
+        candidates[0] ||
+        { x: 0, y: 0 }
+      );
+    }
+
+    function save(icon) {
+      if (!icon.dataset.icon) return;
+
+      localStorage.setItem(
+        "desktop-icon-" + icon.dataset.icon,
+        JSON.stringify({
+          x: Math.round(parseFloat(icon.style.left) || 0),
+          y: Math.round(parseFloat(icon.style.top) || 0)
+        })
+      );
+    }
+
+    function resolveAfterDrag() {
+      const all = icons();
+      const selected = all.filter((icon) =>
+        icon.classList.contains("desktop-selected")
+      );
+
+      if (!selected.length) return;
+
+      const selectedSet = new Set(selected);
+      const blocked = [];
+
+      // Non-selected icons are hard obstacles.
+      for (const icon of all) {
+        if (selectedSet.has(icon)) continue;
+        const p = getPos(icon);
+        blocked.push(rect(icon, p.x, p.y));
+      }
+
+      // Keep the group together as much as possible by processing
+      // icons in their current top-to-bottom / left-to-right order.
+      selected.sort((a, b) => {
+        const pa = getPos(a);
+        const pb = getPos(b);
+        return pa.y - pb.y || pa.x - pb.x;
+      });
+
+      for (const icon of selected) {
+        const p = getPos(icon);
+        const target = nearestFree(icon, p.x, p.y, blocked);
+
+        icon.style.left = target.x + "px";
+        icon.style.top = target.y + "px";
+        icon.classList.remove("dragging");
+
+        blocked.push(rect(icon, target.x, target.y));
+        save(icon);
+      }
+    }
+
+    function normalizeInitialLayout() {
+      const blocked = [];
+
+      for (const icon of icons()) {
+        const p = getPos(icon);
+        const target = nearestFree(icon, p.x, p.y, blocked);
+
+        icon.style.left = target.x + "px";
+        icon.style.top = target.y + "px";
+
+        blocked.push(rect(icon, target.x, target.y));
+        save(icon);
+      }
+    }
+
+    // Runs after the existing drag system finishes.
+    document.addEventListener("mouseup", resolveAfterDrag, true);
+
+    // Prevent duplicate saved positions from making icons overlap on load.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(normalizeInitialLayout);
+    });
+
+    // Keep icons on-screen after resizing without randomly rearranging them.
+    window.addEventListener("resize", () => {
+      for (const icon of icons()) {
+        const p = getPos(icon);
+        const x = Math.max(
+          0,
+          Math.min(
+            p.x,
+            Math.max(0, desktop.clientWidth - icon.offsetWidth)
+          )
+        );
+        const y = Math.max(
+          0,
+          Math.min(
+            p.y,
+            Math.max(0, desktop.clientHeight - icon.offsetHeight)
+          )
+        );
+
+        icon.style.left = Math.round(x) + "px";
+        icon.style.top = Math.round(y) + "px";
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 })();
