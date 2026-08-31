@@ -69,6 +69,49 @@
   <script src="/Bureau/Bureau.js"></script>
   <script src="/Open_Windows/Minesweeper/Minesweeper.js"></script>
 
+  <audio id="desktop-music" loop>
+  <source src="/Music/your-song.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const music = document.getElementById("desktop-music");
+
+  function startMusic() {
+
+    music.volume = 0.5;
+
+    music.play().catch(function () {
+      console.log("Browser blocked autoplay.");
+    });
+
+    document.removeEventListener(
+      "click",
+      startMusic
+    );
+
+  }
+
+  /*
+   * Try immediately.
+   */
+  music.play().catch(function () {
+
+    /*
+     * If the browser blocks autoplay,
+     * start it after the user's first click.
+     */
+    document.addEventListener(
+      "click",
+      startMusic,
+      { once: true }
+    );
+
+  });
+
+});
+</script>
 
   <style>
 
