@@ -88,6 +88,13 @@ body {
     rgb(192, 29, 78) 95%,
     rgb(165, 25, 65) 98%
   );
+
+  /* DO NOT REMOVE THESE */
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0;
+  z-index: 1000;
 }
 
 
@@ -102,7 +109,7 @@ body {
 
 
 /* =========================================
-   ROSE SYSTEM TRAY / CLOCK AREA
+   ROSE SYSTEM TRAY / CLOCK
    ========================================= */
 
 .footer__items.right {
@@ -112,24 +119,24 @@ body {
   position: relative;
 
   background: linear-gradient(
-    rgb(185, 45, 91) 1%,
-    rgb(233, 92, 137) 6%,
-    rgb(244, 116, 157) 10%,
-    rgb(237, 91, 139) 14%,
-    rgb(231, 78, 129) 19%,
-    rgb(228, 73, 125) 63%,
-    rgb(240, 91, 143) 81%,
-    rgb(238, 88, 140) 88%,
-    rgb(235, 83, 135) 91%,
-    rgb(226, 72, 122) 94%,
-    rgb(211, 57, 106) 97%,
-    rgb(177, 42, 83) 100%
+    rgb(150, 42, 78) 1%,
+    rgb(222, 83, 126) 6%,
+    rgb(241, 108, 151) 10%,
+    rgb(228, 86, 132) 14%,
+    rgb(218, 74, 122) 19%,
+    rgb(215, 70, 119) 63%,
+    rgb(232, 88, 139) 81%,
+    rgb(229, 84, 136) 88%,
+    rgb(224, 79, 131) 91%,
+    rgb(215, 69, 119) 94%,
+    rgb(198, 57, 103) 97%,
+    rgb(161, 39, 75) 100%
   );
 
-  border-left: 1px solid rgb(157, 45, 78);
+  border-left: 1px solid rgb(135, 40, 70);
 
   box-shadow:
-    rgb(255, 145, 177) 1px 0px 1px inset;
+    rgb(255, 137, 171) 1px 0px 1px inset;
 }
 
 
@@ -179,9 +186,7 @@ body {
     position: relative;
 }
 
-
 /* CRT screen texture overlay */
-
 #main-content::before {
     content: "";
     position: absolute;
@@ -196,14 +201,12 @@ body {
     background-image:
 
         /* Horizontal pixel grid */
-
         linear-gradient(
             rgba(255, 255, 255, 0.07) 1px,
             transparent 1px
         ),
 
         /* Vertical pixel grid */
-
         linear-gradient(
             90deg,
             rgba(0, 40, 80, 0.08) 1px,
@@ -211,7 +214,6 @@ body {
         ),
 
         /* Vertical CRT lines */
-
         repeating-linear-gradient(
             90deg,
             rgba(0, 0, 0, 0.05) 0px,
