@@ -4064,7 +4064,647 @@ function writeDateTime() {
       );
     }
 
-    /* ============================================================
+    function updateSelection(event) {
+      if (!selecting) return;
+
+      const desktopRect =
+        desktop.getBoundingClientRect();
+
+      const currentX =
+        event.clientX - desktopRect.left;
+
+      const currentY =
+        event.clientY - desktopRect.top;
+
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+
+      const width =
+        Math.abs(currentX - startX);
+
+      const height =
+        Math.abs(currentY - startY);
+
+      selectionBox.style.display = "block";
+
+      selectionBox.style.left =
+        `${left}px`;
+
+      selectionBox.style.top =
+        `${top}px`;
+
+      selectionBox.style.width =
+        `${width}px`;
+
+      selectionBox.style.height =
+        `${height}px`;
+
+      const selectionRect = {
+        left,
+        top,
+        right: left + width,
+        bottom: top + height
+      };
+
+      desktop
+        .querySelectorAll(".icon")
+        .forEach((icon) => {
+          const iconLeft =
+            parseInt(icon.style.left || "0", 10);
+
+          const iconTop =
+            parseInt(icon.style.top || "0", 10);
+
+          const iconRight =
+            iconLeft + icon.offsetWidth;
+
+          const iconBottom =
+            iconTop + icon.offsetHeight;
+
+          const overlaps =
+            iconLeft < selectionRect.right &&
+            iconRight > selectionRect.left &&
+            iconTop < selectionRect.bottom &&
+            iconBottom > selectionRect.top;
+
+          if (overlaps) {
+            icon.classList.add("rose-selected");
+          } else {
+            icon.classList.remove("rose-selected");
+          }
+        });
+    }
+
+    desktop.addEventListener("mousedown", function (event) {
+      if (event.button !== 0) return;
+
+      /*
+       * Do not start selection when clicking an icon,
+       * a window, or another interactive element.
+       */
+      if (event.target.closest(".icon")) return;
+
+      if (event.target !== desktop) return;
+
+      const rect =
+        desktop.getBoundingClientRect();
+
+      startX =
+        event.clientX - rect.left;
+
+      startY =
+        event.clientY - rect.top;
+
+      selecting = true;
+
+      clearSelections();
+
+      selectionBox.style.display = "block";
+
+      selectionBox.style.left =
+        `${startX}px`;
+
+      selectionBox.style.top =
+        `${startY}px`;
+
+      selectionBox.style.width = "0px";
+      selectionBox.style.height = "0px";
+
+      event.preventDefault();
+    });
+
+    document.addEventListener("mousemove", function (event) {
+      if (!selecting) return;
+
+      updateSelection(event);
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (!selecting) return;
+
+      selecting = false;
+
+      selectionBox.style.display = "none";
+    });
+
+    /*
+     * Click desktop with no drag = deselect.
+     */
+    desktop.addEventListener("click", function (event) {
+      if (
+        event.target === desktop &&
+        !selecting
+      ) {
+        clearSelections();
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------
+     GRID SNAP
+     --------------------------------------------------------- */
+
+  const GRID_X = 70;
+  const GRID_Y = 70;
+
+  const GRID_ORIGIN_X = 20;
+  const GRID_ORIGIN_Y = 20;
+
+  const SNAP_DISTANCE = 28;
+
+  function nearestGrid(value, grid, origin) {
+    return (
+      origin +
+      Math.round(
+        (value - origin) / grid
+      ) *
+        grid
+    );
+  }
+
+  function getOtherIconPositions(currentIcon) {
+    const desktop =
+      document.getElementById("desktop");
+
+    if (!desktop) return [];
+
+    return Array.from(
+      desktop.querySelectorAll(".icon")
+    )
+      .filter((icon) => icon !== currentIcon)
+      .map((icon) => ({
+        x: parseInt(
+          icon.style.left || "0",
+          10
+        ),
+        y: parseInt(
+          icon.style.top || "0",
+          10
+        )
+      }));
+  }
+
+  function snapIconPosition(icon, rawX, rawY) {
+    let x = nearestGrid(
+      rawX,
+      GRID_X,
+      GRID_ORIGIN_X
+    );
+
+    let y = nearestGrid(
+      rawY,
+      GRID_Y,
+      GRID_ORIGIN_Y
+    );
+
+    /*
+     * First snap to the normal grid.
+     */
+
+    const otherIcons =
+      getOtherIconPositions(icon);
+
+    /*
+     * Then see if another icon is nearby.
+     * This makes icons "magnetically" line up.
+     */
+
+    let bestX = x;
+    let bestY = y;
+
+    let bestDistance =
+      Number.POSITIVE_INFINITY;
+
+    otherIcons.forEach((position) => {
+      const dx =
+        Math.abs(rawX - position.x);
+
+      const dy =
+        Math.abs(rawY - position.y);
+
+      /*
+       * Same-column snapping
+       */
+      if (dx <= SNAP_DISTANCE && dy <= 45) {
+        const distance = dx;
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestX = position.x;
+        }
+      }
+
+      /*
+       * Same-row snapping
+       */
+      if (dy <= SNAP_DISTANCE && dx <= 45) {
+        const distance = dy;
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestY = position.y;
+        }
+      }
+    });
+
+    return {
+      x: bestX,
+      y: bestY
+    };
+  }
+
+  /* ---------------------------------------------------------
+     PATCH EXISTING ICON DRAGGING
+     --------------------------------------------------------- */
+
+  function installIconSnapSystem() {
+    const desktop =
+      document.getElementById("desktop");
+
+    if (!desktop) return;
+
+    let draggedIcon = null;
+
+    /*
+     * Detect the icon currently being dragged.
+     *
+     * The existing Bureau.html drag system still does
+     * the actual movement. We simply snap its resulting
+     * position to our grid.
+     */
+
+    desktop
+      .querySelectorAll(".icon")
+      .forEach((icon) => {
+        icon.addEventListener(
+          "mousedown",
+          function (event) {
+            if (event.button !== 0) return;
+
+            draggedIcon = icon;
+
+            const grid =
+              document.getElementById(
+                "desktop-grid-overlay"
+              );
+
+            if (grid) {
+              grid.style.display = "block";
+            }
+          },
+          true
+        );
+      });
+
+    document.addEventListener(
+      "mousemove",
+      function () {
+        if (!draggedIcon) return;
+
+        /*
+         * The original drag handler has already updated
+         * left/top by this point.
+         */
+
+        const rawX =
+          parseInt(
+            draggedIcon.style.left || "0",
+            10
+          );
+
+        const rawY =
+          parseInt(
+            draggedIcon.style.top || "0",
+            10
+          );
+
+        const snapped =
+          snapIconPosition(
+            draggedIcon,
+            rawX,
+            rawY
+          );
+
+        draggedIcon.style.left =
+          `${snapped.x}px`;
+
+        draggedIcon.style.top =
+          `${snapped.y}px`;
+      },
+      true
+    );
+
+    document.addEventListener(
+      "mouseup",
+      function () {
+        if (!draggedIcon) return;
+
+        const snapped =
+          snapIconPosition(
+            draggedIcon,
+            parseInt(
+              draggedIcon.style.left || "0",
+              10
+            ),
+            parseInt(
+              draggedIcon.style.top || "0",
+              10
+            )
+          );
+
+        draggedIcon.style.left =
+          `${snapped.x}px`;
+
+        draggedIcon.style.top =
+          `${snapped.y}px`;
+
+        /*
+         * Save position using the same localStorage
+         * format as the existing desktop system.
+         */
+
+        if (draggedIcon.dataset.icon) {
+          localStorage.setItem(
+            "desktop-icon-" +
+              draggedIcon.dataset.icon,
+            JSON.stringify({
+              x: snapped.x,
+              y: snapped.y
+            })
+          );
+        }
+
+        draggedIcon.classList.remove(
+          "dragging"
+        );
+
+        const grid =
+          document.getElementById(
+            "desktop-grid-overlay"
+          );
+
+        if (grid) {
+          grid.style.display = "none";
+        }
+
+        draggedIcon = null;
+      },
+      true
+    );
+  }
+
+  /* ---------------------------------------------------------
+     MAKE DYNAMIC TASKBAR ITEMS ROSE
+     --------------------------------------------------------- */
+
+  function refreshRoseTaskbar() {
+    const taskbar =
+      document.getElementById("taskbar");
+
+    if (!taskbar) return;
+
+    taskbar
+      .querySelectorAll(".taskbar-item")
+      .forEach((item) => {
+        item.style.setProperty(
+          "color",
+          "#fff",
+          "important"
+        );
+
+        item.style.setProperty(
+          "text-shadow",
+          "0 1px 1px rgba(70,10,35,.8)",
+          "important"
+        );
+      });
+  }
+
+  /* ---------------------------------------------------------
+     FORCE ACTIVE TASKBAR COLOR
+     --------------------------------------------------------- */
+
+  function patchTaskbarHighlight() {
+    if (
+      typeof updateTaskbarHighlight !==
+      "function"
+    ) {
+      return;
+    }
+
+    const original =
+      updateTaskbarHighlight;
+
+    /*
+     * Don't patch repeatedly.
+     */
+
+    if (
+      updateTaskbarHighlight
+        ._rosePatched
+    ) {
+      return;
+    }
+
+    function roseHighlight() {
+      original.apply(this, arguments);
+
+      const taskbar =
+        document.getElementById("taskbar");
+
+      if (!taskbar) return;
+
+      taskbar
+        .querySelectorAll(".taskbar-item")
+        .forEach((item) => {
+          /*
+           * The original function gives the active
+           * item an inline blue background.
+           * Remove that blue and replace it.
+           */
+
+          const background =
+            item.style.backgroundColor;
+
+          if (
+            background &&
+            (
+              background.includes("26, 80, 183") ||
+              background.includes(
+                "rgb(26, 80, 183)"
+              )
+            )
+          ) {
+            item.style.backgroundColor =
+              "rgba(211, 75, 124, .95)";
+
+            item.style.boxShadow =
+              `
+              inset 0 1px rgba(255,255,255,.55),
+              inset 0 -1px rgba(76,12,39,.65),
+              0 0 7px rgba(255,164,194,.28)
+              `;
+
+            item.classList.add(
+              "rose-active"
+            );
+          }
+        });
+
+      refreshRoseTaskbar();
+    }
+
+    roseHighlight._rosePatched = true;
+
+    /*
+     * Replace global function.
+     */
+    window.updateTaskbarHighlight =
+      roseHighlight;
+  }
+
+  /* ---------------------------------------------------------
+     REMOVE ANY OLD LINKEDIN WINDOW
+     --------------------------------------------------------- */
+
+  function removeLinkedInEverywhere() {
+    /*
+     * Remove an already-open LinkedIn window.
+     */
+
+    document
+      .querySelectorAll(
+        '[id*="LinkedIn"], [data-app-name*="LinkedIn"]'
+      )
+      .forEach((element) => {
+        element.remove();
+      });
+
+    /*
+     * Remove LinkedIn taskbar entry.
+     */
+
+    document
+      .querySelectorAll(
+        '[id="taskbar-LinkedIn"]'
+      )
+      .forEach((element) => {
+        element.remove();
+      });
+
+    /*
+     * Clean saved window state.
+     */
+
+    try {
+      const saved =
+        JSON.parse(
+          localStorage.getItem(
+            "openWindows"
+          ) || "[]"
+        );
+
+      const filtered =
+        saved.filter(
+          (windowState) =>
+            windowState.appName !==
+            "LinkedIn"
+        );
+
+      localStorage.setItem(
+        "openWindows",
+        JSON.stringify(filtered)
+      );
+    } catch (error) {
+      console.warn(
+        "Could not clean LinkedIn from saved windows:",
+        error
+      );
+    }
+  }
+
+  /* ---------------------------------------------------------
+     OBSERVE NEW WINDOWS / TASKBAR
+     --------------------------------------------------------- */
+
+  function installDynamicObserver() {
+    const observer =
+      new MutationObserver(() => {
+        refreshRoseTaskbar();
+        removeLinkedInEverywhere();
+
+        const grid =
+          document.getElementById(
+            "desktop-grid-overlay"
+          );
+
+        if (grid) {
+          grid.style.pointerEvents =
+            "none";
+        }
+      });
+
+    observer.observe(
+      document.body,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
+  }
+
+  /* ---------------------------------------------------------
+     START EVERYTHING
+     --------------------------------------------------------- */
+
+  function initializeRoseSystem() {
+    installRoseGlassTheme();
+
+    removeLinkedInEverywhere();
+
+    installDesktopSelection();
+
+    installIconSnapSystem();
+
+    installDynamicObserver();
+
+    /*
+     * updateTaskbarHighlight may not exist yet
+     * depending on script execution order.
+     */
+
+    setTimeout(() => {
+      patchTaskbarHighlight();
+      refreshRoseTaskbar();
+    }, 50);
+
+    setTimeout(() => {
+      patchTaskbarHighlight();
+      refreshRoseTaskbar();
+    }, 500);
+
+    setTimeout(() => {
+      patchTaskbarHighlight();
+      refreshRoseTaskbar();
+    }, 1500);
+  }
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeRoseSystem
+    );
+  } else {
+    initializeRoseSystem();
+  }
+})();
+
+
+
+/* ============================================================
    ROSE GLASS THEME
    ============================================================ */
 
@@ -4076,6 +4716,10 @@ function writeDateTime() {
     style.id = "rose-glass-theme";
 
     style.textContent = `
+      /* ======================================================
+         COLORS
+         ====================================================== */
+
       :root {
         --rose-dark: #9b2457;
         --rose-deep: #b72f67;
@@ -4088,20 +4732,32 @@ function writeDateTime() {
         --glass-white-strong: rgba(255,255,255,0.38);
       }
 
+
       /* ======================================================
          DESKTOP FOOTER
+         
+         LIGHTER ROSE VERSION
          ====================================================== */
 
       #Desktop_Footer {
         background:
           linear-gradient(
             to bottom,
+
+            /* glossy top */
             rgba(255, 215, 230, 0.78) 0%,
+
             rgba(255, 190, 215, 0.58) 4%,
+
+            /* light rose */
             rgba(244, 139, 174, 0.98) 10%,
+
             rgba(235, 112, 153, 0.98) 28%,
+
             rgba(225, 91, 139, 0.98) 52%,
+
             rgba(211, 70, 121, 0.99) 76%,
+
             rgba(193, 53, 103, 1) 100%
           ) !important;
 
@@ -4117,8 +4773,9 @@ function writeDateTime() {
         -webkit-backdrop-filter: blur(10px);
       }
 
+
       /* ======================================================
-         START BUTTON
+         START BUTTON AREA
          ====================================================== */
 
       #Desktop_Footer .footer__start_menu {
@@ -4126,13 +4783,15 @@ function writeDateTime() {
           drop-shadow(0 1px 2px rgba(70,0,30,0.25));
       }
 
+
       /* ======================================================
-         TASKBAR
+         DYNAMIC TASKBAR
          ====================================================== */
 
       #taskbar {
         background: transparent !important;
       }
+
 
       .taskbar-item {
         position: relative;
@@ -4140,6 +4799,7 @@ function writeDateTime() {
         background:
           linear-gradient(
             to bottom,
+
             rgba(255,218,232,0.58) 0%,
             rgba(255,184,211,0.42) 5%,
             rgba(230,91,139,0.95) 16%,
@@ -4160,6 +4820,7 @@ function writeDateTime() {
         -webkit-backdrop-filter: blur(8px);
       }
 
+
       .taskbar-item:hover {
         background:
           linear-gradient(
@@ -4176,6 +4837,11 @@ function writeDateTime() {
         filter: brightness(1.05);
       }
 
+
+      /* ======================================================
+         ACTIVE TASKBAR ITEM
+         ====================================================== */
+
       .taskbar-item.active {
         background:
           linear-gradient(
@@ -4190,8 +4856,9 @@ function writeDateTime() {
           0 1px 2px rgba(70,0,25,0.45) inset;
       }
 
+
       /* ======================================================
-         WINDOWS
+         ROSE GLASS WINDOWS
          ====================================================== */
 
       .window {
@@ -4216,6 +4883,7 @@ function writeDateTime() {
         -webkit-backdrop-filter: blur(14px);
       }
 
+
       /* ======================================================
          WINDOW TOPBAR
          ====================================================== */
@@ -4224,6 +4892,7 @@ function writeDateTime() {
         background:
           linear-gradient(
             to bottom,
+
             rgba(255,220,233,0.82) 0%,
             rgba(255,188,214,0.66) 4%,
             rgba(246,125,165,0.98) 11%,
@@ -4244,6 +4913,11 @@ function writeDateTime() {
         -webkit-backdrop-filter: blur(12px);
       }
 
+
+      /* ======================================================
+         WINDOW TOPBAR SHINE
+         ====================================================== */
+
       .window-header-background::before {
         opacity: 1 !important;
 
@@ -4256,6 +4930,7 @@ function writeDateTime() {
           ) !important;
       }
 
+
       .window-header-background::after {
         opacity: 1 !important;
 
@@ -4267,9 +4942,15 @@ function writeDateTime() {
           ) !important;
       }
 
+
+      /* ======================================================
+         INACTIVE WINDOW
+         ====================================================== */
+
       .window.window-inactive {
         filter: saturate(0.72);
       }
+
 
       .window.window-inactive .window-header-background {
         background:
@@ -4282,6 +4963,7 @@ function writeDateTime() {
           ) !important;
       }
 
+
       /* ======================================================
          WINDOW BUTTONS
          ====================================================== */
@@ -4289,6 +4971,7 @@ function writeDateTime() {
       .header-button--minimize,
       .header-button--maximaze,
       .header-button--maximized {
+
         background-image:
           radial-gradient(
             circle at 85% 85%,
@@ -4303,6 +4986,7 @@ function writeDateTime() {
           #8e1649 0 -1px 2px 1px inset,
           rgba(255,255,255,0.35) 0 1px 1px inset !important;
       }
+
 
       .header-button--close {
         background-image:
@@ -4320,15 +5004,20 @@ function writeDateTime() {
           rgba(255,255,255,0.30) 0 1px 1px inset !important;
       }
 
+
       /* ======================================================
          DESKTOP SELECTION FRAME
          ====================================================== */
 
       #desktop-selection-frame {
         position: fixed;
+
         display: none;
+
         pointer-events: none;
+
         z-index: 999999;
+
         box-sizing: border-box;
 
         border:
@@ -4341,6 +5030,11 @@ function writeDateTime() {
           0 0 0 1px rgba(255,255,255,0.16) inset;
       }
 
+
+      /* ======================================================
+         SELECTED DESKTOP ICON
+         ====================================================== */
+
       #desktop .desktop-selected {
         background:
           rgba(70,150,235,0.32) !important;
@@ -4348,6 +5042,7 @@ function writeDateTime() {
         outline:
           1px solid rgba(120,190,255,0.78);
       }
+
 
       /* ======================================================
          ICONS
@@ -4357,12 +5052,14 @@ function writeDateTime() {
         box-sizing: border-box;
       }
 
+
       #desktop .icon img {
         filter:
           drop-shadow(
             0 2px 2px rgba(0,0,0,0.35)
           );
       }
+
 
       #desktop .icon:hover img {
         filter:
@@ -4376,11 +5073,9 @@ function writeDateTime() {
     document.head.appendChild(style);
   }
 
+
   if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      applyRoseTheme
-    );
+    document.addEventListener("DOMContentLoaded", applyRoseTheme);
   } else {
     applyRoseTheme();
   }
@@ -4395,24 +5090,18 @@ function writeDateTime() {
 
   function setupSelection() {
 
-    const desktop =
-      document.getElementById("desktop");
+    const desktop = document.getElementById("desktop");
 
     if (!desktop) return;
 
-    if (
-      document.getElementById(
-        "desktop-selection-frame"
-      )
-    ) return;
+    if (document.getElementById("desktop-selection-frame")) return;
 
-    const frame =
-      document.createElement("div");
+    const frame = document.createElement("div");
 
-    frame.id =
-      "desktop-selection-frame";
+    frame.id = "desktop-selection-frame";
 
     document.body.appendChild(frame);
+
 
     let selecting = false;
 
@@ -4420,182 +5109,122 @@ function writeDateTime() {
     let startY = 0;
 
 
-    desktop.addEventListener(
-      "mousedown",
-      function (event) {
+    desktop.addEventListener("mousedown", function (event) {
 
-        if (event.button !== 0) return;
+      if (event.button !== 0) return;
 
-        /*
-         * Clicking an icon should be handled
-         * by the normal icon dragging system.
-         */
+      /*
+       * If the user clicked an icon,
+       * let the existing icon dragging system handle it.
+       */
 
-        if (
-          event.target.closest(".icon")
-        ) {
-          return;
-        }
+      if (event.target.closest(".icon")) return;
 
-        /*
-         * Never select through windows.
-         */
+      /*
+       * Don't start desktop selection on windows.
+       */
 
-        if (
-          event.target.closest(".window")
-        ) {
-          return;
-        }
-
-        /*
-         * Only start when clicking the desktop.
-         */
-
-        if (
-          event.target !== desktop
-        ) {
-          return;
-        }
-
-        selecting = true;
-
-        startX = event.clientX;
-        startY = event.clientY;
-
-        frame.style.display = "block";
-
-        frame.style.left =
-          `${startX}px`;
-
-        frame.style.top =
-          `${startY}px`;
-
-        frame.style.width = "0px";
-        frame.style.height = "0px";
-
-        /*
-         * Clear previous selections.
-         */
-
-        desktop
-          .querySelectorAll(
-            ".desktop-selected"
-          )
-          .forEach((icon) => {
-            icon.classList.remove(
-              "desktop-selected"
-            );
-          });
-
-        event.preventDefault();
-      }
-    );
+      if (event.target.closest(".window")) return;
 
 
-    document.addEventListener(
-      "mousemove",
-      function (event) {
+      selecting = true;
 
-        if (!selecting) return;
+      startX = event.clientX;
+      startY = event.clientY;
 
-        const currentX =
-          event.clientX;
 
-        const currentY =
-          event.clientY;
+      frame.style.display = "block";
 
-        const left =
-          Math.min(
-            startX,
-            currentX
+      frame.style.left = `${startX}px`;
+      frame.style.top = `${startY}px`;
+
+      frame.style.width = "0px";
+      frame.style.height = "0px";
+
+
+      /*
+       * Clear old selections.
+       */
+
+      desktop
+        .querySelectorAll(".desktop-selected")
+        .forEach((icon) => {
+          icon.classList.remove("desktop-selected");
+        });
+
+
+      event.preventDefault();
+    });
+
+
+    document.addEventListener("mousemove", function (event) {
+
+      if (!selecting) return;
+
+
+      const currentX = event.clientX;
+      const currentY = event.clientY;
+
+
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+
+
+      frame.style.left = `${left}px`;
+      frame.style.top = `${top}px`;
+
+      frame.style.width = `${width}px`;
+      frame.style.height = `${height}px`;
+
+
+      const selectionRect =
+        frame.getBoundingClientRect();
+
+
+      desktop
+        .querySelectorAll(".icon")
+        .forEach((icon) => {
+
+          const iconRect =
+            icon.getBoundingClientRect();
+
+
+          const intersects =
+            iconRect.left < selectionRect.right &&
+            iconRect.right > selectionRect.left &&
+            iconRect.top < selectionRect.bottom &&
+            iconRect.bottom > selectionRect.top;
+
+
+          icon.classList.toggle(
+            "desktop-selected",
+            intersects
           );
-
-        const top =
-          Math.min(
-            startY,
-            currentY
-          );
-
-        const width =
-          Math.abs(
-            currentX - startX
-          );
-
-        const height =
-          Math.abs(
-            currentY - startY
-          );
-
-        frame.style.left =
-          `${left}px`;
-
-        frame.style.top =
-          `${top}px`;
-
-        frame.style.width =
-          `${width}px`;
-
-        frame.style.height =
-          `${height}px`;
-
-        const selectionRect =
-          frame.getBoundingClientRect();
-
-        desktop
-          .querySelectorAll(".icon")
-          .forEach((icon) => {
-
-            const iconRect =
-              icon.getBoundingClientRect();
-
-            const intersects =
-              iconRect.left <
-                selectionRect.right &&
-              iconRect.right >
-                selectionRect.left &&
-              iconRect.top <
-                selectionRect.bottom &&
-              iconRect.bottom >
-                selectionRect.top;
-
-            icon.classList.toggle(
-              "desktop-selected",
-              intersects
-            );
-          });
-      }
-    );
+        });
+    });
 
 
-    document.addEventListener(
-      "mouseup",
-      function () {
+    document.addEventListener("mouseup", function () {
 
-        if (!selecting) return;
+      if (!selecting) return;
 
-        selecting = false;
+      selecting = false;
 
-        frame.style.display =
-          "none";
-      }
-    );
+      frame.style.display = "none";
+    });
   }
 
 
-  if (
-    document.readyState ===
-    "loading"
-  ) {
-
+  if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
       setupSelection
     );
-
   } else {
-
     setupSelection();
-
   }
 
 })();
@@ -4607,11 +5236,6 @@ function writeDateTime() {
 
 (function initDesktopGrid() {
 
-  /*
-   * Change these if you want the grid
-   * closer/further apart.
-   */
-
   const GRID_X = 90;
   const GRID_Y = 70;
 
@@ -4619,18 +5243,12 @@ function writeDateTime() {
   const GRID_OFFSET_Y = 20;
 
 
-  function snapToGrid(
-    value,
-    grid,
-    offset
-  ) {
+  function snapToGrid(value, grid, offset) {
 
     return (
       Math.round(
-        (value - offset) /
-        grid
-      ) *
-      grid +
+        (value - offset) / grid
+      ) * grid +
       offset
     );
 
@@ -4648,6 +5266,7 @@ function writeDateTime() {
         10
       );
 
+
     const currentTop =
       parseInt(
         icon.style.top || "0",
@@ -4661,6 +5280,7 @@ function writeDateTime() {
         GRID_X,
         GRID_OFFSET_X
       );
+
 
     const snappedTop =
       snapToGrid(
@@ -4679,37 +5299,35 @@ function writeDateTime() {
 
 
   /*
-   * Snap icons when mouse is released.
+   * When the mouse is released, find the icon
+   * that was being moved and snap it.
    */
 
   document.addEventListener(
     "mouseup",
     function () {
 
-      const icons =
+      const selectedIcons =
         document.querySelectorAll(
           "#desktop .icon"
         );
 
-      icons.forEach(
-        (icon) => {
 
-          /*
-           * Only snap icons which
-           * already have a position.
-           */
+      selectedIcons.forEach((icon) => {
 
-          if (
-            icon.style.left !== "" &&
-            icon.style.top !== ""
-          ) {
+        /*
+         * Only snap icons that have an explicit
+         * position.
+         */
 
-            snapIcon(icon);
-
-          }
-
+        if (
+          icon.style.left !== "" &&
+          icon.style.top !== ""
+        ) {
+          snapIcon(icon);
         }
-      );
+
+      });
 
     },
     true
