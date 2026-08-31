@@ -829,6 +829,7 @@ webamp.renderWhenReady(winampDiv).then(() => {
   });
 });
 
+      webamp.onClose(() => {
 
       observer.observe(document.body, {
         childList: true,
