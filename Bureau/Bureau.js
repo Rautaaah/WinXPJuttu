@@ -692,154 +692,143 @@ function openRawWinamp() {
       return;
     }
 
-    const webamp = new Webamp({
-      initialTracks: [
+// Clear Webamp's saved playlist/state so it starts fresh
+localStorage.removeItem("webamp");
+sessionStorage.removeItem("webamp");
+
+const webamp = new Webamp({
+  initialTracks: [
+    {
+      metaData: {
+        artist: "Aikakone",
+        title: "Anna mun bailaa",
+      },
+      url: "/Assets/Sounds/Anna mun bailaa.mp3",
+    },
+    {
+      metaData: {
+        artist: "Aikakone",
+        title: "Odota",
+      },
+      url: "/Assets/Sounds/Odota.mp3",
+    },
+    {
+      metaData: {
+        artist: "Movetron",
+        title: "Romeo Ja Julia (Original Mix)",
+      },
+      url: "/Assets/Sounds/Romeo Ja Julia (Original Mix).mp3",
+    },
         {
-          metaData: {
-            artist: "Movetron",
-            title: "Romeo Ja Julia",
-          },
-          url:
-            "/Assets/Sounds/Romeo Ja Julia (Original Mix).mp3",
-        },
-        {
-          metaData: {
-            artist:
-              "Aikakone",
-            title: "Odota",
-          },
-          url:
-            "/Assets/Sounds/Odota.mp3",
-        },
-        {
-          metaData: {
-            artist:
-              "Aikakone",
-            title: "Anna mun bailaa",
-          },
-          url:
-            "/Assets/Sounds//Anna mun bailaa.mp3",
-        },
-        {
-          metaData: {
-            artist:
-              "Uhhh...",
-            title:
-              "hi :3",
-          },
-          url:
-            "67",
-        },
-      ],
-    });
+      metaData: {
+        artist: "Evangelion Finally",
+        title: "KOMM, SUSSER TOD M-10 Director's Edit Version",
+      },
+      url: "/Assets/Sounds/Romeo Ja Julia (Original Mix).mp3",
+    },
+  ],
+});
 
-    webamp.renderWhenReady(winampDiv).then(() => {
-      const observer =
-        new MutationObserver(() => {
-          const webampDiv =
-            document.getElementById("webamp");
+webamp.renderWhenReady(winampDiv).then(() => {
+  const observer = new MutationObserver(() => {
+    const webampDiv = document.getElementById("webamp");
 
-          if (webampDiv) {
-            observer.disconnect();
+    if (webampDiv) {
+      observer.disconnect();
 
-            const classObserver =
-              new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                  if (
-                    mutation.attributeName ===
-                    "class"
-                  ) {
-                    if (
-                      webampDiv.classList.contains(
-                        "window-inactive"
-                      )
-                    ) {
-                      webampDiv.classList.remove(
-                        "window-inactive"
-                      );
-                    }
+      const classObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "class") {
+            if (
+              webampDiv.classList.contains("window-inactive")
+            ) {
+              webampDiv.classList.remove("window-inactive");
+            }
 
-                    const inactiveChildren =
-                      webampDiv.querySelectorAll(
-                        ".window-inactive"
-                      );
+            const inactiveChildren =
+              webampDiv.querySelectorAll(".window-inactive");
 
-                    inactiveChildren.forEach((el) => {
-                      el.classList.remove(
-                        "window-inactive"
-                      );
+            inactiveChildren.forEach((el) => {
+              el.classList.remove("window-inactive");
 
-                      el.style.setProperty(
-                        "background-color",
-                        "none",
-                        "important"
-                      );
-                    });
-
-                    webampDiv.style.setProperty(
-                      "background-color",
-                      "",
-                      "important"
-                    );
-                  }
-                });
-              });
-
-            classObserver.observe(webampDiv, {
-              attributes: true,
-              subtree: true,
-            });
-
-            zIndexCounter++;
-
-            webampDiv.style.zIndex =
-              zIndexCounter.toString();
-
-            webampDiv.classList.add(
-              "window",
-              "no-bg"
-            );
-
-            updateTaskbarHighlight();
-
-            const windowEl =
-              document.querySelector(
-                "#webamp .window"
+              el.style.setProperty(
+                "background-color",
+                "none",
+                "important"
               );
-
-            const styleObserver =
-              new MutationObserver(() => {
-                windowEl.style.setProperty(
-                  "width",
-                  "0",
-                  "important"
-                );
-
-                windowEl.style.setProperty(
-                  "height",
-                  "0",
-                  "important"
-                );
-              });
-
-            styleObserver.observe(windowEl, {
-              attributes: true,
-              attributeFilter: ["style"],
             });
 
-            webampDiv.addEventListener(
-              "mousedown",
-              () => {
-                zIndexCounter++;
-
-                webampDiv.style.zIndex =
-                  zIndexCounter;
-
-                updateTaskbarHighlight();
-              }
+            webampDiv.style.setProperty(
+              "background-color",
+              "",
+              "important"
             );
           }
         });
+      });
+
+      classObserver.observe(webampDiv, {
+        attributes: true,
+        subtree: true,
+      });
+
+      zIndexCounter++;
+
+      webampDiv.style.zIndex =
+        zIndexCounter.toString();
+
+      webampDiv.classList.add(
+        "window",
+        "no-bg"
+      );
+
+      updateTaskbarHighlight();
+
+      const windowEl =
+        document.querySelector(
+          "#webamp .window"
+        );
+
+      const styleObserver =
+        new MutationObserver(() => {
+          windowEl.style.setProperty(
+            "width",
+            "0",
+            "important"
+          );
+
+          windowEl.style.setProperty(
+            "height",
+            "0",
+            "important"
+          );
+        });
+
+      styleObserver.observe(windowEl, {
+        attributes: true,
+        attributeFilter: ["style"],
+      });
+
+      webampDiv.addEventListener(
+        "mousedown",
+        () => {
+          zIndexCounter++;
+
+          webampDiv.style.zIndex =
+            zIndexCounter;
+
+          updateTaskbarHighlight();
+        }
+      );
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+});
+
 
       observer.observe(document.body, {
         childList: true,
