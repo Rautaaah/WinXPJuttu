@@ -14,7 +14,7 @@
   flex-direction: column;
   -webkit-box-align: center;
   align-items: center;
-  background-color: rgb(66, 130, 214);
+  background-color: rgb(214, 91, 132);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   position: relative;
@@ -38,20 +38,21 @@
   width: 405px;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+
   background: linear-gradient(
-    rgb(24, 104, 206) 0%,
-    rgb(14, 96, 203) 12%,
-    rgb(14, 96, 203) 20%,
-    rgb(17, 100, 207) 32%,
-    rgb(22, 103, 207) 33%,
-    rgb(27, 108, 211) 47%,
-    rgb(30, 112, 217) 54%,
-    rgb(36, 118, 220) 60%,
-    rgb(41, 122, 224) 65%,
-    rgb(52, 130, 227) 77%,
-    rgb(55, 134, 229) 79%,
-    rgb(66, 142, 233) 90%,
-    rgb(71, 145, 235) 100%
+    rgb(206, 68, 111) 0%,
+    rgb(194, 58, 101) 12%,
+    rgb(194, 58, 101) 20%,
+    rgb(198, 62, 105) 32%,
+    rgb(203, 67, 110) 33%,
+    rgb(209, 74, 117) 47%,
+    rgb(214, 81, 125) 54%,
+    rgb(219, 89, 133) 60%,
+    rgb(223, 96, 140) 65%,
+    rgb(228, 107, 149) 77%,
+    rgb(231, 112, 153) 79%,
+    rgb(235, 123, 162) 90%,
+    rgb(238, 128, 167) 100%
   );
 }
 
@@ -63,6 +64,7 @@
   left: 0px;
   width: 100%;
   height: 3px;
+
   background: linear-gradient(
     to right,
     transparent 0px,
@@ -73,7 +75,9 @@
     rgba(255, 255, 255, 0.2) 99%,
     transparent 100%
   );
-  box-shadow: rgb(14, 96, 203) 0px -1px 1px inset;
+
+  box-shadow:
+    rgb(194, 58, 101) 0px -1px 1px inset;
 }
 
 .StartMenuHeader img {
@@ -88,8 +92,10 @@
   display: flex;
   margin: 0px 2px;
   position: relative;
-  border-top: 1px solid rgb(56, 93, 231);
-  box-shadow: rgb(56, 93, 231) 0px 1px;
+
+  border-top: 1px solid rgb(205, 104, 137);
+  box-shadow: rgb(205, 104, 137) 0px 1px;
+
   width: auto;
   height: 100%;
 }
@@ -101,12 +107,14 @@
   right: 0px;
   top: -6px;
   height: 2px;
+
   background: linear-gradient(
     to right,
     rgba(0, 0, 0, 0) 0%,
-    rgb(218, 136, 74) 50%,
+    rgb(218, 91, 130) 50%,
     rgba(0, 0, 0, 0) 100%
   );
+
   border: 0px;
 }
 
@@ -122,11 +130,15 @@
 }
 
 .RightMenu {
-  background-color: rgb(203, 227, 255);
-  border-left: 1px solid rgba(58, 58, 255, 0.37);
+  background-color: rgb(255, 218, 229);
+
+  border-left: 1px solid rgba(190, 65, 108, 0.37);
+
   padding: 6px 5px 5px;
   width: 190px;
-  color: rgb(0, 19, 107);
+
+  color: rgb(107, 19, 52);
+
   font-family: trebuc, sans-serif;
   font-size: 11px;
 }
@@ -163,14 +175,20 @@
   margin-right: 3px;
 }
 
+
+/* =========================================
+   ROSE HOVER
+   ========================================= */
+
 .ItemMenu:hover {
   color: white;
-  background-color: rgb(47, 113, 205);
+  background-color: rgb(205, 75, 119);
 }
 
 .ItemMenu:hover .MenuItemSubtxt {
   color: white;
 }
+
 .ItemMenu:hover .MenuArrow {
   border-left-color: white;
 }
@@ -197,20 +215,21 @@
 
 .MenuSeparator {
   height: 2px;
+
   background: linear-gradient(
       to right,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.1) 50%,
+      rgba(180, 60, 100, 0.1) 50%,
       rgba(0, 0, 0, 0) 100%
     )
     content-box;
+
   border-top: 3px solid transparent;
   border-bottom: 3px solid transparent;
 }
 
 .AllProgMenu {
   position: static;
-  
   margin-bottom: 5px;
 }
 
@@ -227,7 +246,7 @@
 
 .AllProgMenu:hover {
   color: white;
-  background-color: rgb(47, 113, 205);
+  background-color: rgb(205, 75, 119);
 }
 
 .AllProgImg {
@@ -244,10 +263,13 @@
   border-image: initial;
   border-right-style: initial;
   border-right-color: initial;
-  border-left-color: rgb(0, 19, 107);
+
+  border-left-color: rgb(107, 19, 52);
+
   position: absolute;
   left: 140px;
 }
+
 
 /*
 .AllProgMenuDropDown {
@@ -257,7 +279,7 @@
   bottom: -1px;
   background-color: white;
   padding-left: 1px;
-  box-shadow: rgb(114, 173, 233) 0px 0px 0px 1px inset,
+  box-shadow: rgb(205, 104, 137) 0px 0px 0px 1px inset,
     rgba(0, 0, 0, 0.5) 2px 3px 3px;
 }
 
@@ -267,10 +289,12 @@
   -webkit-box-align: center;
   align-items: center;
   padding: 0px 22px 0px 10px;
-  box-shadow: rgb(64, 129, 255) 3px 0px inset;
+  box-shadow: rgb(205, 75, 119) 3px 0px inset;
   position: relative;
   color: black;
-} */
+}
+*/
+
 
 .footer_item {
   font-family: trebuc, sans-serif;
@@ -288,6 +312,11 @@
   margin-right: 5px;
 }
 
+
+/* =========================================
+   ROSE START MENU FOOTER
+   ========================================= */
+
 .FooterStartMenu {
   position: relative;
   display: flex;
@@ -296,24 +325,27 @@
   align-items: center;
   -webkit-box-pack: end;
   justify-content: flex-end;
+
   color: rgb(255, 255, 255);
+
   height: 40px;
   width: 100%;
+
   background: linear-gradient(
-    rgb(66, 130, 214) 0%,
-    rgb(59, 133, 224) 3%,
-    rgb(65, 138, 227) 5%,
-    rgb(65, 138, 227) 17%,
-    rgb(60, 135, 226) 21%,
-    rgb(55, 134, 228) 26%,
-    rgb(52, 130, 227) 29%,
-    rgb(46, 126, 225) 39%,
-    rgb(35, 116, 223) 49%,
-    rgb(32, 114, 219) 57%,
-    rgb(25, 110, 219) 62%,
-    rgb(23, 107, 216) 72%,
-    rgb(20, 104, 213) 75%,
-    rgb(17, 101, 210) 83%,
-    rgb(15, 97, 203) 88%
+    rgb(214, 91, 132) 0%,
+    rgb(210, 94, 136) 3%,
+    rgb(216, 101, 143) 5%,
+    rgb(216, 101, 143) 17%,
+    rgb(211, 98, 140) 21%,
+    rgb(207, 96, 140) 26%,
+    rgb(203, 92, 136) 29%,
+    rgb(196, 87, 131) 39%,
+    rgb(186, 78, 123) 49%,
+    rgb(181, 75, 119) 57%,
+    rgb(176, 70, 115) 62%,
+    rgb(172, 67, 111) 72%,
+    rgb(168, 64, 108) 75%,
+    rgb(163, 61, 104) 83%,
+    rgb(157, 57, 100) 88%
   );
 }
