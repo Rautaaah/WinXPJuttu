@@ -4842,273 +4842,661 @@ function writeDateTime() {
 
 
 /* ============================================================
-   DESKTOP SELECTION + MULTI-ICON DRAGGING + COLLISION SNAP
+   DESKTOP SELECTION RECTANGLE
    ============================================================ */
-(function initDesktopSelectionAndGrid() {
-  if (window.__desktopSelectionAndGridInitialized) return;
-  window.__desktopSelectionAndGridInitialized = true;
 
-  const COLS = 19;
-  const ROWS = 8;
+/* ============================================================
+   DESKTOP SELECTION + MULTI-ICON DRAGGING + 19x8 GRID
+   ============================================================ */
+
+(function initDesktopSelectionAndGrid() {
+
+  const GRID_COLUMNS = 19;
+  const GRID_ROWS = 8;
+
   let desktop = null;
   let selectionFrame = null;
+
   let selecting = false;
   let dragging = false;
+
+  let startX = 0;
+  let startY = 0;
+
   let dragStartX = 0;
   let dragStartY = 0;
-  let lastMouseX = 0;
-  let lastMouseY = 0;
-  let startPositions = [];
+
   let draggedIcons = [];
 
+
+  /* ==========================================================
+     SETUP
+     ========================================================== */
+
   function setup() {
+
     desktop = document.getElementById("desktop");
-    if (!desktop) return;
 
-    selectionFrame = document.getElementById("desktop-selection-frame");
+    if (!desktop) {
+      console.warn("Desktop element #desktop was not found.");
+      return;
+    }
+
+
+    /* --------------------------------------------------------
+       Create selection rectangle
+       -------------------------------------------------------- */
+
+    selectionFrame =
+      document.getElementById(
+        "desktop-selection-frame"
+      );
+
+
     if (!selectionFrame) {
-      selectionFrame = document.createElement("div");
-      selectionFrame.id = "desktop-selection-frame";
-      document.body.appendChild(selectionFrame);
+
+      selectionFrame =
+        document.createElement("div");
+
+      selectionFrame.id =
+        "desktop-selection-frame";
+
+      document.body.appendChild(
+        selectionFrame
+      );
+
     }
 
-    if (!document.getElementById("desktop-icon-hover-frame-style")) {
-      const style = document.createElement("style");
-      style.id = "desktop-icon-hover-frame-style";
-      style.textContent = `
-        #desktop .icon:hover {
-          background: rgba(80,155,235,.14) !important;
-          outline: 1px solid rgba(120,190,255,.78);
-          outline-offset: 0;
-        }
-        #desktop .icon.desktop-selected:hover {
-          background: rgba(80,160,240,.38) !important;
-          outline: 1px solid rgba(145,205,255,.98);
-        }
-        #desktop .icon.desktop-dragging {
-          z-index: 1000000 !important;
-        }
-      `;
-      document.head.appendChild(style);
-    }
 
-    desktop.addEventListener("mousedown", onDesktopMouseDown, true);
-    document.addEventListener("mousemove", onMouseMove, true);
-    document.addEventListener("mouseup", onMouseUp, true);
+    /* --------------------------------------------------------
+       DESKTOP MOUSE DOWN
+       -------------------------------------------------------- */
+
+    desktop.addEventListener(
+      "mousedown",
+      onDesktopMouseDown,
+      true
+    );
+
+
+    /* --------------------------------------------------------
+       GLOBAL MOUSE MOVE
+       -------------------------------------------------------- */
+
+    document.addEventListener(
+      "mousemove",
+      onMouseMove,
+      true
+    );
+
+
+    /* --------------------------------------------------------
+       GLOBAL MOUSE UP
+       -------------------------------------------------------- */
+
+    document.addEventListener(
+      "mouseup",
+      onMouseUp,
+      true
+    );
+
   }
 
-  function icons() {
-    return Array.from(desktop.querySelectorAll(".icon"));
+
+  /* ==========================================================
+     GET SELECTED ICONS
+     ========================================================== */
+
+  function getSelectedIcons() {
+
+    return Array.from(
+      desktop.querySelectorAll(
+        ".icon.desktop-selected"
+      )
+    );
+
   }
 
-  function selectedIcons() {
-    return icons().filter(i => i.classList.contains("desktop-selected"));
-  }
+
+  /* ==========================================================
+     CLEAR SELECTION
+     ========================================================== */
 
   function clearSelection() {
-    selectedIcons().forEach(i => i.classList.remove("desktop-selected"));
+
+    desktop
+      .querySelectorAll(
+        ".desktop-selected"
+      )
+      .forEach(function(icon) {
+
+        icon.classList.remove(
+          "desktop-selected"
+        );
+
+      });
+
   }
 
-  function pos(icon) {
-    const x = parseFloat(icon.style.left);
-    const y = parseFloat(icon.style.top);
-    return {
-      x: Number.isFinite(x) ? x : icon.offsetLeft,
-      y: Number.isFinite(y) ? y : icon.offsetTop
-    };
-  }
 
-  function save(icon, x, y) {
-    if (!icon.dataset.icon) return;
-    localStorage.setItem(
-      "desktop-icon-" + icon.dataset.icon,
-      JSON.stringify({ x, y })
-    );
-  }
-
-  function grid() {
-    return {
-      w: desktop.clientWidth / COLS,
-      h: desktop.clientHeight / ROWS
-    };
-  }
-
-  function clamp(n, min, max) {
-    return Math.max(min, Math.min(max, n));
-  }
-
-  function candidateRect(icon, x, y) {
-    return {
-      left: x,
-      top: y,
-      right: x + icon.offsetWidth,
-      bottom: y + icon.offsetHeight
-    };
-  }
-
-  function overlap(a, b) {
-    return a.left < b.right && a.right > b.left &&
-           a.top < b.bottom && a.bottom > b.top;
-  }
-
-  function free(icon, x, y, occupied) {
-    const r = candidateRect(icon, x, y);
-    return !occupied.some(o => o.icon !== icon && overlap(r, o.rect));
-  }
-
-  function nearestFree(icon, rawX, rawY, occupied) {
-    const { w, h } = grid();
-    const targetCol = clamp(Math.round(rawX / w), 0, COLS - 1);
-    const targetRow = clamp(Math.round(rawY / h), 0, ROWS - 1);
-    let best = null;
-    let bestDistance = Infinity;
-    const maxRadius = Math.max(COLS, ROWS);
-
-    for (let radius = 0; radius <= maxRadius; radius++) {
-      for (let col = targetCol - radius; col <= targetCol + radius; col++) {
-        for (let row = targetRow - radius; row <= targetRow + radius; row++) {
-          if (col < 0 || col >= COLS || row < 0 || row >= ROWS) continue;
-          if (Math.max(Math.abs(col - targetCol), Math.abs(row - targetRow)) !== radius) continue;
-
-          const x = col * w;
-          const y = row * h;
-          if (!free(icon, x, y, occupied)) continue;
-
-          const d = (x - rawX) ** 2 + (y - rawY) ** 2;
-          if (d < bestDistance) {
-            bestDistance = d;
-            best = { x, y };
-          }
-        }
-      }
-      if (best) break;
-    }
-
-    return best || { x: targetCol * w, y: targetRow * h };
-  }
+  /* ==========================================================
+     DESKTOP MOUSE DOWN
+     ========================================================== */
 
   function onDesktopMouseDown(event) {
+
     if (event.button !== 0) return;
 
-    const icon = event.target.closest(".icon");
-    if (icon && desktop.contains(icon)) {
-      if (!icon.classList.contains("desktop-selected")) {
-        clearSelection();
-        icon.classList.add("desktop-selected");
+
+    const icon =
+      event.target.closest(".icon");
+
+
+    /*
+     * --------------------------------------------------------
+     * CLICKED AN ICON
+     * --------------------------------------------------------
+     */
+
+    if (icon) {
+
+      /*
+       * If this icon is already selected,
+       * move ALL selected icons.
+       */
+
+      if (
+        icon.classList.contains(
+          "desktop-selected"
+        )
+      ) {
+
+        draggedIcons =
+          getSelectedIcons();
+
       }
 
-      draggedIcons = selectedIcons();
-      if (!draggedIcons.length) return;
+      /*
+       * Otherwise select only this icon.
+       */
+
+      else {
+
+        clearSelection();
+
+        icon.classList.add(
+          "desktop-selected"
+        );
+
+        draggedIcons = [icon];
+
+      }
+
+
+      if (
+        draggedIcons.length === 0
+      ) {
+        return;
+      }
+
+
+      /*
+       * Start dragging.
+       */
 
       dragging = true;
-      dragStartX = lastMouseX = event.clientX;
-      dragStartY = lastMouseY = event.clientY;
-      startPositions = draggedIcons.map(pos);
 
-      draggedIcons.forEach(i => i.classList.add("desktop-dragging"));
-      const overlay = document.getElementById("desktop-grid-overlay");
-      if (overlay) overlay.style.display = "block";
+      dragStartX =
+        event.clientX;
 
-      /* Prevent the old single-icon drag handler from competing with us. */
+      dragStartY =
+        event.clientY;
+
+
+      /*
+       * Remember every icon's starting position.
+       */
+
+      draggedIcons.forEach(
+        function(selectedIcon) {
+
+          const left =
+            parseFloat(
+              selectedIcon.style.left
+            ) ||
+            selectedIcon.offsetLeft;
+
+
+          const top =
+            parseFloat(
+              selectedIcon.style.top
+            ) ||
+            selectedIcon.offsetTop;
+
+
+          selectedIcon.dataset.dragStartLeft =
+            left;
+
+          selectedIcon.dataset.dragStartTop =
+            top;
+
+        }
+      );
+
+
       event.preventDefault();
-      event.stopImmediatePropagation();
+
       return;
     }
 
-    if (event.target.closest(".window")) return;
-    if (event.target !== desktop) return;
+
+    /*
+     * --------------------------------------------------------
+     * CLICKED A WINDOW
+     * --------------------------------------------------------
+     */
+
+    if (
+      event.target.closest(".window")
+    ) {
+      return;
+    }
+
+
+    /*
+     * --------------------------------------------------------
+     * START DESKTOP SELECTION
+     * --------------------------------------------------------
+     */
 
     selecting = true;
-    dragStartX = event.clientX;
-    dragStartY = event.clientY;
-    selectionFrame.style.display = "block";
-    selectionFrame.style.left = `${dragStartX}px`;
-    selectionFrame.style.top = `${dragStartY}px`;
-    selectionFrame.style.width = "0px";
-    selectionFrame.style.height = "0px";
+
+    startX = event.clientX;
+    startY = event.clientY;
+
+
+    selectionFrame.style.display =
+      "block";
+
+    selectionFrame.style.left =
+      `${startX}px`;
+
+    selectionFrame.style.top =
+      `${startY}px`;
+
+    selectionFrame.style.width =
+      "0px";
+
+    selectionFrame.style.height =
+      "0px";
+
+
+    /*
+     * Clear previous selection.
+     */
+
     clearSelection();
 
+
     event.preventDefault();
-    event.stopImmediatePropagation();
+
   }
+
+
+  /* ==========================================================
+     MOUSE MOVE
+     ========================================================== */
 
   function onMouseMove(event) {
-    lastMouseX = event.clientX;
-    lastMouseY = event.clientY;
+
+
+    /* --------------------------------------------------------
+       MOVE SELECTED ICONS
+       -------------------------------------------------------- */
 
     if (dragging) {
-      const dx = event.clientX - dragStartX;
-      const dy = event.clientY - dragStartY;
 
-      /* No collision test and no snapping while the mouse is down. */
-      draggedIcons.forEach((icon, index) => {
-        icon.style.left = `${startPositions[index].x + dx}px`;
-        icon.style.top = `${startPositions[index].y + dy}px`;
-      });
-      event.preventDefault();
+      const deltaX =
+        event.clientX -
+        dragStartX;
+
+
+      const deltaY =
+        event.clientY -
+        dragStartY;
+
+
+      draggedIcons.forEach(
+        function(icon) {
+
+          const originalLeft =
+            parseFloat(
+              icon.dataset.dragStartLeft
+            );
+
+
+          const originalTop =
+            parseFloat(
+              icon.dataset.dragStartTop
+            );
+
+
+          icon.style.left =
+            `${originalLeft + deltaX}px`;
+
+          icon.style.top =
+            `${originalTop + deltaY}px`;
+
+        }
+      );
+
+
       return;
     }
 
-    if (!selecting) return;
 
-    const left = Math.min(dragStartX, event.clientX);
-    const top = Math.min(dragStartY, event.clientY);
-    const width = Math.abs(event.clientX - dragStartX);
-    const height = Math.abs(event.clientY - dragStartY);
+    /* --------------------------------------------------------
+       DRAW SELECTION RECTANGLE
+       -------------------------------------------------------- */
 
-    selectionFrame.style.left = `${left}px`;
-    selectionFrame.style.top = `${top}px`;
-    selectionFrame.style.width = `${width}px`;
-    selectionFrame.style.height = `${height}px`;
+    if (!selecting) {
+      return;
+    }
 
-    const box = selectionFrame.getBoundingClientRect();
-    icons().forEach(icon => {
-      const r = icon.getBoundingClientRect();
-      const hit = r.left < box.right && r.right > box.left &&
-                  r.top < box.bottom && r.bottom > box.top;
-      icon.classList.toggle("desktop-selected", hit);
-    });
+
+    const currentX =
+      event.clientX;
+
+    const currentY =
+      event.clientY;
+
+
+    const left =
+      Math.min(
+        startX,
+        currentX
+      );
+
+
+    const top =
+      Math.min(
+        startY,
+        currentY
+      );
+
+
+    const width =
+      Math.abs(
+        currentX -
+        startX
+      );
+
+
+    const height =
+      Math.abs(
+        currentY -
+        startY
+      );
+
+
+    selectionFrame.style.left =
+      `${left}px`;
+
+    selectionFrame.style.top =
+      `${top}px`;
+
+    selectionFrame.style.width =
+      `${width}px`;
+
+    selectionFrame.style.height =
+      `${height}px`;
+
+
+    /*
+     * Get rectangle coordinates.
+     */
+
+    const selectionRect =
+      selectionFrame.getBoundingClientRect();
+
+
+    /*
+     * Select every icon that intersects
+     * the rectangle.
+     */
+
+    desktop
+      .querySelectorAll(".icon")
+      .forEach(function(icon) {
+
+        const iconRect =
+          icon.getBoundingClientRect();
+
+
+        const intersects =
+          iconRect.left <
+            selectionRect.right &&
+
+          iconRect.right >
+            selectionRect.left &&
+
+          iconRect.top <
+            selectionRect.bottom &&
+
+          iconRect.bottom >
+            selectionRect.top;
+
+
+        icon.classList.toggle(
+          "desktop-selected",
+          intersects
+        );
+
+      });
+
   }
 
-  function onMouseUp(event) {
+
+  /* ==========================================================
+     MOUSE UP
+     ========================================================== */
+
+  function onMouseUp() {
+
+
+    /* --------------------------------------------------------
+       FINISH ICON DRAG
+       -------------------------------------------------------- */
+
     if (dragging) {
+
       dragging = false;
 
-      const occupied = icons()
-        .filter(icon => !draggedIcons.includes(icon))
-        .map(icon => ({ icon, rect: candidateRect(icon, pos(icon).x, pos(icon).y) }));
 
-      /* Resolve collisions only now, nearest free grid cell first. */
-      draggedIcons.forEach(icon => {
-        const p = pos(icon);
-        const target = nearestFree(icon, p.x, p.y, occupied);
-        icon.style.left = `${target.x}px`;
-        icon.style.top = `${target.y}px`;
-        save(icon, target.x, target.y);
-        occupied.push({ icon, rect: candidateRect(icon, target.x, target.y) });
-        icon.classList.remove("desktop-dragging");
-      });
+      /*
+       * Snap every moved icon.
+       */
+
+      draggedIcons.forEach(
+        function(icon) {
+
+          snapIconToGrid(icon);
+
+
+          delete icon.dataset.dragStartLeft;
+
+          delete icon.dataset.dragStartTop;
+
+        }
+      );
+
 
       draggedIcons = [];
-      startPositions = [];
-      const overlay = document.getElementById("desktop-grid-overlay");
-      if (overlay) overlay.style.display = "none";
-      event.preventDefault();
+
       return;
     }
 
+
+    /* --------------------------------------------------------
+       FINISH SELECTION
+       -------------------------------------------------------- */
+
     if (selecting) {
+
       selecting = false;
-      selectionFrame.style.display = "none";
+
+      selectionFrame.style.display =
+        "none";
+
     }
+
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setup, { once: true });
-  } else {
-    setup();
+
+  /* ==========================================================
+     19 x 8 GRID
+     ========================================================== */
+
+  function snapIconToGrid(icon) {
+
+    if (!icon || !desktop) {
+      return;
+    }
+
+
+    const desktopWidth =
+      desktop.clientWidth;
+
+    const desktopHeight =
+      desktop.clientHeight;
+
+
+    if (
+      desktopWidth <= 0 ||
+      desktopHeight <= 0
+    ) {
+      return;
+    }
+
+
+    /*
+     * Calculate actual grid-cell size.
+     *
+     * 19 columns across.
+     * 8 rows vertically.
+     */
+
+    const cellWidth =
+      desktopWidth /
+      GRID_COLUMNS;
+
+
+    const cellHeight =
+      desktopHeight /
+      GRID_ROWS;
+
+
+    let left =
+      parseFloat(
+        icon.style.left
+      );
+
+
+    let top =
+      parseFloat(
+        icon.style.top
+      );
+
+
+    if (Number.isNaN(left)) {
+      left = icon.offsetLeft;
+    }
+
+
+    if (Number.isNaN(top)) {
+      top = icon.offsetTop;
+    }
+
+
+    /*
+     * Find closest grid position.
+     */
+
+    let column =
+      Math.round(
+        left /
+        cellWidth
+      );
+
+
+    let row =
+      Math.round(
+        top /
+        cellHeight
+      );
+
+
+    /*
+     * Keep inside 19 x 8.
+     */
+
+    column =
+      Math.max(
+        0,
+        Math.min(
+          GRID_COLUMNS - 1,
+          column
+        )
+      );
+
+
+    row =
+      Math.max(
+        0,
+        Math.min(
+          GRID_ROWS - 1,
+          row
+        )
+      );
+
+
+    /*
+     * Apply snapped position.
+     */
+
+    icon.style.left =
+      `${column * cellWidth}px`;
+
+    icon.style.top =
+      `${row * cellHeight}px`;
+
   }
+
+
+  /* ==========================================================
+     INITIALIZE
+     ========================================================== */
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      setup
+    );
+
+  }
+
+  else {
+
+    setup();
+
+  }
+
 })();
+
 
 
 /* ============================================================
