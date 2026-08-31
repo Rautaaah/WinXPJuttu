@@ -69,11 +69,12 @@
   <script src="/Bureau/Bureau.js"></script>
   <script src="/Open_Windows/Minesweeper/Minesweeper.js"></script>
 
+
   <style>
 
     /*
      * =====================================================
-     * DRAGGABLE DESKTOP ICONS
+     * DESKTOP
      * =====================================================
      */
 
@@ -88,7 +89,15 @@
       padding: 0;
 
       overflow: hidden;
+
     }
+
+
+    /*
+     * =====================================================
+     * DESKTOP ICONS
+     * =====================================================
+     */
 
     #desktop .icon {
 
@@ -101,14 +110,20 @@
       -webkit-user-select: none;
 
       touch-action: none;
+
+      box-sizing: border-box;
+
     }
+
 
     #desktop .icon.dragging {
 
       z-index: 9999;
 
       opacity: 0.85;
+
     }
+
 
     /*
      * =====================================================
@@ -124,8 +139,11 @@
 
       top: 50%;
 
-      transform: translate(-50%, -50%);
+      transform:
+        translate(-50%, -50%);
+
     }
+
 
     /*
      * =====================================================
@@ -156,14 +174,18 @@
       touch-action: none;
 
       box-sizing: border-box;
+
     }
+
 
     #kris-companion.dragging {
 
       cursor: grabbing;
 
       z-index: 99999;
+
     }
+
 
     #kris-gif {
 
@@ -177,14 +199,17 @@
 
       height: auto;
 
-      transform: translateX(-50%);
+      transform:
+        translateX(-50%);
 
       pointer-events: none;
 
       user-select: none;
 
       -webkit-user-drag: none;
+
     }
+
 
     /*
      * =====================================================
@@ -200,7 +225,8 @@
 
       bottom: 250px;
 
-      transform: translateX(-50%);
+      transform:
+        translateX(-50%);
 
       min-width: 220px;
 
@@ -216,7 +242,9 @@
 
       color: #fff;
 
-      font-family: "Courier New", monospace;
+      font-family:
+        "Courier New",
+        monospace;
 
       font-size: 18px;
 
@@ -232,13 +260,18 @@
 
       text-align: left;
 
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+      box-shadow:
+        4px 4px 0 rgba(0,0,0,0.5);
+
     }
+
 
     #kris-dialogue.hidden {
 
       display: none;
+
     }
+
 
     #kris-dialogue::after {
 
@@ -256,25 +289,16 @@
 
       background: #000;
 
-      border-right: 3px solid #fff;
+      border-right:
+        3px solid #fff;
 
-      border-bottom: 3px solid #fff;
+      border-bottom:
+        3px solid #fff;
 
       transform:
         translateX(-50%)
         rotate(45deg);
-    }
 
-    /*
-     * =====================================================
-     * KRIS GRID SNAP PREVIEW
-     * =====================================================
-     */
-
-    #kris-companion.grid-preview {
-
-      filter:
-        drop-shadow(0 0 6px rgba(255,255,255,0.8));
     }
 
   </style>
@@ -283,6 +307,7 @@
 
 
 <body>
+
 
 <div
   id="main-content"
@@ -312,9 +337,13 @@
 
       /*
        * MORNING
+       * 06:00 - 11:59
        */
 
-      if (hour >= 6 && hour < 12) {
+      if (
+        hour >= 6 &&
+        hour < 12
+      ) {
 
         wallpaper =
           "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHV6ZTR1Zzg4NTF3dHZsOW1vNGtoOGxncTRybGpsamw1bHQzMWt0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13ZzYXkeIjcZy0/giphy.gif";
@@ -324,9 +353,13 @@
 
       /*
        * AFTERNOON
+       * 12:00 - 17:59
        */
 
-      else if (hour >= 12 && hour < 18) {
+      else if (
+        hour >= 12 &&
+        hour < 18
+      ) {
 
         wallpaper =
           "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExam5kM2l4bGt3bzZnZWRxbGR2MWxsZ2VuNzVsdmczZ2d4Z2J1bjRtMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NKicvKt6iisXS/giphy.gif";
@@ -336,6 +369,7 @@
 
       /*
        * NIGHT
+       * 18:00 - 05:59
        */
 
       else {
@@ -395,7 +429,9 @@
         alt="My Computer"
       />
 
-      <span>My Computer</span>
+      <span>
+        My Computer
+      </span>
 
     </div>
 
@@ -415,7 +451,9 @@
         alt="Recycle Bin"
       />
 
-      <span>Recycle Bin</span>
+      <span>
+        Recycle Bin
+      </span>
 
     </div>
 
@@ -435,7 +473,9 @@
         alt="Internet Explorer"
       />
 
-      <span>Internet Explorer</span>
+      <span>
+        Internet Explorer
+      </span>
 
     </div>
 
@@ -455,7 +495,9 @@
         alt="Minesweeper"
       />
 
-      <span>Minesweeper</span>
+      <span>
+        Minesweeper
+      </span>
 
     </div>
 
@@ -475,7 +517,9 @@
         alt="Pinball"
       />
 
-      <span>Pinball</span>
+      <span>
+        Pinball
+      </span>
 
     </div>
 
@@ -495,7 +539,9 @@
         alt="Paint"
       />
 
-      <span>Paint</span>
+      <span>
+        Paint
+      </span>
 
     </div>
 
@@ -515,7 +561,9 @@
         alt="Notepad"
       />
 
-      <span>Notepad</span>
+      <span>
+        Notepad
+      </span>
 
     </div>
 
@@ -535,7 +583,9 @@
         alt="Winamp"
       />
 
-      <span>Winamp</span>
+      <span>
+        Winamp
+      </span>
 
     </div>
 
@@ -555,21 +605,20 @@
         alt="Projects Under Construct ! Folder"
       />
 
-      <span>Projects Under Construct !</span>
+      <span>
+        Projects Under Construct !
+      </span>
 
     </div>
 
 
     <!-- =================================================
-         KRIS COMPANION
-
-         IMPORTANT:
-         This is NOT an .icon.
-         It therefore cannot trigger the
-         desktop icon drag system.
+         KRIS
          ================================================= -->
 
-    <div id="kris-companion">
+    <div
+      id="kris-companion"
+    >
 
       <div
         id="kris-dialogue"
@@ -604,7 +653,9 @@
     class="footer_original"
   >
 
-    <div class="footer__items left">
+    <div
+      class="footer__items left"
+    >
 
       <div
         class="footer__start_menu"
@@ -623,7 +674,9 @@
     </div>
 
 
-    <div class="footer__items right">
+    <div
+      class="footer__items right"
+    >
 
       <img
         class="footer__icon"
@@ -631,17 +684,20 @@
         alt=""
       />
 
+
       <img
         class="footer__icon"
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Volume.png"
         alt=""
       />
 
+
       <img
         class="footer__icon"
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Safely Remove Hardware.png"
         alt=""
       />
+
 
       <div
         class="footer__time"
@@ -655,8 +711,9 @@
 </div>
 
 
+
 <!-- =====================================================
-     DESKTOP ICON DRAG & DROP SYSTEM
+     DESKTOP ICON DRAG SYSTEM
      ===================================================== -->
 
 <script>
@@ -665,17 +722,21 @@ document.addEventListener(
   "DOMContentLoaded",
   function () {
 
+
     const desktop =
       document.getElementById(
         "desktop"
       );
 
+
     if (!desktop) return;
 
 
     const icons =
-      desktop.querySelectorAll(
-        ".icon"
+      Array.from(
+        desktop.querySelectorAll(
+          ".icon"
+        )
       );
 
 
@@ -688,11 +749,17 @@ document.addEventListener(
 
     /*
      * =================================================
-     * DESKTOP GRID
+     * GRID SETTINGS
      * =================================================
      *
-     * Change these values if you want the grid
-     * spacing to be different.
+     * X controls horizontal spacing.
+     *
+     * Y controls vertical spacing.
+     *
+     * The icons are still completely free while
+     * being dragged.
+     *
+     * They ONLY snap after you release them.
      */
 
     const GRID_X = 20;
@@ -701,7 +768,174 @@ document.addEventListener(
 
 
     /*
-     * Snap a position to the desktop grid.
+     * Extra spacing around icons.
+     *
+     * This prevents icons that are extremely close
+     * from touching each other.
+     */
+
+    const ICON_GAP = 8;
+
+
+    /*
+     * =================================================
+     * DEFAULT POSITIONS
+     * =================================================
+     */
+
+    const defaultPositions = [
+
+      [20, 20],
+
+      [20, 90],
+
+      [20, 160],
+
+      [20, 230],
+
+      [20, 300],
+
+      [20, 370],
+
+      [20, 440],
+
+      [20, 510]
+
+    ];
+
+
+    /*
+     * =================================================
+     * GET RECTANGLE AT A POSITION
+     * =================================================
+     */
+
+    function getIconRect(
+      icon,
+      x,
+      y
+    ) {
+
+      return {
+
+        left: x,
+
+        top: y,
+
+        right:
+          x +
+          icon.offsetWidth,
+
+        bottom:
+          y +
+          icon.offsetHeight
+
+      };
+
+    }
+
+
+    /*
+     * =================================================
+     * RECTANGLE COLLISION
+     * =================================================
+     *
+     * Returns TRUE when two icons overlap OR
+     * are close enough to visually touch.
+     */
+
+    function rectanglesTouch(
+      a,
+      b
+    ) {
+
+      return !(
+        a.right + ICON_GAP <= b.left ||
+
+        a.left >= b.right + ICON_GAP ||
+
+        a.bottom + ICON_GAP <= b.top ||
+
+        a.top >= b.bottom + ICON_GAP
+      );
+
+    }
+
+
+    /*
+     * =================================================
+     * POSITION AVAILABLE?
+     * =================================================
+     */
+
+    function positionIsAvailable(
+      icon,
+      x,
+      y
+    ) {
+
+      const testRect =
+        getIconRect(
+          icon,
+          x,
+          y
+        );
+
+
+      for (
+        const otherIcon of icons
+      ) {
+
+        if (
+          otherIcon === icon
+        ) {
+          continue;
+        }
+
+
+        const otherX =
+          parseInt(
+            otherIcon.style.left
+          ) || 0;
+
+
+        const otherY =
+          parseInt(
+            otherIcon.style.top
+          ) || 0;
+
+
+        const otherRect =
+          getIconRect(
+            otherIcon,
+            otherX,
+            otherY
+          );
+
+
+        if (
+          rectanglesTouch(
+            testRect,
+            otherRect
+          )
+        ) {
+
+          return false;
+
+        }
+
+      }
+
+
+      return true;
+
+    }
+
+
+    /*
+     * =================================================
+     * SNAP TO GRID
+     * =================================================
      */
 
     function snapToGrid(
@@ -726,30 +960,305 @@ document.addEventListener(
     }
 
 
-    const defaultPositions = [
+    /*
+     * =================================================
+     * FIND NEAREST FREE GRID POSITION
+     * =================================================
+     *
+     * If the user releases an icon on another icon,
+     * we search outward from that position until we
+     * find an empty grid location.
+     */
 
-      [20, 20],
+    function findNearestFreePosition(
+      icon,
+      desiredX,
+      desiredY
+    ) {
 
-      [20, 90],
+      const snapped =
+        snapToGrid(
+          desiredX,
+          desiredY
+        );
 
-      [20, 160],
 
-      [20, 230],
+      /*
+       * First try the exact grid position.
+       */
 
-      [20, 300],
+      if (
+        positionIsAvailable(
+          icon,
+          snapped.x,
+          snapped.y
+        )
+      ) {
 
-      [20, 370],
+        return snapped;
 
-      [20, 440],
+      }
 
-      [20, 510],
 
-    ];
+      /*
+       * Search outward in a spiral-ish pattern.
+       *
+       * This makes the icon move to the closest
+       * available grid position.
+       */
+
+      const maxRadius = 30;
+
+
+      for (
+        let radius = 1;
+        radius <= maxRadius;
+        radius++
+      ) {
+
+        const candidates = [];
+
+
+        /*
+         * Top
+         */
+
+        candidates.push({
+
+          x:
+            snapped.x,
+
+          y:
+            snapped.y -
+            radius *
+            GRID_Y
+
+        });
+
+
+        /*
+         * Bottom
+         */
+
+        candidates.push({
+
+          x:
+            snapped.x,
+
+          y:
+            snapped.y +
+            radius *
+            GRID_Y
+
+        });
+
+
+        /*
+         * Left
+         */
+
+        candidates.push({
+
+          x:
+            snapped.x -
+            radius *
+            GRID_X,
+
+          y:
+            snapped.y
+
+        });
+
+
+        /*
+         * Right
+         */
+
+        candidates.push({
+
+          x:
+            snapped.x +
+            radius *
+            GRID_X,
+
+          y:
+            snapped.y
+
+        });
+
+
+        /*
+         * Diagonals
+         */
+
+        candidates.push({
+
+          x:
+            snapped.x -
+            radius *
+            GRID_X,
+
+          y:
+            snapped.y -
+            radius *
+            GRID_Y
+
+        });
+
+
+        candidates.push({
+
+          x:
+            snapped.x +
+            radius *
+            GRID_X,
+
+          y:
+            snapped.y -
+            radius *
+            GRID_Y
+
+        });
+
+
+        candidates.push({
+
+          x:
+            snapped.x -
+            radius *
+            GRID_X,
+
+          y:
+            snapped.y +
+            radius *
+            GRID_Y
+
+        });
+
+
+        candidates.push({
+
+          x:
+            snapped.x +
+            radius *
+            GRID_X,
+
+          y:
+            snapped.y +
+            radius *
+            GRID_Y
+
+        });
+
+
+        /*
+         * Test every candidate.
+         */
+
+        for (
+          const candidate of candidates
+        ) {
+
+          /*
+           * Don't let icons go off-screen.
+           */
+
+          const maxX =
+            Math.max(
+              0,
+              desktop.clientWidth -
+              icon.offsetWidth
+            );
+
+
+          const maxY =
+            Math.max(
+              0,
+              desktop.clientHeight -
+              icon.offsetHeight
+            );
+
+
+          if (
+            candidate.x < 0 ||
+            candidate.y < 0 ||
+            candidate.x > maxX ||
+            candidate.y > maxY
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            positionIsAvailable(
+              icon,
+              candidate.x,
+              candidate.y
+            )
+          ) {
+
+            return candidate;
+
+          }
+
+        }
+
+      }
+
+
+      /*
+       * Fallback:
+       *
+       * Search every grid position on the desktop.
+       */
+
+      for (
+        let y = 0;
+        y < desktop.clientHeight;
+        y += GRID_Y
+      ) {
+
+        for (
+          let x = 0;
+          x < desktop.clientWidth;
+          x += GRID_X
+        ) {
+
+          if (
+            positionIsAvailable(
+              icon,
+              x,
+              y
+            )
+          ) {
+
+            return {
+              x: x,
+              y: y
+            };
+
+          }
+
+        }
+
+      }
+
+
+      /*
+       * If somehow there is literally no space,
+       * keep the original snapped position.
+       */
+
+      return snapped;
+
+    }
 
 
     /*
      * =================================================
-     * LOAD DESKTOP ICON POSITIONS
+     * RESTORE ICON POSITIONS
      * =================================================
      */
 
@@ -773,7 +1282,9 @@ document.addEventListener(
           );
 
 
-        if (savedPosition) {
+        if (
+          savedPosition
+        ) {
 
           try {
 
@@ -792,7 +1303,6 @@ document.addEventListener(
               position.y +
               "px";
 
-
           }
 
           catch (error) {
@@ -806,29 +1316,25 @@ document.addEventListener(
 
         }
 
-        else {
+        else if (
+          defaultPositions[index]
+        ) {
 
-          if (
-            defaultPositions[index]
-          ) {
-
-            icon.style.left =
-              defaultPositions[index][0] +
-              "px";
+          icon.style.left =
+            defaultPositions[index][0] +
+            "px";
 
 
-            icon.style.top =
-              defaultPositions[index][1] +
-              "px";
-
-          }
+          icon.style.top =
+            defaultPositions[index][1] +
+            "px";
 
         }
 
 
         /*
          * =================================================
-         * MOUSE DRAG
+         * MOUSE DOWN
          * =================================================
          */
 
@@ -872,7 +1378,7 @@ document.addEventListener(
 
         /*
          * =================================================
-         * TOUCH DRAG
+         * TOUCH START
          * =================================================
          */
 
@@ -920,6 +1426,12 @@ document.addEventListener(
      * =================================================
      * MOUSE MOVE
      * =================================================
+     *
+     * IMPORTANT:
+     *
+     * NO GRID SNAP HERE.
+     *
+     * The icon moves completely freely.
      */
 
     document.addEventListener(
@@ -977,12 +1489,18 @@ document.addEventListener(
           );
 
 
+        /*
+         * FREE MOVEMENT.
+         */
+
         draggedIcon.style.left =
-          x + "px";
+          x +
+          "px";
 
 
         draggedIcon.style.top =
-          y + "px";
+          y +
+          "px";
 
       }
     );
@@ -1054,12 +1572,16 @@ document.addEventListener(
 
 
         draggedIcon.style.left =
-          x + "px";
+          x +
+          "px";
 
 
         draggedIcon.style.top =
-          y + "px";
+          y +
+          "px";
 
+
+        event.preventDefault();
 
       },
       {
@@ -1083,10 +1605,6 @@ document.addEventListener(
         ) return;
 
 
-        /*
-         * Snap the icon when released.
-         */
-
         const currentX =
           parseInt(
             draggedIcon.style.left
@@ -1099,19 +1617,26 @@ document.addEventListener(
           ) || 0;
 
 
-        const snapped =
-          snapToGrid(
+        /*
+         * SNAP ONLY NOW.
+         */
+
+        const finalPosition =
+          findNearestFreePosition(
+            draggedIcon,
             currentX,
             currentY
           );
 
 
         draggedIcon.style.left =
-          snapped.x + "px";
+          finalPosition.x +
+          "px";
 
 
         draggedIcon.style.top =
-          snapped.y + "px";
+          finalPosition.y +
+          "px";
 
 
         saveIconPosition(
@@ -1158,19 +1683,26 @@ document.addEventListener(
           ) || 0;
 
 
-        const snapped =
-          snapToGrid(
+        /*
+         * SNAP ONLY WHEN RELEASED.
+         */
+
+        const finalPosition =
+          findNearestFreePosition(
+            draggedIcon,
             currentX,
             currentY
           );
 
 
         draggedIcon.style.left =
-          snapped.x + "px";
+          finalPosition.x +
+          "px";
 
 
         draggedIcon.style.top =
-          snapped.y + "px";
+          finalPosition.y +
+          "px";
 
 
         saveIconPosition(
@@ -1192,7 +1724,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * SAVE ICON POSITION
+     * SAVE POSITION
      * =================================================
      */
 
@@ -1238,8 +1770,9 @@ document.addEventListener(
 </script>
 
 
+
 <!-- =====================================================
-     KRIS COMPANION SYSTEM
+     KRIS COMPANION
      ===================================================== -->
 
 <script>
@@ -1247,6 +1780,7 @@ document.addEventListener(
 document.addEventListener(
   "DOMContentLoaded",
   function () {
+
 
     const kris =
       document.getElementById(
@@ -1290,24 +1824,21 @@ document.addEventListener(
 
     /*
      * =================================================
-     * KRIS SETTINGS
+     * KRIS GRID
      * =================================================
+     *
+     * Same basic grid concept as the desktop icons.
+     *
+     * BUT:
+     *
+     * Kris moves freely while dragging.
+     *
+     * He ONLY snaps when released.
      */
 
     const KRIS_GRID_X = 20;
 
     const KRIS_GRID_Y = 70;
-
-
-    /*
-     * How long Kris keeps talking.
-     *
-     * VERY FAST.
-     */
-
-    const NORMAL_TALK_TIME = 1500;
-
-    const REACTION_TIME = 1800;
 
 
     let dragging = false;
@@ -1318,12 +1849,10 @@ document.addEventListener(
 
     let dialogueTimer = null;
 
-    let randomCommentTimer = null;
-
 
     /*
      * =================================================
-     * RANDOM KRIS QUOTES
+     * QUOTES
      * =================================================
      */
 
@@ -1537,6 +2066,7 @@ document.addEventListener(
 
     const openingReactions = {
 
+
       "My Computer": [
 
         "MY COMPUTER??",
@@ -1660,7 +2190,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * SPECIAL WINAMP REACTIONS
+     * WINAMP
      * =================================================
      */
 
@@ -1711,7 +2241,7 @@ document.addEventListener(
 
     function talk(
       message,
-      duration = NORMAL_TALK_TIME
+      duration = 1500
     ) {
 
       clearTimeout(
@@ -1745,7 +2275,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * REACT TO WINDOW
+     * WINDOW REACTION
      * =================================================
      */
 
@@ -1782,13 +2312,9 @@ document.addEventListener(
         }
 
 
-        /*
-         * React VERY quickly.
-         */
-
         talk(
           reaction,
-          REACTION_TIME
+          1800
         );
 
       };
@@ -1796,11 +2322,8 @@ document.addEventListener(
 
     /*
      * =================================================
-     * INTERCEPT openWindow
+     * HOOK openWindow
      * =================================================
-     *
-     * This makes Kris react whenever your existing
-     * openWindow() function is called.
      */
 
     if (
@@ -1817,10 +2340,6 @@ document.addEventListener(
           windowName
         ) {
 
-          /*
-           * First let the actual website
-           * open the window.
-           */
 
           const result =
             originalOpenWindow.apply(
@@ -1828,10 +2347,6 @@ document.addEventListener(
               arguments
             );
 
-
-          /*
-           * Then let Kris react.
-           */
 
           setTimeout(
             function () {
@@ -1860,7 +2375,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * INTERCEPT WINAMP
+     * HOOK WINAMP
      * =================================================
      */
 
@@ -1876,6 +2391,7 @@ document.addEventListener(
       window.openRawWinamp =
         function () {
 
+
           const result =
             originalWinamp.apply(
               this,
@@ -1890,7 +2406,7 @@ document.addEventListener(
                 randomQuote(
                   winampReactions
                 ),
-                REACTION_TIME
+                1800
               );
 
             },
@@ -1920,13 +2436,17 @@ document.addEventListener(
 
         x:
           Math.round(
-            x / KRIS_GRID_X
-          ) * KRIS_GRID_X,
+            x /
+            KRIS_GRID_X
+          ) *
+          KRIS_GRID_X,
 
         y:
           Math.round(
-            y / KRIS_GRID_Y
-          ) * KRIS_GRID_Y
+            y /
+            KRIS_GRID_Y
+          ) *
+          KRIS_GRID_Y
 
       };
 
@@ -1935,7 +2455,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * DRAG KRIS
+     * KRIS MOUSE DOWN
      * =================================================
      */
 
@@ -1943,19 +2463,17 @@ document.addEventListener(
       "mousedown",
       function (event) {
 
+
         if (
           event.button !== 0
         ) return;
 
 
         /*
-         * CRITICAL:
+         * VERY IMPORTANT.
          *
-         * Stop the event BEFORE the desktop icon
-         * drag system can see it.
-         *
-         * This prevents My Computer or another icon
-         * from being dragged together with Kris.
+         * This prevents Kris from activating
+         * the desktop icon drag system.
          */
 
         event.preventDefault();
@@ -1987,16 +2505,11 @@ document.addEventListener(
         );
 
 
-        kris.classList.add(
-          "grid-preview"
-        );
-
-
         talk(
           randomQuote(
             dragQuotes
           ),
-          1200
+          1000
         );
 
       },
@@ -2006,15 +2519,22 @@ document.addEventListener(
 
     /*
      * =================================================
-     * DRAG KRIS WITH MOUSE
+     * KRIS MOUSE MOVE
      * =================================================
+     *
+     * FREE MOVEMENT.
+     *
+     * NO GRID HERE.
      */
 
     document.addEventListener(
       "mousemove",
       function (event) {
 
-        if (!dragging) return;
+
+        if (
+          !dragging
+        ) return;
 
 
         event.preventDefault();
@@ -2075,28 +2595,16 @@ document.addEventListener(
 
 
         /*
-         * =================================================
-         * LIVE GRID SNAP
-         * =================================================
-         *
-         * Kris actually moves along the same grid
-         * instead of only snapping when released.
+         * Kris moves freely.
          */
 
-        const snapped =
-          snapKrisToGrid(
-            x,
-            y
-          );
-
-
         kris.style.left =
-          snapped.x +
+          x +
           "px";
 
 
         kris.style.top =
-          snapped.y +
+          y +
           "px";
 
       },
@@ -2106,7 +2614,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * RELEASE KRIS
+     * KRIS RELEASE
      * =================================================
      */
 
@@ -2114,7 +2622,10 @@ document.addEventListener(
       "mouseup",
       function (event) {
 
-        if (!dragging) return;
+
+        if (
+          !dragging
+        ) return;
 
 
         event.preventDefault();
@@ -2124,11 +2635,6 @@ document.addEventListener(
 
         dragging = false;
 
-
-        /*
-         * Make absolutely sure the final position
-         * is on the grid.
-         */
 
         const currentX =
           parseInt(
@@ -2142,6 +2648,10 @@ document.addEventListener(
           ) || 0;
 
 
+        /*
+         * NOW snap Kris to the nearest grid.
+         */
+
         const snapped =
           snapKrisToGrid(
             currentX,
@@ -2149,13 +2659,41 @@ document.addEventListener(
           );
 
 
+        const maxX =
+          Math.max(
+            0,
+            desktop.clientWidth -
+            kris.offsetWidth
+          );
+
+
+        const maxY =
+          Math.max(
+            0,
+            desktop.clientHeight -
+            kris.offsetHeight
+          );
+
+
         kris.style.left =
-          snapped.x +
+          Math.max(
+            0,
+            Math.min(
+              snapped.x,
+              maxX
+            )
+          ) +
           "px";
 
 
         kris.style.top =
-          snapped.y +
+          Math.max(
+            0,
+            Math.min(
+              snapped.y,
+              maxY
+            )
+          ) +
           "px";
 
 
@@ -2164,13 +2702,8 @@ document.addEventListener(
         );
 
 
-        kris.classList.remove(
-          "grid-preview"
-        );
-
-
         /*
-         * Save Kris position.
+         * Save position.
          */
 
         localStorage.setItem(
@@ -2178,18 +2711,18 @@ document.addEventListener(
           JSON.stringify({
 
             x:
-              snapped.x,
+              parseInt(
+                kris.style.left
+              ) || 0,
 
             y:
-              snapped.y
+              parseInt(
+                kris.style.top
+              ) || 0
 
           })
         );
 
-
-        /*
-         * Immediately yap after being placed.
-         */
 
         talk(
           randomQuote(
@@ -2205,13 +2738,14 @@ document.addEventListener(
 
     /*
      * =================================================
-     * TOUCH SUPPORT
+     * TOUCH START
      * =================================================
      */
 
     kris.addEventListener(
       "touchstart",
       function (event) {
+
 
         const touch =
           event.touches[0];
@@ -2239,16 +2773,11 @@ document.addEventListener(
         );
 
 
-        kris.classList.add(
-          "grid-preview"
-        );
-
-
         talk(
           randomQuote(
             dragQuotes
           ),
-          1200
+          1000
         );
 
       },
@@ -2262,13 +2791,18 @@ document.addEventListener(
      * =================================================
      * TOUCH MOVE
      * =================================================
+     *
+     * Also completely free.
      */
 
     document.addEventListener(
       "touchmove",
       function (event) {
 
-        if (!dragging) return;
+
+        if (
+          !dragging
+        ) return;
 
 
         event.preventDefault();
@@ -2330,21 +2864,15 @@ document.addEventListener(
           );
 
 
-        const snapped =
-          snapKrisToGrid(
-            x,
-            y
-          );
-
-
         kris.style.left =
-          snapped.x +
+          x +
           "px";
 
 
         kris.style.top =
-          snapped.y +
+          y +
           "px";
+
 
       },
       {
@@ -2361,9 +2889,12 @@ document.addEventListener(
 
     document.addEventListener(
       "touchend",
-      function (event) {
+      function () {
 
-        if (!dragging) return;
+
+        if (
+          !dragging
+        ) return;
 
 
         dragging = false;
@@ -2381,6 +2912,10 @@ document.addEventListener(
           ) || 0;
 
 
+        /*
+         * SNAP AFTER RELEASE.
+         */
+
         const snapped =
           snapKrisToGrid(
             currentX,
@@ -2388,13 +2923,41 @@ document.addEventListener(
           );
 
 
+        const maxX =
+          Math.max(
+            0,
+            desktop.clientWidth -
+            kris.offsetWidth
+          );
+
+
+        const maxY =
+          Math.max(
+            0,
+            desktop.clientHeight -
+            kris.offsetHeight
+          );
+
+
         kris.style.left =
-          snapped.x +
+          Math.max(
+            0,
+            Math.min(
+              snapped.x,
+              maxX
+            )
+          ) +
           "px";
 
 
         kris.style.top =
-          snapped.y +
+          Math.max(
+            0,
+            Math.min(
+              snapped.y,
+              maxY
+            )
+          ) +
           "px";
 
 
@@ -2403,23 +2966,23 @@ document.addEventListener(
         );
 
 
-        kris.classList.remove(
-          "grid-preview"
-        );
-
-
         localStorage.setItem(
           "kris-companion-position",
           JSON.stringify({
 
             x:
-              snapped.x,
+              parseInt(
+                kris.style.left
+              ) || 0,
 
             y:
-              snapped.y
+              parseInt(
+                kris.style.top
+              ) || 0
 
           })
         );
+
 
       }
     );
@@ -2427,7 +2990,7 @@ document.addEventListener(
 
     /*
      * =================================================
-     * RESTORE KRIS POSITION
+     * RESTORE KRIS
      * =================================================
      */
 
@@ -2437,7 +3000,9 @@ document.addEventListener(
       );
 
 
-    if (savedPosition) {
+    if (
+      savedPosition
+    ) {
 
       try {
 
@@ -2493,38 +3058,39 @@ document.addEventListener(
      * =================================================
      * FAST RANDOM YAPPING
      * =================================================
-     *
-     * Kris now talks MUCH more frequently.
-     *
-     * Instead of waiting a long time between
-     * comments, he picks a new random delay
-     * between roughly 3 and 7 seconds.
      */
 
     function randomComment() {
 
-      if (!dragging) {
+
+      if (
+        !dragging
+      ) {
 
         talk(
           randomQuote(
             quotes
           ),
-          NORMAL_TALK_TIME
+          1500
         );
 
       }
 
 
+      /*
+       * New comment every 3-7 seconds.
+       */
+
       const nextDelay =
         3000 +
-        Math.random() * 4000;
+        Math.random() *
+        4000;
 
 
-      randomCommentTimer =
-        setTimeout(
-          randomComment,
-          nextDelay
-        );
+      setTimeout(
+        randomComment,
+        nextDelay
+      );
 
     }
 
@@ -2537,17 +3103,16 @@ document.addEventListener(
 
     /*
      * =================================================
-     * EXTRA ULTRA-FAST BURSTS
+     * RANDOM YAP BURSTS
      * =================================================
-     *
-     * Sometimes Kris gets REALLY annoying and
-     * starts yapping multiple times in quick
-     * succession.
      */
 
     function yapBurst() {
 
-      if (!dragging) {
+
+      if (
+        !dragging
+      ) {
 
         talk(
           randomQuote(
@@ -2561,7 +3126,8 @@ document.addEventListener(
 
       const nextBurst =
         15000 +
-        Math.random() * 25000;
+        Math.random() *
+        25000;
 
 
       setTimeout(
@@ -2581,6 +3147,7 @@ document.addEventListener(
 );
 
 </script>
+
 
 </body>
 </html>
