@@ -689,6 +689,7 @@ function openRawWinamp() {
   script.onload = () => {
     if (typeof Webamp === "undefined") {
       console.error("Webamp is not loaded!");
+      if (winampDiv.parentNode) winampDiv.remove();
       return;
     }
 
@@ -753,7 +754,7 @@ webamp.renderWhenReady(winampDiv).then(() => {
 
               el.style.setProperty(
                 "background-color",
-                "none",
+                "transparent",
                 "important"
               );
             });
@@ -784,31 +785,6 @@ webamp.renderWhenReady(winampDiv).then(() => {
 
       updateTaskbarHighlight();
 
-      const windowEl =
-        document.querySelector(
-          "#webamp .window"
-        );
-
-      const styleObserver =
-        new MutationObserver(() => {
-          windowEl.style.setProperty(
-            "width",
-            "0",
-            "important"
-          );
-
-          windowEl.style.setProperty(
-            "height",
-            "0",
-            "important"
-          );
-        });
-
-      styleObserver.observe(windowEl, {
-        attributes: true,
-        attributeFilter: ["style"],
-      });
-
       webampDiv.addEventListener(
         "mousedown",
         () => {
@@ -827,9 +803,12 @@ webamp.renderWhenReady(winampDiv).then(() => {
     childList: true,
     subtree: true,
   });
+}).catch((error) => {
+  console.error("Webamp failed to render:", error);
+  if (winampDiv.parentNode) winampDiv.remove();
+  updateTaskbarHighlight();
 });
 
-      webamp.onClose(() => {
 
     webamp.onClose(() => {
       if (taskbarItem) taskbarItem.remove();
@@ -915,6 +894,12 @@ webamp.renderWhenReady(winampDiv).then(() => {
         );
       }
     }, 1000);
+  };
+
+  script.onerror = () => {
+    console.error("Failed to load Webamp from the CDN.");
+    if (winampDiv.parentNode) winampDiv.remove();
+    updateTaskbarHighlight();
   };
 
   winampDiv.appendChild(script);
@@ -1014,9 +999,19 @@ function waitForGameToLoad() {
   const iframe =
     document.getElementById("pinball-frame");
 
+  if (!iframe) {
+    console.warn("Pinball iframe not found; skipping game-load watcher.");
+    return;
+  }
+
   const iframeDoc =
     iframe.contentDocument ||
-    iframe.contentWindow.document;
+    iframe.contentWindow?.document;
+
+  if (!iframeDoc || !iframeDoc.body) {
+    console.warn("Pinball iframe document is not ready; skipping game-load watcher.");
+    return;
+  }
 
   const observer =
     new MutationObserver(() => {
