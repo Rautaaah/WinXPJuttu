@@ -696,39 +696,39 @@ function openRawWinamp() {
       initialTracks: [
         {
           metaData: {
-            artist: "Michael Jackson",
-            title: "Billie Jean",
+            artist: "Movetron",
+            title: "Romeo Ja Julia",
           },
           url:
-            "/Assets/Sounds/Michael Jackson - Billie Jean (Official Video).mp3",
+            "/Assets/Sounds/Romeo Ja Julia (Original Mix).mp3",
         },
         {
           metaData: {
             artist:
-              "Joe Hisaishi, Royal Philharmonic Orchestra",
-            title: "The Bygone Days",
+              "Aikakone",
+            title: "Odota",
           },
           url:
-            "/Assets/Sounds/The Bygone Days   Porco Rosso.mp3",
+            "/Assets/Sounds/Odota.mp3",
         },
         {
           metaData: {
             artist:
-              "Playboi Carti & The Weeknd",
-            title: "RATHER LIE (Official Audio)",
+              "Aikakone",
+            title: "Anna mun bailaa",
           },
           url:
-            "/Assets/Sounds/Playboi Carti & The Weeknd - RATHER LIE (Official Audio).mp3",
+            "/Assets/Sounds//Anna mun bailaa.mp3",
         },
         {
           metaData: {
             artist:
-              "Kal Banx ft Smino x Buddy",
+              "Uhhh...",
             title:
-              "HOP OUT CHO FEELINGS",
+              "hi :3",
           },
           url:
-            "/Assets/Sounds/Kal Banx ft Smino x Buddy  - HOP OUT CHO FEELINGS (Official Video).mp3",
+            "67",
         },
       ],
     });
