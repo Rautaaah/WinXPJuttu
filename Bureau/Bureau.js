@@ -831,12 +831,6 @@ webamp.renderWhenReady(winampDiv).then(() => {
 
       webamp.onClose(() => {
 
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
-    });
-
     webamp.onClose(() => {
       if (taskbarItem) taskbarItem.remove();
 
