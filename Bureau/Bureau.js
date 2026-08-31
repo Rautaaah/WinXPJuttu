@@ -999,6 +999,31 @@ function openRawWinamp() {
   }
 }
 
+
+/* ============================================================
+   AUTO-START WEBAMP
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  /*
+   * Wait a moment for the desktop to finish loading.
+   * This uses your EXISTING openRawWinamp() function,
+   * so there is still only one Webamp implementation.
+   */
+
+  setTimeout(function () {
+
+    if (typeof window.openRawWinamp === "function") {
+      window.openRawWinamp();
+    }
+
+  }, 500);
+
+});
+
+
+
 function waitForGameToLoad() {
   console.log("waitForGameToLoad started");
 
