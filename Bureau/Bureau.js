@@ -806,7 +806,8 @@ webamp.renderWhenReady(winampDiv).then(() => {
 
           updateTaskbarHighlight();
         }
-      );    }
+      );
+    }
   });
 
   observer.observe(document.body, {
@@ -5749,56 +5750,21 @@ function writeDateTime() {
 
 
 /* ============================================================
-   ONEKO
+   ONEKO (OPTIONAL)
    ============================================================ */
-
 (function initOneko() {
+  // Oneko is optional. Do not request a missing local asset.
+  // If the project later includes /Oneko/oneko.js and /Oneko/oneko.gif,
+  // this loader can be enabled by setting window.ENABLE_ONEKO = true.
+  if (window.ENABLE_ONEKO !== true) return;
 
-  /*
-   * Prevent loading Oneko twice.
-   */
-
-  if (
-    document.querySelector(
-      'script[data-oneko="true"]'
-    )
-  ) {
-    return;
-  }
-
-
-  /*
-   * Load Oneko from:
-   *
-   * /Oneko/oneko.js
-   */
-
-  const oneko =
-    document.createElement(
-      "script"
-    );
-
-
-  oneko.src =
-    "https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.js";
-
-
-  oneko.dataset.oneko =
-    "true";
-
-  // The upstream script defaults to oneko.gif beside itself.
-  // Point it explicitly at the upstream image so a missing local
-  // /Oneko/oneko.gif cannot produce a 404.
-  oneko.dataset.cat =
-    "https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif";
-
-
-  oneko.async = true;
-
-
-  document.body.appendChild(
-    oneko
-  );
-
+  const script = document.createElement("script");
+  script.src = "/Oneko/oneko.js";
+  script.dataset.oneko = "true";
+  script.async = true;
+  script.onerror = () => {
+    console.warn("Oneko is unavailable; continuing without it.");
+    script.remove();
+  };
+  document.body.appendChild(script);
 })();
-  
