@@ -697,462 +697,729 @@
 
 
 
-<!-- =====================================================
-     DESKTOP ICON DRAG SYSTEM
-     ===================================================== -->
-
 <script>
+/* =====================================================
+   DESKTOP ICON DRAG + MULTI-SELECTION + 19x8 GRID
+   ===================================================== */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+document.addEventListener("DOMContentLoaded", function () {
+
+  const desktop = document.getElementById("desktop");
+
+  if (!desktop) return;
 
 
-    const desktop =
-      document.getElementById(
-        "desktop"
+  /* =====================================================
+     SETTINGS
+     ===================================================== */
+
+  const GRID_COLUMNS = 19;
+  const GRID_ROWS = 8;
+
+  const icons = Array.from(
+    desktop.querySelectorAll(".icon")
+  );
+
+
+  /* =====================================================
+     SELECTION FRAME
+     ===================================================== */
+
+  let selectionFrame =
+    document.getElementById("desktop-selection-frame");
+
+  if (!selectionFrame) {
+
+    selectionFrame =
+      document.createElement("div");
+
+    selectionFrame.id =
+      "desktop-selection-frame";
+
+    document.body.appendChild(
+      selectionFrame
+    );
+
+  }
+
+
+  /* =====================================================
+     STATE
+     ===================================================== */
+
+  let selecting = false;
+
+  let dragging = false;
+
+  let draggedIcons = [];
+
+  let selectionStartX = 0;
+
+  let selectionStartY = 0;
+
+  let dragStartMouseX = 0;
+
+  let dragStartMouseY = 0;
+
+  let originalPositions = [];
+
+
+  /* =====================================================
+     GRID
+     ===================================================== */
+
+  function getGridSize() {
+
+    return {
+
+      cellWidth:
+        desktop.clientWidth /
+        GRID_COLUMNS,
+
+      cellHeight:
+        desktop.clientHeight /
+        GRID_ROWS
+
+    };
+
+  }
+
+
+  function snapToGrid(x, y, icon) {
+
+    const grid =
+      getGridSize();
+
+
+    /*
+     * Keep the icon completely inside
+     * the desktop.
+     */
+
+    const maxX =
+      Math.max(
+        0,
+        desktop.clientWidth -
+        icon.offsetWidth
+      );
+
+    const maxY =
+      Math.max(
+        0,
+        desktop.clientHeight -
+        icon.offsetHeight
       );
 
 
-    if (!desktop) return;
+    let snappedX =
+      Math.round(
+        x /
+        grid.cellWidth
+      ) *
+      grid.cellWidth;
 
 
-    const icons =
-      Array.from(
-        desktop.querySelectorAll(
-          ".icon"
+    let snappedY =
+      Math.round(
+        y /
+        grid.cellHeight
+      ) *
+      grid.cellHeight;
+
+
+    snappedX =
+      Math.max(
+        0,
+        Math.min(
+          snappedX,
+          maxX
         )
       );
 
 
-    let draggedIcon = null;
-
-    let offsetX = 0;
-
-    let offsetY = 0;
-
-
-    /*
-     * =================================================
-     * GRID SETTINGS
-     * =================================================
-     *
-     * X controls horizontal spacing.
-     *
-     * Y controls vertical spacing.
-     *
-     * The icons are still completely free while
-     * being dragged.
-     *
-     * They ONLY snap after you release them.
-     */
-
-    const GRID_X = 20;
-
-    const GRID_Y = 70;
-
-
-    /*
-     * Extra spacing around icons.
-     *
-     * This prevents icons that are extremely close
-     * from touching each other.
-     */
-
-    const ICON_GAP = 8;
-
-
-    /*
-     * =================================================
-     * DEFAULT POSITIONS
-     * =================================================
-     */
-
-    const defaultPositions = [
-
-      [20, 20],
-
-      [20, 90],
-
-      [20, 160],
-
-      [20, 230],
-
-      [20, 300],
-
-      [20, 370],
-
-      [20, 440],
-
-      [20, 510]
-
-    ];
-
-
-    /*
-     * =================================================
-     * GET RECTANGLE AT A POSITION
-     * =================================================
-     */
-
-    function getIconRect(
-      icon,
-      x,
-      y
-    ) {
-
-      return {
-
-        left: x,
-
-        top: y,
-
-        right:
-          x +
-          icon.offsetWidth,
-
-        bottom:
-          y +
-          icon.offsetHeight
-
-      };
-
-    }
-
-
-    /*
-     * =================================================
-     * RECTANGLE COLLISION
-     * =================================================
-     *
-     * Returns TRUE when two icons overlap OR
-     * are close enough to visually touch.
-     */
-
-    function rectanglesTouch(
-      a,
-      b
-    ) {
-
-      return !(
-        a.right + ICON_GAP <= b.left ||
-
-        a.left >= b.right + ICON_GAP ||
-
-        a.bottom + ICON_GAP <= b.top ||
-
-        a.top >= b.bottom + ICON_GAP
+    snappedY =
+      Math.max(
+        0,
+        Math.min(
+          snappedY,
+          maxY
+        )
       );
 
-    }
+
+    return {
+
+      x: Math.round(snappedX),
+
+      y: Math.round(snappedY)
+
+    };
+
+  }
 
 
-    /*
-     * =================================================
-     * POSITION AVAILABLE?
-     * =================================================
-     */
+  /* =====================================================
+     POSITION HELPERS
+     ===================================================== */
 
-    function positionIsAvailable(
-      icon,
-      x,
-      y
-    ) {
+  function getPosition(icon) {
 
-      const testRect =
-        getIconRect(
-          icon,
-          x,
-          y
+    return {
+
+      x:
+        parseFloat(
+          icon.style.left
+        ) || 0,
+
+      y:
+        parseFloat(
+          icon.style.top
+        ) || 0
+
+    };
+
+  }
+
+
+  function setPosition(icon, x, y) {
+
+    icon.style.left =
+      Math.round(x) +
+      "px";
+
+    icon.style.top =
+      Math.round(y) +
+      "px";
+
+  }
+
+
+  /* =====================================================
+     CLEAR SELECTION
+     ===================================================== */
+
+  function clearSelection() {
+
+    icons.forEach(
+      function (icon) {
+
+        icon.classList.remove(
+          "desktop-selected"
         );
 
+      }
+    );
 
-      for (
-        const otherIcon of icons
-      ) {
-
-        if (
-          otherIcon === icon
-        ) {
-          continue;
-        }
+  }
 
 
-        const otherX =
-          parseInt(
-            otherIcon.style.left
-          ) || 0;
+  /* =====================================================
+     SELECT ICONS INSIDE RECTANGLE
+     ===================================================== */
+
+  function updateSelection() {
+
+    const left =
+      Math.min(
+        selectionStartX,
+        window.event?.clientX ??
+        selectionStartX
+      );
+
+    const top =
+      Math.min(
+        selectionStartY,
+        window.event?.clientY ??
+        selectionStartY
+      );
+
+  }
 
 
-        const otherY =
-          parseInt(
-            otherIcon.style.top
-          ) || 0;
+  function selectIconsInRectangle(
+    rectangle
+  ) {
+
+    icons.forEach(
+      function (icon) {
+
+        const rect =
+          icon.getBoundingClientRect();
 
 
-        const otherRect =
-          getIconRect(
-            otherIcon,
-            otherX,
-            otherY
+        const intersects =
+          rect.left <
+            rectangle.right &&
+
+          rect.right >
+            rectangle.left &&
+
+          rect.top <
+            rectangle.bottom &&
+
+          rect.bottom >
+            rectangle.top;
+
+
+        if (intersects) {
+
+          icon.classList.add(
+            "desktop-selected"
           );
 
+        }
 
-        if (
-          rectanglesTouch(
-            testRect,
-            otherRect
-          )
-        ) {
+        else {
 
-          return false;
+          icon.classList.remove(
+            "desktop-selected"
+          );
 
         }
 
       }
+    );
+
+  }
 
 
-      return true;
+  /* =====================================================
+     DESKTOP MOUSE DOWN
+     ===================================================== */
 
-    }
+  desktop.addEventListener(
+    "mousedown",
+    function (event) {
 
-
-    /*
-     * =================================================
-     * SNAP TO GRID
-     * =================================================
-     */
-
-    function snapToGrid(
-      x,
-      y
-    ) {
-
-      return {
-
-        x:
-          Math.round(
-            x / GRID_X
-          ) * GRID_X,
-
-        y:
-          Math.round(
-            y / GRID_Y
-          ) * GRID_Y
-
-      };
-
-    }
-
-
-    /*
-     * =================================================
-     * FIND NEAREST FREE GRID POSITION
-     * =================================================
-     *
-     * If the user releases an icon on another icon,
-     * we search outward from that position until we
-     * find an empty grid location.
-     */
-
-    function findNearestFreePosition(
-      icon,
-      desiredX,
-      desiredY
-    ) {
-
-      const snapped =
-        snapToGrid(
-          desiredX,
-          desiredY
-        );
+      if (event.button !== 0)
+        return;
 
 
       /*
-       * First try the exact grid position.
+       * Clicking an icon starts
+       * the icon drag system instead.
        */
 
       if (
-        positionIsAvailable(
-          icon,
-          snapped.x,
-          snapped.y
-        )
+        event.target.closest(".icon")
       ) {
-
-        return snapped;
-
+        return;
       }
 
 
       /*
-       * Search outward in a spiral-ish pattern.
-       *
-       * This makes the icon move to the closest
-       * available grid position.
+       * Don't select through windows.
        */
 
-      const maxRadius = 30;
-
-
-      for (
-        let radius = 1;
-        radius <= maxRadius;
-        radius++
+      if (
+        event.target.closest(".window")
       ) {
-
-        const candidates = [];
-
-
-        /*
-         * Top
-         */
-
-        candidates.push({
-
-          x:
-            snapped.x,
-
-          y:
-            snapped.y -
-            radius *
-            GRID_Y
-
-        });
+        return;
+      }
 
 
-        /*
-         * Bottom
-         */
-
-        candidates.push({
-
-          x:
-            snapped.x,
-
-          y:
-            snapped.y +
-            radius *
-            GRID_Y
-
-        });
+      selecting = true;
 
 
-        /*
-         * Left
-         */
+      selectionStartX =
+        event.clientX;
 
-        candidates.push({
-
-          x:
-            snapped.x -
-            radius *
-            GRID_X,
-
-          y:
-            snapped.y
-
-        });
+      selectionStartY =
+        event.clientY;
 
 
-        /*
-         * Right
-         */
-
-        candidates.push({
-
-          x:
-            snapped.x +
-            radius *
-            GRID_X,
-
-          y:
-            snapped.y
-
-        });
+      selectionFrame.style.display =
+        "block";
 
 
-        /*
-         * Diagonals
-         */
-
-        candidates.push({
-
-          x:
-            snapped.x -
-            radius *
-            GRID_X,
-
-          y:
-            snapped.y -
-            radius *
-            GRID_Y
-
-        });
+      selectionFrame.style.left =
+        selectionStartX +
+        "px";
 
 
-        candidates.push({
-
-          x:
-            snapped.x +
-            radius *
-            GRID_X,
-
-          y:
-            snapped.y -
-            radius *
-            GRID_Y
-
-        });
+      selectionFrame.style.top =
+        selectionStartY +
+        "px";
 
 
-        candidates.push({
-
-          x:
-            snapped.x -
-            radius *
-            GRID_X,
-
-          y:
-            snapped.y +
-            radius *
-            GRID_Y
-
-        });
+      selectionFrame.style.width =
+        "0px";
 
 
-        candidates.push({
-
-          x:
-            snapped.x +
-            radius *
-            GRID_X,
-
-          y:
-            snapped.y +
-            radius *
-            GRID_Y
-
-        });
+      selectionFrame.style.height =
+        "0px";
 
 
-        /*
-         * Test every candidate.
-         */
+      clearSelection();
 
-        for (
-          const candidate of candidates
-        ) {
+
+      event.preventDefault();
+
+    }
+  );
+
+
+  /* =====================================================
+     SELECTION MOUSE MOVE
+     ===================================================== */
+
+  document.addEventListener(
+    "mousemove",
+    function (event) {
+
+      if (!selecting)
+        return;
+
+
+      const currentX =
+        event.clientX;
+
+      const currentY =
+        event.clientY;
+
+
+      const left =
+        Math.min(
+          selectionStartX,
+          currentX
+        );
+
+
+      const top =
+        Math.min(
+          selectionStartY,
+          currentY
+        );
+
+
+      const width =
+        Math.abs(
+          currentX -
+          selectionStartX
+        );
+
+
+      const height =
+        Math.abs(
+          currentY -
+          selectionStartY
+        );
+
+
+      selectionFrame.style.left =
+        left +
+        "px";
+
+
+      selectionFrame.style.top =
+        top +
+        "px";
+
+
+      selectionFrame.style.width =
+        width +
+        "px";
+
+
+      selectionFrame.style.height =
+        height +
+        "px";
+
+
+      const selectionRect =
+        selectionFrame.getBoundingClientRect();
+
+
+      selectIconsInRectangle(
+        selectionRect
+      );
+
+    }
+  );
+
+
+  /* =====================================================
+     SELECTION MOUSE UP
+     ===================================================== */
+
+  document.addEventListener(
+    "mouseup",
+    function () {
+
+      if (!selecting)
+        return;
+
+
+      selecting = false;
+
+
+      selectionFrame.style.display =
+        "none";
+
+    }
+  );
+
+
+  /* =====================================================
+     ICON MOUSE DOWN
+     ===================================================== */
+
+  icons.forEach(
+    function (icon) {
+
+      icon.addEventListener(
+        "mousedown",
+        function (event) {
+
+          if (event.button !== 0)
+            return;
+
 
           /*
-           * Don't let icons go off-screen.
+           * Don't allow the selection
+           * rectangle to start.
            */
+
+          event.stopPropagation();
+
+
+          /*
+           * If this icon isn't selected,
+           * make it the only selected icon.
+           *
+           * If it IS selected, keep the
+           * existing multi-selection.
+           */
+
+          if (
+            !icon.classList.contains(
+              "desktop-selected"
+            )
+          ) {
+
+            clearSelection();
+
+            icon.classList.add(
+              "desktop-selected"
+            );
+
+          }
+
+
+          draggedIcons =
+            icons.filter(
+              function (item) {
+
+                return item.classList.contains(
+                  "desktop-selected"
+                );
+
+              }
+            );
+
+
+          if (
+            draggedIcons.length === 0
+          ) {
+
+            draggedIcons = [
+              icon
+            ];
+
+          }
+
+
+          dragging = true;
+
+
+          dragStartMouseX =
+            event.clientX;
+
+          dragStartMouseY =
+            event.clientY;
+
+
+          originalPositions =
+            draggedIcons.map(
+              function (item) {
+
+                const position =
+                  getPosition(item);
+
+                return {
+
+                  icon: item,
+
+                  x: position.x,
+
+                  y: position.y
+
+                };
+
+              }
+            );
+
+
+          draggedIcons.forEach(
+            function (item) {
+
+              item.classList.add(
+                "dragging"
+              );
+
+            }
+          );
+
+
+          event.preventDefault();
+
+        }
+      );
+
+
+      /* =================================================
+         TOUCH START
+         ================================================= */
+
+      icon.addEventListener(
+        "touchstart",
+        function (event) {
+
+          const touch =
+            event.touches[0];
+
+          if (!touch)
+            return;
+
+
+          if (
+            !icon.classList.contains(
+              "desktop-selected"
+            )
+          ) {
+
+            clearSelection();
+
+            icon.classList.add(
+              "desktop-selected"
+            );
+
+          }
+
+
+          draggedIcons =
+            icons.filter(
+              function (item) {
+
+                return item.classList.contains(
+                  "desktop-selected"
+                );
+
+              }
+            );
+
+
+          if (
+            draggedIcons.length === 0
+          ) {
+
+            draggedIcons = [
+              icon
+            ];
+
+          }
+
+
+          dragging = true;
+
+
+          dragStartMouseX =
+            touch.clientX;
+
+          dragStartMouseY =
+            touch.clientY;
+
+
+          originalPositions =
+            draggedIcons.map(
+              function (item) {
+
+                const position =
+                  getPosition(item);
+
+                return {
+
+                  icon: item,
+
+                  x: position.x,
+
+                  y: position.y
+
+                };
+
+              }
+            );
+
+
+          draggedIcons.forEach(
+            function (item) {
+
+              item.classList.add(
+                "dragging"
+              );
+
+            }
+          );
+
+        },
+        {
+          passive: true
+        }
+      );
+
+    }
+  );
+
+
+  /* =====================================================
+     MOVE SELECTED ICONS
+     ===================================================== */
+
+  document.addEventListener(
+    "mousemove",
+    function (event) {
+
+      if (!dragging)
+        return;
+
+
+      const deltaX =
+        event.clientX -
+        dragStartMouseX;
+
+
+      const deltaY =
+        event.clientY -
+        dragStartMouseY;
+
+
+      originalPositions.forEach(
+        function (original) {
+
+          let x =
+            original.x +
+            deltaX;
+
+          let y =
+            original.y +
+            deltaY;
+
 
           const maxX =
             Math.max(
               0,
               desktop.clientWidth -
-              icon.offsetWidth
+              original.icon.offsetWidth
             );
 
 
@@ -1160,598 +1427,504 @@ document.addEventListener(
             Math.max(
               0,
               desktop.clientHeight -
-              icon.offsetHeight
+              original.icon.offsetHeight
             );
 
 
-          if (
-            candidate.x < 0 ||
-            candidate.y < 0 ||
-            candidate.x > maxX ||
-            candidate.y > maxY
-          ) {
-
-            continue;
-
-          }
+          x =
+            Math.max(
+              0,
+              Math.min(
+                x,
+                maxX
+              )
+            );
 
 
-          if (
-            positionIsAvailable(
-              icon,
-              candidate.x,
-              candidate.y
-            )
-          ) {
-
-            return candidate;
-
-          }
-
-        }
-
-      }
+          y =
+            Math.max(
+              0,
+              Math.min(
+                y,
+                maxY
+              )
+            );
 
 
-      /*
-       * Fallback:
-       *
-       * Search every grid position on the desktop.
-       */
-
-      for (
-        let y = 0;
-        y < desktop.clientHeight;
-        y += GRID_Y
-      ) {
-
-        for (
-          let x = 0;
-          x < desktop.clientWidth;
-          x += GRID_X
-        ) {
-
-          if (
-            positionIsAvailable(
-              icon,
-              x,
-              y
-            )
-          ) {
-
-            return {
-              x: x,
-              y: y
-            };
-
-          }
+          setPosition(
+            original.icon,
+            x,
+            y
+          );
 
         }
+      );
 
-      }
+    }
+  );
 
 
-      /*
-       * If somehow there is literally no space,
-       * keep the original snapped position.
-       */
+  /* =====================================================
+     TOUCH MOVE
+     ===================================================== */
 
-      return snapped;
+  document.addEventListener(
+    "touchmove",
+    function (event) {
+
+      if (!dragging)
+        return;
+
+
+      const touch =
+        event.touches[0];
+
+      if (!touch)
+        return;
+
+
+      const deltaX =
+        touch.clientX -
+        dragStartMouseX;
+
+
+      const deltaY =
+        touch.clientY -
+        dragStartMouseY;
+
+
+      originalPositions.forEach(
+        function (original) {
+
+          let x =
+            original.x +
+            deltaX;
+
+          let y =
+            original.y +
+            deltaY;
+
+
+          const maxX =
+            Math.max(
+              0,
+              desktop.clientWidth -
+              original.icon.offsetWidth
+            );
+
+
+          const maxY =
+            Math.max(
+              0,
+              desktop.clientHeight -
+              original.icon.offsetHeight
+            );
+
+
+          x =
+            Math.max(
+              0,
+              Math.min(
+                x,
+                maxX
+              )
+            );
+
+
+          y =
+            Math.max(
+              0,
+              Math.min(
+                y,
+                maxY
+              )
+            );
+
+
+          setPosition(
+            original.icon,
+            x,
+            y
+          );
+
+        }
+      );
+
+
+      event.preventDefault();
+
+    },
+    {
+      passive: false
+    }
+  );
+
+
+  /* =====================================================
+     FINISH DRAG
+     ===================================================== */
+
+  function finishDrag() {
+
+    if (!dragging)
+      return;
+
+
+    dragging = false;
+
+
+    /*
+     * Calculate how far the group moved.
+     */
+
+    if (
+      originalPositions.length === 0
+    ) {
+
+      draggedIcons = [];
+
+      return;
 
     }
 
 
-    /*
-     * =================================================
-     * RESTORE ICON POSITIONS
-     * =================================================
-     */
-
-    icons.forEach(
-      function (
-        icon,
-        index
-      ) {
-
-        const key =
-          "desktop-icon-" +
-          (
-            icon.dataset.icon ||
-            index
-          );
+    const firstOriginal =
+      originalPositions[0];
 
 
-        const savedPosition =
-          localStorage.getItem(
-            key
-          );
+    const firstCurrent =
+      getPosition(
+        firstOriginal.icon
+      );
 
 
-        if (
-          savedPosition
-        ) {
-
-          try {
-
-            const position =
-              JSON.parse(
-                savedPosition
-              );
+    const movedX =
+      firstCurrent.x -
+      firstOriginal.x;
 
 
-            icon.style.left =
-              position.x +
-              "px";
-
-
-            icon.style.top =
-              position.y +
-              "px";
-
-          }
-
-          catch (error) {
-
-            console.warn(
-              "Could not restore icon position:",
-              error
-            );
-
-          }
-
-        }
-
-        else if (
-          defaultPositions[index]
-        ) {
-
-          icon.style.left =
-            defaultPositions[index][0] +
-            "px";
-
-
-          icon.style.top =
-            defaultPositions[index][1] +
-            "px";
-
-        }
-
-
-        /*
-         * =================================================
-         * MOUSE DOWN
-         * =================================================
-         */
-
-        icon.addEventListener(
-          "mousedown",
-          function (event) {
-
-            if (
-              event.button !== 0
-            ) return;
-
-
-            draggedIcon =
-              icon;
-
-
-            const rect =
-              icon.getBoundingClientRect();
-
-
-            offsetX =
-              event.clientX -
-              rect.left;
-
-
-            offsetY =
-              event.clientY -
-              rect.top;
-
-
-            icon.classList.add(
-              "dragging"
-            );
-
-
-            event.preventDefault();
-
-          }
-        );
-
-
-        /*
-         * =================================================
-         * TOUCH START
-         * =================================================
-         */
-
-        icon.addEventListener(
-          "touchstart",
-          function (event) {
-
-            const touch =
-              event.touches[0];
-
-
-            const rect =
-              icon.getBoundingClientRect();
-
-
-            draggedIcon =
-              icon;
-
-
-            offsetX =
-              touch.clientX -
-              rect.left;
-
-
-            offsetY =
-              touch.clientY -
-              rect.top;
-
-
-            icon.classList.add(
-              "dragging"
-            );
-
-          },
-          {
-            passive: true
-          }
-        );
-
-      }
-    );
+    const movedY =
+      firstCurrent.y -
+      firstOriginal.y;
 
 
     /*
-     * =================================================
-     * MOUSE MOVE
-     * =================================================
+     * Snap the GROUP using the movement
+     * of the first selected icon.
      *
-     * IMPORTANT:
-     *
-     * NO GRID SNAP HERE.
-     *
-     * The icon moves completely freely.
+     * This keeps selected icons together.
      */
 
-    document.addEventListener(
-      "mousemove",
-      function (event) {
+    const snappedFirst =
+      snapToGrid(
+        firstOriginal.x +
+        movedX,
 
-        if (
-          !draggedIcon
-        ) return;
+        firstOriginal.y +
+        movedY,
 
-
-        const desktopRect =
-          desktop.getBoundingClientRect();
-
-
-        let x =
-          event.clientX -
-          desktopRect.left -
-          offsetX;
+        firstOriginal.icon
+      );
 
 
-        let y =
-          event.clientY -
-          desktopRect.top -
-          offsetY;
+    const snapDeltaX =
+      snappedFirst.x -
+      firstCurrent.x;
+
+
+    const snapDeltaY =
+      snappedFirst.y -
+      firstCurrent.y;
+
+
+    originalPositions.forEach(
+      function (original) {
+
+        const current =
+          getPosition(
+            original.icon
+          );
+
+
+        let finalX =
+          current.x +
+          snapDeltaX;
+
+
+        let finalY =
+          current.y +
+          snapDeltaY;
 
 
         const maxX =
-          desktop.clientWidth -
-          draggedIcon.offsetWidth;
+          Math.max(
+            0,
+            desktop.clientWidth -
+            original.icon.offsetWidth
+          );
 
 
         const maxY =
-          desktop.clientHeight -
-          draggedIcon.offsetHeight;
+          Math.max(
+            0,
+            desktop.clientHeight -
+            original.icon.offsetHeight
+          );
 
 
-        x =
+        finalX =
           Math.max(
             0,
             Math.min(
-              x,
+              finalX,
               maxX
             )
           );
 
 
-        y =
+        finalY =
           Math.max(
             0,
             Math.min(
-              y,
+              finalY,
               maxY
             )
           );
 
 
-        /*
-         * FREE MOVEMENT.
-         */
-
-        draggedIcon.style.left =
-          x +
-          "px";
-
-
-        draggedIcon.style.top =
-          y +
-          "px";
-
-      }
-    );
-
-
-    /*
-     * =================================================
-     * TOUCH MOVE
-     * =================================================
-     */
-
-    document.addEventListener(
-      "touchmove",
-      function (event) {
-
-        if (
-          !draggedIcon
-        ) return;
-
-
-        const touch =
-          event.touches[0];
-
-
-        const desktopRect =
-          desktop.getBoundingClientRect();
-
-
-        let x =
-          touch.clientX -
-          desktopRect.left -
-          offsetX;
-
-
-        let y =
-          touch.clientY -
-          desktopRect.top -
-          offsetY;
-
-
-        const maxX =
-          desktop.clientWidth -
-          draggedIcon.offsetWidth;
-
-
-        const maxY =
-          desktop.clientHeight -
-          draggedIcon.offsetHeight;
-
-
-        x =
-          Math.max(
-            0,
-            Math.min(
-              x,
-              maxX
-            )
-          );
-
-
-        y =
-          Math.max(
-            0,
-            Math.min(
-              y,
-              maxY
-            )
-          );
-
-
-        draggedIcon.style.left =
-          x +
-          "px";
-
-
-        draggedIcon.style.top =
-          y +
-          "px";
-
-
-        event.preventDefault();
-
-      },
-      {
-        passive: false
-      }
-    );
-
-
-    /*
-     * =================================================
-     * RELEASE ICON
-     * =================================================
-     */
-
-    document.addEventListener(
-      "mouseup",
-      function () {
-
-        if (
-          !draggedIcon
-        ) return;
-
-
-        const currentX =
-          parseInt(
-            draggedIcon.style.left
-          ) || 0;
-
-
-        const currentY =
-          parseInt(
-            draggedIcon.style.top
-          ) || 0;
-
-
-        /*
-         * SNAP ONLY NOW.
-         */
-
-        const finalPosition =
-          findNearestFreePosition(
-            draggedIcon,
-            currentX,
-            currentY
-          );
-
-
-        draggedIcon.style.left =
-          finalPosition.x +
-          "px";
-
-
-        draggedIcon.style.top =
-          finalPosition.y +
-          "px";
+        setPosition(
+          original.icon,
+          finalX,
+          finalY
+        );
 
 
         saveIconPosition(
-          draggedIcon
+          original.icon
         );
 
 
-        draggedIcon.classList.remove(
+        original.icon.classList.remove(
           "dragging"
         );
-
-
-        draggedIcon =
-          null;
 
       }
     );
 
 
-    /*
-     * =================================================
-     * RELEASE TOUCH
-     * =================================================
-     */
+    draggedIcons = [];
 
-    document.addEventListener(
-      "touchend",
-      function () {
+    originalPositions = [];
 
-        if (
-          !draggedIcon
-        ) return;
+  }
 
 
-        const currentX =
-          parseInt(
-            draggedIcon.style.left
-          ) || 0;
+  /* =====================================================
+     MOUSE UP
+     ===================================================== */
+
+  document.addEventListener(
+    "mouseup",
+    function () {
+
+      finishDrag();
+
+    },
+    true
+  );
 
 
-        const currentY =
-          parseInt(
-            draggedIcon.style.top
-          ) || 0;
+  /* =====================================================
+     TOUCH END
+     ===================================================== */
+
+  document.addEventListener(
+    "touchend",
+    function () {
+
+      finishDrag();
+
+    }
+  );
 
 
-        /*
-         * SNAP ONLY WHEN RELEASED.
-         */
+  /* =====================================================
+     SAVE POSITION
+     ===================================================== */
 
-        const finalPosition =
-          findNearestFreePosition(
-            draggedIcon,
-            currentX,
-            currentY
-          );
+  function saveIconPosition(icon) {
 
-
-        draggedIcon.style.left =
-          finalPosition.x +
-          "px";
+    const key =
+      "desktop-icon-" +
+      (
+        icon.dataset.icon ||
+        "unknown"
+      );
 
 
-        draggedIcon.style.top =
-          finalPosition.y +
-          "px";
+    const position =
+      getPosition(icon);
 
 
-        saveIconPosition(
-          draggedIcon
-        );
+    localStorage.setItem(
+      key,
+      JSON.stringify({
 
+        x:
+          Math.round(
+            position.x
+          ),
 
-        draggedIcon.classList.remove(
-          "dragging"
-        );
+        y:
+          Math.round(
+            position.y
+          )
 
-
-        draggedIcon =
-          null;
-
-      }
+      })
     );
 
+  }
 
-    /*
-     * =================================================
-     * SAVE POSITION
-     * =================================================
-     */
 
-    function saveIconPosition(
-      icon
-    ) {
+  /* =====================================================
+     RESTORE POSITIONS
+     ===================================================== */
+
+  const defaultPositions = [];
+
+
+  /*
+   * Create the initial positions using
+   * the 19 x 8 grid.
+   */
+
+  icons.forEach(
+    function (icon, index) {
 
       const key =
         "desktop-icon-" +
         (
           icon.dataset.icon ||
-          "unknown"
+          index
         );
 
 
-      const position = {
-
-        x:
-          parseInt(
-            icon.style.left
-          ) || 0,
-
-        y:
-          parseInt(
-            icon.style.top
-          ) || 0
-
-      };
+      const saved =
+        localStorage.getItem(
+          key
+        );
 
 
-      localStorage.setItem(
-        key,
-        JSON.stringify(
-          position
-        )
+      if (saved) {
+
+        try {
+
+          const position =
+            JSON.parse(saved);
+
+
+          setPosition(
+            icon,
+            position.x,
+            position.y
+          );
+
+
+          return;
+
+        }
+
+        catch (error) {
+
+          console.warn(
+            "Could not restore icon position:",
+            error
+          );
+
+        }
+
+      }
+
+
+      /*
+       * Default layout:
+       *
+       * 19 columns
+       * 8 rows
+       */
+
+      const column =
+        Math.floor(
+          index / GRID_ROWS
+        );
+
+
+      const row =
+        index %
+        GRID_ROWS;
+
+
+      const grid =
+        getGridSize();
+
+
+      const x =
+        column *
+        grid.cellWidth;
+
+
+      const y =
+        row *
+        grid.cellHeight;
+
+
+      setPosition(
+        icon,
+        x,
+        y
       );
 
     }
+  );
 
-  }
-);
 
+  /* =====================================================
+     KEEP GRID CORRECT AFTER RESIZE
+     ===================================================== */
+
+  let resizeTimer = null;
+
+
+  window.addEventListener(
+    "resize",
+    function () {
+
+      clearTimeout(
+        resizeTimer
+      );
+
+
+      resizeTimer =
+        setTimeout(
+          function () {
+
+            /*
+             * We don't automatically move
+             * saved icons on resize.
+             *
+             * This prevents icons from jumping
+             * around unexpectedly.
+             */
+
+          },
+          100
+        );
+
+    }
+  );
+
+
+});
 </script>
 
 
