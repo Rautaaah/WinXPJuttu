@@ -718,40 +718,59 @@
     let offsetY = 0;
     let dialogueTimer = null;
 
-    const quotes = [
-      "what are you doing.",
-      "you opened that?",
-      "wow.",
-      "interesting.",
-      "are you lost?",
-      "i'm watching you.",
-      "you really like clicking things.",
-      "what are you looking for?",
-      "this is productive.",
-      "sure.",
-      "why are you still here?",
-      "i saw that.",
-      "stop clicking everything.",
-      "okay.",
-      "fascinating.",
-      "windows xp.",
-      "this website is weird.",
-      "you know i'm dancing, right?",
-      "you have too much free time.",
-      "i'm judging you.",
-      "..."
-    ];
+ const quotes = [
+  "what are you doing.",
+  "you opened that?",
+  "wow.",
+  "i'm watching you.",
+  "this is productive.",
+  "you have too much free time.",
+  "i'm judging you.",
 
-    const dragQuotes = [
-      "hey.",
-      "why are you moving me?",
-      "put me down.",
-      "seriously?",
-      "where are we going?",
-      "stop dragging me.",
-      "i was comfortable there.",
-      "bro."
-    ];
+  // DELTARUNE REFERENCES
+  "have you tried pressing X?",
+  "the world is revolving.",
+  "don't forget your [HeartShapedObject].",
+  "you look like someone who would trust Spamton.",
+  "NOELLE WOULD NOT APPROVE OF THIS.",
+  "where's Susie when you need her?",
+  "i wonder what Ralsei is baking.",
+  "this desktop feels like a Dark World.",
+  "did you just open another window?",
+  "that's not very [[BIG SHOT]] of you.",
+  "HEY EVERY !! IT'S ME.",
+  "CHAOS, CHAOS!",
+  "you ever wonder why the fountain is still there?",
+  "Kris... where are we?",
+  "this isn't Castle Town.",
+  "the prophecy did not mention Windows XP.",
+  "Susie would probably break this computer.",
+  "Ralsei would probably say something nice.",
+  "Lancer would probably eat the mouse.",
+  "Queen would probably buy this computer.",
+  "Berdly would explain why he's better at Minesweeper.",
+  "Noelle is probably nervous about something right now.",
+
+  // RANDOM YAPPING
+  "okay, serious question. why are there so many icons?",
+  "you know you can just close the window, right?",
+  "i've been dancing this entire time.",
+  "my legs are getting tired. probably.",
+  "do you think the Recycle Bin actually recycles anything?",
+  "Internet Explorer? In this economy?",
+  "wait. you actually use this?",
+  "i have questions. many questions.",
+  "you could be doing literally anything else right now.",
+  "don't mind me. i'm just standing here.",
+  "...",
+  "... okay.",
+  "this feels like a side quest.",
+  "is this your save file?",
+  "i think we're both lost.",
+  "maybe try turning it off and on again.",
+  "i've seen worse desktops.",
+  "actually, no i haven't."
+];
 
     function randomQuote(list) {
       return list[
@@ -930,8 +949,8 @@
       }
 
       const nextDelay =
-        12000 +
-        Math.random() * 18000;
+        1000 +
+        Math.random() * 3000;
 
       setTimeout(
         randomComment,
