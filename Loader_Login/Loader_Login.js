@@ -1,13 +1,21 @@
 /* =========================================================
-   STARTUP SEQUENCE
+   WINDOWS XP STARTUP SEQUENCE
 
-   1. Command prompt
-   2. Windows95Happyyay.gif
-   3. Existing Windows XP boot screen
-   4. Existing XP login screen
+   CMD
+      ↓
+   Windows95Happyyay.gif
+      ↓
+   Existing Windows XP Boot Screen
+      ↓
+   Existing Windows XP Login Screen
    ========================================================= */
 
-window.addEventListener("load", function () {
+
+/* =========================================================
+   STARTUP
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
 
   const prebootConsole =
     document.getElementById("preboot-console");
@@ -26,17 +34,19 @@ window.addEventListener("load", function () {
 
 
   /* =======================================================
-     CHECK REQUIRED ELEMENTS
+     SAFETY CHECK
      ======================================================= */
 
   if (
     !prebootConsole ||
     !consoleOutput ||
     !prebootGif ||
-    !loader
+    !loader ||
+    !loginScreen
   ) {
+
     console.error(
-      "Pre-boot elements are missing!"
+      "STARTUP ERROR: One or more startup elements are missing."
     );
 
     return;
@@ -44,22 +54,77 @@ window.addEventListener("load", function () {
 
 
   /* =======================================================
-     INITIAL STATE
-
-     Hide XP boot.
-     Show command prompt.
-     Hide GIF.
+     STOP THE OLD FADE SYSTEM
+     
+     This is important.
+     We do NOT want the existing login animation
+     touching the CMD screen.
      ======================================================= */
 
-  loader.style.display = "none";
-
-  prebootConsole.style.display = "block";
-
-  prebootGif.classList.add("hidden");
+  document.body.classList.remove(
+    "fade-in-steps"
+  );
 
 
   /* =======================================================
-     COMMAND PROMPT TEXT
+     FORCE BLACK BACKGROUND
+     ======================================================= */
+
+  document.documentElement.style.background =
+    "#000";
+
+  document.body.style.background =
+    "#000";
+
+
+  /* =======================================================
+     FORCE STARTING STATE
+     ======================================================= */
+
+  /* Hide XP boot */
+  loader.style.display =
+    "none";
+
+
+  /* Hide login */
+  loginScreen.classList.add(
+    "hidden"
+  );
+
+
+  /* Hide GIF */
+  prebootGif.classList.add(
+    "hidden"
+  );
+
+
+  /* Show CMD */
+  prebootConsole.style.display =
+    "block";
+
+
+  /*
+   * Make absolutely sure the CMD
+   * is on top of EVERYTHING.
+   */
+
+  prebootConsole.style.position =
+    "fixed";
+
+  prebootConsole.style.inset =
+    "0";
+
+  prebootConsole.style.zIndex =
+    "999999";
+
+
+  /* Clear old output */
+  consoleOutput.innerHTML =
+    "";
+
+
+  /* =======================================================
+     COMMAND PROMPT
      ======================================================= */
 
   const systemLines = [
@@ -81,8 +146,18 @@ window.addEventListener("load", function () {
 
     "",
 
+    "Detecting hardware...",
+    "Hardware detection..... OK",
+
+    "",
+
     "Checking Windows services...",
     "Windows services....... OK",
+
+    "",
+
+    "Loading system files...",
+    "System files........... OK",
 
     "",
 
@@ -112,12 +187,17 @@ window.addEventListener("load", function () {
 
 
   /* =======================================================
-     TYPE COMMAND PROMPT
+     TYPE CMD LINES
      ======================================================= */
 
   let currentLine = 0;
 
-  function showNextLine() {
+
+  function typeNextLine() {
+
+    /*
+     * Are we finished?
+     */
 
     if (
       currentLine >=
@@ -125,54 +205,78 @@ window.addEventListener("load", function () {
     ) {
 
       /*
-       * Finished typing.
-       * Wait a little before showing GIF.
+       * Finished CMD.
+       *
+       * Wait 1 second before
+       * moving to GIF.
        */
 
-      setTimeout(() => {
-
-        startGif();
-
-      }, 800);
+      setTimeout(
+        startWindows95Gif,
+        1000
+      );
 
       return;
     }
 
 
+    /*
+     * Create new line.
+     */
+
     const line =
       document.createElement("div");
+
 
     line.className =
       "console-line";
 
+
     line.textContent =
       systemLines[currentLine];
 
-    consoleOutput.appendChild(line);
+
+    consoleOutput.appendChild(
+      line
+    );
+
 
     currentLine++;
 
 
     /*
-     * Speed of command prompt.
-     * Smaller = faster.
+     * Scroll to bottom.
+     */
+
+    consoleOutput.scrollTop =
+      consoleOutput.scrollHeight;
+
+
+    /*
+     * Type next line.
      */
 
     setTimeout(
-      showNextLine,
-      120
+      typeNextLine,
+      100
     );
+
   }
 
 
   /* =======================================================
-     START GIF
+     WINDOWS 95 GIF
      ======================================================= */
 
-  function startGif() {
+  function startWindows95Gif() {
+
+    console.log(
+      "STARTUP: CMD finished."
+    );
+
 
     /*
-     * Hide command prompt.
+     * Hide CMD.
      */
 
     prebootConsole.style.display =
@@ -188,29 +292,62 @@ window.addEventListener("load", function () {
     );
 
 
+    prebootGif.style.display =
+      "flex";
+
+
+    prebootGif.style.position =
+      "fixed";
+
+
+    prebootGif.style.inset =
+      "0";
+
+
+    prebootGif.style.zIndex =
+      "999998";
+
+
+    prebootGif.style.background =
+      "#000";
+
+
+    console.log(
+      "STARTUP: Windows 95 GIF started."
+    );
+
+
     /*
-     * GIF duration.
-     *
-     * 3000 = 3 seconds.
+     * Keep GIF on screen
+     * for 3 seconds.
      */
 
-    setTimeout(() => {
+    setTimeout(
+      startXPBoot,
+      3000
+    );
 
-      startXPBoot();
-
-    }, 3000);
   }
 
 
   /* =======================================================
-     START EXISTING WINDOWS XP BOOT
+     WINDOWS XP BOOT SCREEN
      ======================================================= */
 
   function startXPBoot() {
 
+    console.log(
+      "STARTUP: Windows 95 GIF finished."
+    );
+
+
     /*
      * Hide GIF.
      */
+
+    prebootGif.style.display =
+      "none";
+
 
     prebootGif.classList.add(
       "hidden"
@@ -218,41 +355,51 @@ window.addEventListener("load", function () {
 
 
     /*
-     * Show the ORIGINAL XP boot screen.
+     * Show EXISTING XP BOOT SCREEN.
      */
 
     loader.style.display =
       "flex";
 
 
+    loader.style.position =
+      "fixed";
+
+
+    loader.style.inset =
+      "0";
+
+
+    loader.style.zIndex =
+      "999997";
+
+
+    console.log(
+      "STARTUP: Windows XP boot started."
+    );
+
+
     /*
-     * Original XP boot duration.
-     *
-     * 4000 = 4 seconds.
+     * XP boot stays for 4 seconds.
      */
 
-    setTimeout(() => {
+    setTimeout(
+      finishXPBoot,
+      4000
+    );
 
-      finishXPBoot();
-
-    }, 4000);
   }
 
 
   /* =======================================================
-     FINISH XP BOOT
+     FINISH WINDOWS XP BOOT
      ======================================================= */
 
   function finishXPBoot() {
 
-    if (!loader || !loginScreen) {
-
-      console.error(
-        "Missing #loader or #login-screen"
-      );
-
-      return;
-    }
+    console.log(
+      "STARTUP: Windows XP boot finished."
+    );
 
 
     /*
@@ -264,11 +411,16 @@ window.addEventListener("load", function () {
 
 
     /*
-     * Original black transition.
+     * Create black transition.
      */
 
     const blackScreen =
       document.createElement("div");
+
+
+    blackScreen.id =
+      "startup-black-screen";
+
 
     blackScreen.style.position =
       "fixed";
@@ -277,13 +429,10 @@ window.addEventListener("load", function () {
       "0";
 
     blackScreen.style.background =
-      "black";
+      "#000";
 
     blackScreen.style.zIndex =
-      "10000";
-
-    blackScreen.style.opacity =
-      "1";
+      "9999999";
 
 
     document.body.appendChild(
@@ -292,154 +441,192 @@ window.addEventListener("load", function () {
 
 
     /*
-     * Wait before Startup_Transition.
+     * Give the black screen
+     * a short moment.
      */
 
-    setTimeout(() => {
+    setTimeout(
+      showStartupTransition,
+      1000
+    );
 
-      const transitionDiv =
-        document.createElement("div");
-
-
-      transitionDiv.id =
-        "transition-screen";
-
-
-      transitionDiv.style.position =
-        "fixed";
-
-      transitionDiv.style.inset =
-        "0";
-
-      transitionDiv.style.zIndex =
-        "10001";
-
-      transitionDiv.style.display =
-        "flex";
-
-      transitionDiv.style.alignItems =
-        "center";
-
-      transitionDiv.style.justifyContent =
-        "center";
-
-      transitionDiv.style.background =
-        "black";
-
-
-      document.body.appendChild(
-        transitionDiv
-      );
-
-
-      blackScreen.remove();
-
-
-      /*
-       * Load the existing startup
-       * transition.
-       */
-
-      fetch(
-        "/Loader_Login/Startup_Transition.html"
-      )
-
-        .then((response) => {
-
-          if (!response.ok) {
-
-            throw new Error(
-              "Startup transition returned " +
-              response.status
-            );
-
-          }
-
-          return response.text();
-
-        })
-
-
-        .then((html) => {
-
-          transitionDiv.innerHTML =
-            html;
-
-
-          /*
-           * Original transition
-           * duration.
-           */
-
-          setTimeout(() => {
-
-            transitionDiv.remove();
-
-
-            /*
-             * Show the ORIGINAL
-             * XP login screen.
-             */
-
-            loginScreen.classList.remove(
-              "hidden"
-            );
-
-          }, 800);
-
-        })
-
-
-        .catch((error) => {
-
-          console.error(
-            "Failed to load startup transition:",
-            error
-          );
-
-
-          transitionDiv.remove();
-
-
-          /*
-           * Still show login if
-           * transition fails.
-           */
-
-          loginScreen.classList.remove(
-            "hidden"
-          );
-
-        });
-
-    }, 1000);
   }
 
 
   /* =======================================================
-     START EVERYTHING
+     EXISTING STARTUP TRANSITION
      ======================================================= */
 
-  showNextLine();
+  function showStartupTransition() {
 
-});
+    const blackScreen =
+      document.getElementById(
+        "startup-black-screen"
+      );
 
 
+    const transitionDiv =
+      document.createElement("div");
 
-/* =========================================================
-   FADE-IN EFFECT
-   ========================================================= */
 
-window.addEventListener(
-  "DOMContentLoaded",
-  function () {
+    transitionDiv.id =
+      "transition-screen";
+
+
+    transitionDiv.style.position =
+      "fixed";
+
+    transitionDiv.style.inset =
+      "0";
+
+    transitionDiv.style.zIndex =
+      "10000000";
+
+    transitionDiv.style.display =
+      "flex";
+
+    transitionDiv.style.alignItems =
+      "center";
+
+    transitionDiv.style.justifyContent =
+      "center";
+
+    transitionDiv.style.background =
+      "#000";
+
+
+    document.body.appendChild(
+      transitionDiv
+    );
+
+
+    if (blackScreen) {
+      blackScreen.remove();
+    }
+
+
+    /*
+     * Load your EXISTING
+     * Startup_Transition.html
+     */
+
+    fetch(
+      "/Loader_Login/Startup_Transition.html"
+    )
+
+      .then(function (response) {
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Startup transition returned HTTP " +
+            response.status
+          );
+
+        }
+
+        return response.text();
+
+      })
+
+
+      .then(function (html) {
+
+        transitionDiv.innerHTML =
+          html;
+
+
+        /*
+         * Let the existing transition
+         * play for 800ms.
+         */
+
+        setTimeout(
+          showLoginScreen,
+          800
+        );
+
+      })
+
+
+      .catch(function (error) {
+
+        console.error(
+          "Startup transition failed:",
+          error
+        );
+
+
+        /*
+         * If transition fails,
+         * still continue to login.
+         */
+
+        setTimeout(
+          showLoginScreen,
+          300
+        );
+
+      });
+
+  }
+
+
+  /* =======================================================
+     SHOW XP LOGIN
+     ======================================================= */
+
+  function showLoginScreen() {
+
+    const transitionDiv =
+      document.getElementById(
+        "transition-screen"
+      );
+
+
+    if (transitionDiv) {
+      transitionDiv.remove();
+    }
+
+
+    /*
+     * Show original login screen.
+     */
+
+    loginScreen.classList.remove(
+      "hidden"
+    );
+
+
+    /*
+     * NOW it is safe to use
+     * the original fade animation.
+     */
 
     document.body.classList.add(
       "fade-in-steps"
     );
 
+
+    console.log(
+      "STARTUP: XP login screen shown."
+    );
+
   }
-);
+
+
+  /* =======================================================
+     BEGIN CMD
+     ======================================================= */
+
+  console.log(
+    "STARTUP: Command prompt started."
+  );
+
+
+  typeNextLine();
+
+});
 
 
 
@@ -587,7 +774,7 @@ function loginAsGuest() {
     "paddingTopLog 1s forwards";
 
 
-  setTimeout(() => {
+  setTimeout(function () {
 
     userList.classList.remove(
       "is-padding-anim"
@@ -609,7 +796,7 @@ function loginAsGuest() {
   );
 
 
-  setTimeout(() => {
+  setTimeout(function () {
 
     window.location.href =
       "/Bureau/Bureau.html";
@@ -653,12 +840,10 @@ document.addEventListener(
        USER SELECTION
        ===================================================== */
 
-    function updateUserSelection(
-      index
-    ) {
+    function updateUserSelection(index) {
 
       users.forEach(
-        (user, i) => {
+        function (user, i) {
 
           user.classList.toggle(
             "selected",
@@ -750,7 +935,7 @@ document.addEventListener(
 
 
             users.forEach(
-              (user, i) => {
+              function (user, i) {
 
                 if (
                   i === selectedIndex
@@ -803,7 +988,7 @@ document.addEventListener(
 
 
               users.forEach(
-                (user, i) => {
+                function (user, i) {
 
                   if (
                     i === selectedIndex
@@ -852,7 +1037,7 @@ document.addEventListener(
 
 
               users.forEach(
-                (user, i) => {
+                function (user, i) {
 
                   if (
                     i === selectedIndex
@@ -919,10 +1104,13 @@ document.addEventListener(
 
         const hasSelected =
           Array.from(users).some(
-            (user) =>
-              user.classList.contains(
+            function (user) {
+
+              return user.classList.contains(
                 "selected"
-              )
+              );
+
+            }
           );
 
 
@@ -932,7 +1120,7 @@ document.addEventListener(
 
 
         users.forEach(
-          (user) => {
+          function (user) {
 
             user.style.opacity =
               "0.5";
@@ -958,10 +1146,13 @@ document.addEventListener(
 
         const hasSelected =
           Array.from(users).some(
-            (user) =>
-              user.classList.contains(
+            function (user) {
+
+              return user.classList.contains(
                 "selected"
-              )
+              );
+
+            }
           );
 
 
@@ -971,7 +1162,7 @@ document.addEventListener(
 
 
         users.forEach(
-          (user) => {
+          function (user) {
 
             user.style.opacity =
               "1";
@@ -992,7 +1183,7 @@ document.addEventListener(
        ===================================================== */
 
     users.forEach(
-      (user) => {
+      function (user) {
 
         user.addEventListener(
           "mouseenter",
@@ -1058,7 +1249,7 @@ document.addEventListener(
        ===================================================== */
 
     users.forEach(
-      (user) => {
+      function (user) {
 
         const userimg =
           user.querySelector(
@@ -1137,17 +1328,20 @@ document.addEventListener(
        ===================================================== */
 
     users.forEach(
-      (user) => {
+      function (user) {
 
         user.addEventListener(
           "mousedown",
           function () {
 
             users.forEach(
-              (u) =>
+              function (u) {
+
                 u.classList.remove(
                   "selected"
-                )
+                );
+
+              }
             );
 
 
@@ -1164,10 +1358,13 @@ document.addEventListener(
           function () {
 
             users.forEach(
-              (u) =>
+              function (u) {
+
                 u.classList.remove(
                   "selected"
-                )
+                );
+
+              }
             );
 
 
@@ -1180,7 +1377,7 @@ document.addEventListener(
 
         document.addEventListener(
           "click",
-          () => {
+          function () {
 
             user.classList.remove(
               "selected"
