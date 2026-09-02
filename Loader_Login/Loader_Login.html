@@ -12,7 +12,7 @@
       sizes="32x32"
       href="/Assets/Images/Windows_XP-min.ico"
     />
-    
+
     <link
       rel="preload"
       href="/Start_Menu/Log_Off/Base/Log_Off.css"
@@ -22,12 +22,38 @@
 
     <link rel="stylesheet" href="Loader.css" />
     <link rel="stylesheet" href="Login_Screen.css" />
-    
+
     <script src="Loader_Login.js"></script>
     <script src="/Bureau/Bureau.js"></script>
   </head>
 
   <body>
+
+    <!-- =========================================
+         PRE-BOOT COMMAND PROMPT
+         ========================================= -->
+
+    <div id="preboot-console">
+      <div id="console-output"></div>
+    </div>
+
+
+    <!-- =========================================
+         WINDOWS 95 HAPPY GIF
+         ========================================= -->
+
+    <div id="preboot-gif" class="hidden">
+      <img
+        src="/Assets/Windows95Happyyay.gif"
+        alt="Windows 95"
+      />
+    </div>
+
+
+    <!-- =========================================
+         EXISTING WINDOWS XP BOOT SCREEN
+         ========================================= -->
+
     <div id="loader">
       <img
         src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
@@ -53,6 +79,11 @@
         id="Microsoft"
       />
     </div>
+
+
+    <!-- =========================================
+         EXISTING LOGIN SCREEN
+         ========================================= -->
 
     <div id="login-screen" class="hidden">
       <div id="top-bar"></div>
@@ -103,7 +134,11 @@
       </div>
     </div>
 
-    <!-- RAUTATIENTORI title animation -->
+
+    <!-- =========================================
+         RAUTATIENTORI TITLE ANIMATION
+         ========================================= -->
+
     <script>
       const titleText = "RAUTATIENTORI";
       let titleIndex = 1;
@@ -117,8 +152,6 @@
           titleIndex = 1;
         }
 
-        // Faster when the tab is active,
-        // slower when the tab is inactive.
         const delay =
           document.visibilityState === "visible"
             ? 100
