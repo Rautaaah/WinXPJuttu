@@ -1,50 +1,47 @@
-/* =========================================================
-   WINDOWS XP STARTUP SEQUENCE
 
-   CMD
-      ↓
-   Windows95Happyyay.gif
-      ↓
-   Existing Windows XP Boot Screen
-      ↓
-   Existing Windows XP Login Screen
-   ========================================================= */
+/* =========================================
+   WINDOWS XP PORTFOLIO
+   LOADER + LOGIN SCRIPT
 
+   STARTUP ORDER:
 
-/* =========================================================
-   STARTUP
-   ========================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  const prebootConsole =
-    document.getElementById("preboot-console");
-
-  const consoleOutput =
-    document.getElementById("console-output");
-
-  const prebootGif =
-    document.getElementById("preboot-gif");
-
-  const loader =
-    document.getElementById("loader");
-
-  const loginScreen =
-    document.getElementById("login-screen");
+   COMMAND PROMPT
+        ↓
+   WINDOWS 95 GIF
+        ↓
+   WINDOWS XP BOOT SCREEN
+        ↓
+   WINDOWS XP LOGIN SCREEN
+   ========================================= */
 
 
-  /* =======================================================
-     SAFETY CHECK
-     ======================================================= */
+/* =========================================
+   STARTUP SEQUENCE
+   ========================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const consoleScreen = document.getElementById("preboot-console");
+  const consoleOutput = document.getElementById("console-output");
+
+  const gifScreen = document.getElementById("preboot-gif");
+
+  const loader = document.getElementById("loader");
+
+  const loginScreen = document.getElementById("login-screen");
+
+
+  /* -----------------------------------------
+     CHECK REQUIRED ELEMENTS
+     ----------------------------------------- */
 
   if (
-    !prebootConsole ||
+    !consoleScreen ||
     !consoleOutput ||
-    !prebootGif ||
+    !gifScreen ||
     !loader ||
     !loginScreen
   ) {
-
     console.error(
       "STARTUP ERROR: One or more startup elements are missing."
     );
@@ -53,127 +50,62 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  /* =======================================================
-     STOP THE OLD FADE SYSTEM
-     
-     This is important.
-     We do NOT want the existing login animation
-     touching the CMD screen.
-     ======================================================= */
+  /* -----------------------------------------
+     FORCE INITIAL STATE
+     ----------------------------------------- */
 
-  document.body.classList.remove(
-    "fade-in-steps"
-  );
+  // Command prompt: visible
+  consoleScreen.classList.remove("hidden");
+  consoleScreen.style.display = "block";
+  consoleScreen.style.opacity = "1";
+  consoleScreen.style.visibility = "visible";
 
+  // GIF: hidden
+  gifScreen.classList.add("hidden");
+  gifScreen.style.display = "none";
 
-  /* =======================================================
-     FORCE BLACK BACKGROUND
-     ======================================================= */
+  // XP boot screen: hidden
+  loader.classList.add("hidden");
+  loader.style.display = "none";
 
-  document.documentElement.style.background =
-    "#000";
-
-  document.body.style.background =
-    "#000";
-
-
-  /* =======================================================
-     FORCE STARTING STATE
-     ======================================================= */
-
-  /* Hide XP boot */
-  loader.style.display =
-    "none";
+  // Login screen: hidden
+  loginScreen.classList.add("hidden");
+  loginScreen.style.display = "none";
 
 
-  /* Hide login */
-  loginScreen.classList.add(
-    "hidden"
-  );
+  /* -----------------------------------------
+     COMMAND PROMPT CONTENT
+     ----------------------------------------- */
 
-
-  /* Hide GIF */
-  prebootGif.classList.add(
-    "hidden"
-  );
-
-
-  /* Show CMD */
-  prebootConsole.style.display =
-    "block";
-
-
-  /*
-   * Make absolutely sure the CMD
-   * is on top of EVERYTHING.
-   */
-
-  prebootConsole.style.position =
-    "fixed";
-
-  prebootConsole.style.inset =
-    "0";
-
-  prebootConsole.style.zIndex =
-    "999999";
-
-
-  /* Clear old output */
-  consoleOutput.innerHTML =
-    "";
-
-
-  /* =======================================================
-     COMMAND PROMPT
-     ======================================================= */
-
-  const systemLines = [
+  const lines = [
 
     "RAUTATIENTORI BIOS v95.09",
 
     "",
 
-    "Initializing system...",
+    "Copyright (C) RAUTATIENTORI Corporation",
 
     "",
 
-    "CPU.................... OK",
-    "RAM.................... OK",
-    "GPU.................... OK",
-    "AUDIO.................. OK",
-    "STORAGE................ OK",
-    "NETWORK................ OK",
+    "Checking system hardware...",
 
     "",
 
-    "Detecting hardware...",
-    "Hardware detection..... OK",
+    "CPU ......................... OK",
+    "RAM ......................... OK",
+    "GPU ......................... OK",
+    "AUDIO ....................... OK",
+    "STORAGE ..................... OK",
+    "NETWORK ..................... OK",
 
     "",
 
-    "Checking Windows services...",
-    "Windows services....... OK",
+    "Loading system services...",
 
-    "",
-
-    "Loading system files...",
-    "System files........... OK",
-
-    "",
-
-    "Loading portfolio core...",
-    "Portfolio core......... OK",
-
-    "Loading Webamp engine...",
-    "Webamp engine.......... OK",
-
-    "Loading user profile...",
-    "User profile........... OK",
-
-    "",
-
-    "Starting system services...",
-    "System services........ OK",
+    "Windows services ........... OK",
+    "Webamp engine ............... OK",
+    "Portfolio core .............. OK",
+    "User profile ................ OK",
 
     "",
 
@@ -186,1214 +118,348 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
 
-  /* =======================================================
-     TYPE CMD LINES
-     ======================================================= */
+  /* -----------------------------------------
+     COMMAND PROMPT TYPING
+     ----------------------------------------- */
 
-  let currentLine = 0;
+  let lineIndex = 0;
 
 
-  function typeNextLine() {
+  function typeLine() {
 
-    /*
-     * Are we finished?
-     */
-
-    if (
-      currentLine >=
-      systemLines.length
-    ) {
+    if (lineIndex >= lines.length) {
 
       /*
-       * Finished CMD.
+       * Finished typing.
        *
-       * Wait 1 second before
-       * moving to GIF.
+       * Wait a moment before moving
+       * to the Windows 95 GIF.
        */
 
-      setTimeout(
-        startWindows95Gif,
-        1000
-      );
+      setTimeout(() => {
+
+        showWindows95();
+
+      }, 800);
 
       return;
     }
 
 
-    /*
-     * Create new line.
-     */
+    const line = document.createElement("div");
 
-    const line =
-      document.createElement("div");
+    line.className = "console-line";
 
+    line.textContent = lines[lineIndex];
 
-    line.className =
-      "console-line";
+    consoleOutput.appendChild(line);
 
 
-    line.textContent =
-      systemLines[currentLine];
-
-
-    consoleOutput.appendChild(
-      line
-    );
-
-
-    currentLine++;
+    lineIndex++;
 
 
     /*
-     * Scroll to bottom.
+     * Speed of each line.
+     *
+     * Lower = faster
+     * Higher = slower
      */
 
-    consoleOutput.scrollTop =
-      consoleOutput.scrollHeight;
+    setTimeout(typeLine, 90);
+  }
+
+
+  /* -----------------------------------------
+     COMMAND PROMPT → WINDOWS 95 GIF
+     ----------------------------------------- */
+
+  function showWindows95() {
+
+    consoleScreen.style.display = "none";
+    consoleScreen.classList.add("hidden");
+
+
+    gifScreen.classList.remove("hidden");
+
+    gifScreen.style.display = "flex";
+    gifScreen.style.opacity = "1";
+    gifScreen.style.visibility = "visible";
 
 
     /*
-     * Type next line.
+     * How long the Windows 95 GIF stays
+     * on screen.
+     *
+     * 3000 = 3 seconds
      */
 
-    setTimeout(
-      typeNextLine,
-      100
-    );
+    setTimeout(() => {
+
+      showXPBoot();
+
+    }, 3000);
+  }
+
+
+  /* -----------------------------------------
+     WINDOWS 95 GIF → WINDOWS XP BOOT
+     ----------------------------------------- */
+
+  function showXPBoot() {
+
+    gifScreen.style.display = "none";
+    gifScreen.classList.add("hidden");
+
+
+    loader.classList.remove("hidden");
+
+    loader.style.display = "flex";
+    loader.style.opacity = "1";
+    loader.style.visibility = "visible";
+
+
+    /*
+     * How long the XP boot screen stays.
+     *
+     * 4000 = 4 seconds
+     */
+
+    setTimeout(() => {
+
+      showLogin();
+
+    }, 4000);
+  }
+
+
+  /* -----------------------------------------
+     WINDOWS XP BOOT → LOGIN SCREEN
+     ----------------------------------------- */
+
+  function showLogin() {
+
+    loader.style.display = "none";
+    loader.classList.add("hidden");
+
+
+    loginScreen.classList.remove("hidden");
+
+    loginScreen.style.display = "block";
+    loginScreen.style.opacity = "1";
+    loginScreen.style.visibility = "visible";
 
   }
 
 
-  /* =======================================================
-     WINDOWS 95 GIF
-     ======================================================= */
-
-  function startWindows95Gif() {
-
-    console.log(
-      "STARTUP: CMD finished."
-    );
-
-
-    /*
-     * Hide CMD.
-     */
-
-    prebootConsole.style.display =
-      "none";
-
-
-    /*
-     * Show GIF.
-     */
-
-    prebootGif.classList.remove(
-      "hidden"
-    );
-
-
-    prebootGif.style.display =
-      "flex";
-
-
-    prebootGif.style.position =
-      "fixed";
-
-
-    prebootGif.style.inset =
-      "0";
-
-
-    prebootGif.style.zIndex =
-      "999998";
-
-
-    prebootGif.style.background =
-      "#000";
-
-
-    console.log(
-      "STARTUP: Windows 95 GIF started."
-    );
-
-
-    /*
-     * Keep GIF on screen
-     * for 3 seconds.
-     */
-
-    setTimeout(
-      startXPBoot,
-      3000
-    );
-
-  }
-
-
-  /* =======================================================
-     WINDOWS XP BOOT SCREEN
-     ======================================================= */
-
-  function startXPBoot() {
-
-    console.log(
-      "STARTUP: Windows 95 GIF finished."
-    );
-
-
-    /*
-     * Hide GIF.
-     */
-
-    prebootGif.style.display =
-      "none";
-
-
-    prebootGif.classList.add(
-      "hidden"
-    );
-
-
-    /*
-     * Show EXISTING XP BOOT SCREEN.
-     */
-
-    loader.style.display =
-      "flex";
-
-
-    loader.style.position =
-      "fixed";
-
-
-    loader.style.inset =
-      "0";
-
-
-    loader.style.zIndex =
-      "999997";
-
-
-    console.log(
-      "STARTUP: Windows XP boot started."
-    );
-
-
-    /*
-     * XP boot stays for 4 seconds.
-     */
-
-    setTimeout(
-      finishXPBoot,
-      4000
-    );
-
-  }
-
-
-  /* =======================================================
-     FINISH WINDOWS XP BOOT
-     ======================================================= */
-
-  function finishXPBoot() {
-
-    console.log(
-      "STARTUP: Windows XP boot finished."
-    );
-
-
-    /*
-     * Hide XP boot.
-     */
-
-    loader.style.display =
-      "none";
-
-
-    /*
-     * Create black transition.
-     */
-
-    const blackScreen =
-      document.createElement("div");
-
-
-    blackScreen.id =
-      "startup-black-screen";
-
-
-    blackScreen.style.position =
-      "fixed";
-
-    blackScreen.style.inset =
-      "0";
-
-    blackScreen.style.background =
-      "#000";
-
-    blackScreen.style.zIndex =
-      "9999999";
-
-
-    document.body.appendChild(
-      blackScreen
-    );
-
-
-    /*
-     * Give the black screen
-     * a short moment.
-     */
-
-    setTimeout(
-      showStartupTransition,
-      1000
-    );
-
-  }
-
-
-  /* =======================================================
-     EXISTING STARTUP TRANSITION
-     ======================================================= */
-
-  function showStartupTransition() {
-
-    const blackScreen =
-      document.getElementById(
-        "startup-black-screen"
-      );
-
-
-    const transitionDiv =
-      document.createElement("div");
-
-
-    transitionDiv.id =
-      "transition-screen";
-
-
-    transitionDiv.style.position =
-      "fixed";
-
-    transitionDiv.style.inset =
-      "0";
-
-    transitionDiv.style.zIndex =
-      "10000000";
-
-    transitionDiv.style.display =
-      "flex";
-
-    transitionDiv.style.alignItems =
-      "center";
-
-    transitionDiv.style.justifyContent =
-      "center";
-
-    transitionDiv.style.background =
-      "#000";
-
-
-    document.body.appendChild(
-      transitionDiv
-    );
-
-
-    if (blackScreen) {
-      blackScreen.remove();
-    }
-
-
-    /*
-     * Load your EXISTING
-     * Startup_Transition.html
-     */
-
-    fetch(
-      "/Loader_Login/Startup_Transition.html"
-    )
-
-      .then(function (response) {
-
-        if (!response.ok) {
-
-          throw new Error(
-            "Startup transition returned HTTP " +
-            response.status
-          );
-
-        }
-
-        return response.text();
-
-      })
-
-
-      .then(function (html) {
-
-        transitionDiv.innerHTML =
-          html;
-
-
-        /*
-         * Let the existing transition
-         * play for 800ms.
-         */
-
-        setTimeout(
-          showLoginScreen,
-          800
-        );
-
-      })
-
-
-      .catch(function (error) {
-
-        console.error(
-          "Startup transition failed:",
-          error
-        );
-
-
-        /*
-         * If transition fails,
-         * still continue to login.
-         */
-
-        setTimeout(
-          showLoginScreen,
-          300
-        );
-
-      });
-
-  }
-
-
-  /* =======================================================
-     SHOW XP LOGIN
-     ======================================================= */
-
-  function showLoginScreen() {
-
-    const transitionDiv =
-      document.getElementById(
-        "transition-screen"
-      );
-
-
-    if (transitionDiv) {
-      transitionDiv.remove();
-    }
-
-
-    /*
-     * Show original login screen.
-     */
-
-    loginScreen.classList.remove(
-      "hidden"
-    );
-
-
-    /*
-     * NOW it is safe to use
-     * the original fade animation.
-     */
-
-    document.body.classList.add(
-      "fade-in-steps"
-    );
-
-
-    console.log(
-      "STARTUP: XP login screen shown."
-    );
-
-  }
-
-
-  /* =======================================================
-     BEGIN CMD
-     ======================================================= */
-
-  console.log(
-    "STARTUP: Command prompt started."
-  );
-
-
-  typeNextLine();
+  /* -----------------------------------------
+     START COMMAND PROMPT
+     ----------------------------------------- */
+
+  typeLine();
 
 });
 
 
+/* =========================================
+   LOGIN SCREEN
+   ========================================= */
 
-/* =========================================================
-   SWITCH USER
-   ========================================================= */
 
-function switchUserLogOn() {
+/*
+ * Switch user / log-on animation
+ */
 
-  localStorage.setItem(
-    "fromSwitchUser",
-    "1"
-  );
+function switchUserLogOn(userId) {
 
-  window.location.href =
-    "/Bureau/Bureau.html";
+  const user = document.getElementById(userId);
+
+  if (!user) {
+    return;
+  }
+
+
+  user.classList.add("selected");
+
+
+  setTimeout(() => {
+
+    loginAsGuest();
+
+  }, 500);
 }
 
 
-
-/* =========================================================
+/* =========================================
    GUEST LOGIN
-   ========================================================= */
-
-let hasLoggedInAsGuest = false;
-
+   ========================================= */
 
 function loginAsGuest() {
 
-  if (hasLoggedInAsGuest) {
+  const loginScreen = document.getElementById("login-screen");
+
+  if (!loginScreen) {
     return;
   }
 
 
-  hasLoggedInAsGuest = true;
+  /*
+   * Optional login animation.
+   */
+
+  loginScreen.classList.add("logging-in");
 
 
-  const leftSection =
-    document.getElementById(
-      "left-section"
-    );
+  /*
+   * Give the login screen a moment before
+   * continuing to the portfolio.
+   */
 
-  const rightText =
-    document.getElementById(
-      "right-text"
-    );
+  setTimeout(() => {
 
-  const leftPanel =
-    document.getElementById(
-      "left-panel"
-    );
+    /*
+     * If your existing project already has
+     * login functionality elsewhere, this
+     * function can be expanded there.
+     */
 
-  const userList =
-    document.getElementById(
-      "user-list"
-    );
-
-  const guestUser =
-    document.getElementById(
-      "guest-user"
-    );
-
-
-  if (
-    !leftSection ||
-    !rightText ||
-    !leftPanel ||
-    !userList ||
-    !guestUser
-  ) {
-
-    console.error(
-      "Required login elements are missing."
-    );
-
-    hasLoggedInAsGuest =
-      false;
-
-    return;
-  }
-
-
-  const guestSpan =
-    guestUser.querySelector(
-      "span"
-    );
-
-
-  leftPanel.innerHTML =
-    `<p>welcome</p>`;
-
-
-  leftPanel.style.paddingTop =
-    "18%";
-
-
-  const leftPanelP =
-    leftPanel.querySelector(
-      "p"
-    );
-
-
-  if (leftPanelP) {
-
-    Object.assign(
-      leftPanelP.style,
-      {
-
-        fontSize: "5rem",
-
-        fontFamily:
-          "Arial, sans-serif",
-
-        fontStyle:
-          "italic",
-
-        fontWeight:
-          "bold",
-
-        textShadow:
-          "2px 3px #3454b4"
-
-      }
-    );
-
-  }
-
-
-  if (guestSpan) {
-
-    guestSpan.insertAdjacentHTML(
-      "afterend",
-      `<p>Loading your personal settings...</p>`
-    );
-
-  }
-
-
-  userList.classList.add(
-    "is-padding-anim"
-  );
-
-
-  userList.style.animation =
-    "paddingTopLog 1s forwards";
-
-
-  setTimeout(function () {
-
-    userList.classList.remove(
-      "is-padding-anim"
-    );
-
-  }, 1000);
-
-
-  leftSection.style.display =
-    "none";
-
-
-  rightText.style.display =
-    "none";
-
-
-  guestUser.classList.remove(
-    "selected"
-  );
-
-
-  setTimeout(function () {
-
-    window.location.href =
-      "/Bureau/Bureau.html";
+    window.location.href = "/Bureau/Bureau.html";
 
   }, 1000);
 
 }
 
 
+/* =========================================
+   TURN OFF COMPUTER
+   ========================================= */
 
-/* =========================================================
-   LOGIN KEYBOARD / MOUSE CONTROLS
-   ========================================================= */
+function turnOffComputer() {
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+  /*
+   * Hide everything.
+   */
 
-    const userList =
-      document.getElementById(
-        "user-list"
-      );
+  const loginScreen =
+    document.getElementById("login-screen");
 
+  const loader =
+    document.getElementById("loader");
 
-    const users =
-      document.querySelectorAll(
-        ".user"
-      );
+  const gifScreen =
+    document.getElementById("preboot-gif");
 
+  const consoleScreen =
+    document.getElementById("preboot-console");
 
-    let selectedIndex =
-      null;
 
+  if (loginScreen) {
+    loginScreen.style.display = "none";
+  }
 
-    let hasArrowBeenUsed =
-      false;
+  if (loader) {
+    loader.style.display = "none";
+  }
 
+  if (gifScreen) {
+    gifScreen.style.display = "none";
+  }
 
+  if (consoleScreen) {
+    consoleScreen.style.display = "none";
+  }
 
-    /* =====================================================
-       USER SELECTION
-       ===================================================== */
 
-    function updateUserSelection(index) {
+  /*
+   * Black shutdown screen.
+   */
 
-      users.forEach(
-        function (user, i) {
+  document.body.style.background = "#000";
 
-          user.classList.toggle(
-            "selected",
-            i === index
-          );
+  document.body.innerHTML = "";
 
-        }
-      );
 
-    }
+  const shutdownScreen =
+    document.createElement("div");
 
 
-    updateUserSelection(
-      selectedIndex
-    );
+  shutdownScreen.style.position = "fixed";
+  shutdownScreen.style.inset = "0";
 
+  shutdownScreen.style.background = "#000";
 
+  shutdownScreen.style.color = "#aaa";
 
-    /* =====================================================
-       ENTER KEY
-       ===================================================== */
+  shutdownScreen.style.display = "flex";
 
-    document.addEventListener(
-      "keydown",
-      function (e) {
+  shutdownScreen.style.alignItems = "center";
 
-        const guestUser =
-          document.getElementById(
-            "guest-user"
-          );
+  shutdownScreen.style.justifyContent = "center";
 
+  shutdownScreen.style.fontFamily =
+    "Tahoma, Verdana, sans-serif";
 
-        if (!guestUser) {
-          return;
-        }
+  shutdownScreen.style.fontSize = "18px";
 
 
-        if (
-          e.key === "Enter" &&
-          guestUser.classList.contains(
-            "selected"
-          )
-        ) {
+  shutdownScreen.textContent =
+    "It is now safe to turn off your computer.";
 
-          if (
-            window.location.pathname.endsWith(
-              "/Start_Menu/Log_Off/Transition/Switch_User.html"
-            )
-          ) {
 
-            switchUserLogOn();
+  document.body.appendChild(shutdownScreen);
 
-          } else {
+}
 
-            loginAsGuest();
 
-          }
+/* =========================================
+   KEYBOARD SUPPORT
+   ========================================= */
 
-        }
+document.addEventListener("keydown", (event) => {
 
-      }
-    );
+  /*
+   * ENTER on the login screen
+   * logs in as the guest user.
+   */
 
+  if (event.key === "Enter") {
 
+    const loginScreen =
+      document.getElementById("login-screen");
 
-    /* =====================================================
-       ARROW KEYS
-       ===================================================== */
-
-    document.addEventListener(
-      "keydown",
-      function (e) {
-
-        if (
-          e.key === "ArrowDown" ||
-          e.key === "ArrowUp"
-        ) {
-
-          if (!hasArrowBeenUsed) {
-
-            selectedIndex = 0;
-
-            updateUserSelection(
-              selectedIndex
-            );
-
-            hasArrowBeenUsed =
-              true;
-
-
-            users.forEach(
-              function (user, i) {
-
-                if (
-                  i === selectedIndex
-                ) {
-
-                  user.style.opacity =
-                    "1";
-
-                  user.style.animation =
-                    "";
-
-                } else {
-
-                  user.style.opacity =
-                    "0.5";
-
-                  user.style.animation =
-                    "glitchOpacityReverse 0.4s steps(5, end)";
-
-                }
-
-              }
-            );
-
-
-            e.preventDefault();
-
-            return;
-          }
-
-        }
-
-
-        if (hasArrowBeenUsed) {
-
-          if (
-            e.key === "ArrowDown"
-          ) {
-
-            if (
-              selectedIndex <
-              users.length - 1
-            ) {
-
-              selectedIndex++;
-
-              updateUserSelection(
-                selectedIndex
-              );
-
-
-              users.forEach(
-                function (user, i) {
-
-                  if (
-                    i === selectedIndex
-                  ) {
-
-                    user.style.opacity =
-                      "1";
-
-                    user.style.animation =
-                      "";
-
-                  } else {
-
-                    user.style.opacity =
-                      "0.5";
-
-                    user.style.animation =
-                      "glitchOpacityReverse 0.4s steps(5, end)";
-
-                  }
-
-                }
-              );
-
-            }
-
-
-            e.preventDefault();
-
-          }
-
-
-          else if (
-            e.key === "ArrowUp"
-          ) {
-
-            if (
-              selectedIndex > 0
-            ) {
-
-              selectedIndex--;
-
-              updateUserSelection(
-                selectedIndex
-              );
-
-
-              users.forEach(
-                function (user, i) {
-
-                  if (
-                    i === selectedIndex
-                  ) {
-
-                    user.style.opacity =
-                      "1";
-
-                    user.style.animation =
-                      "";
-
-                  } else {
-
-                    user.style.opacity =
-                      "0.5";
-
-                    user.style.animation =
-                      "glitchOpacityReverse 0.4s steps(5, end)";
-
-                  }
-
-                }
-              );
-
-            }
-
-
-            e.preventDefault();
-
-          }
-
-        }
-
-      }
-    );
-
-
-
-    /* =====================================================
-       CHECK USER LIST
-       ===================================================== */
 
     if (
-      !userList ||
-      users.length === 0
+      loginScreen &&
+      !loginScreen.classList.contains("hidden")
     ) {
 
-      console.error(
-        "Element '#user-list' or '.user' missing!"
-      );
-
-      return;
-    }
-
-
-
-    /* =====================================================
-       USER LIST MOUSE ENTER
-       ===================================================== */
-
-    userList.addEventListener(
-      "mouseenter",
-      function () {
-
-        const hasSelected =
-          Array.from(users).some(
-            function (user) {
-
-              return user.classList.contains(
-                "selected"
-              );
-
-            }
-          );
-
-
-        if (hasSelected) {
-          return;
-        }
-
-
-        users.forEach(
-          function (user) {
-
-            user.style.opacity =
-              "0.5";
-
-            user.style.animation =
-              "glitchOpacityReverse 0.4s steps(5, end)";
-
-          }
-        );
-
-      }
-    );
-
-
-
-    /* =====================================================
-       USER LIST MOUSE LEAVE
-       ===================================================== */
-
-    userList.addEventListener(
-      "mouseleave",
-      function () {
-
-        const hasSelected =
-          Array.from(users).some(
-            function (user) {
-
-              return user.classList.contains(
-                "selected"
-              );
-
-            }
-          );
-
-
-        if (hasSelected) {
-          return;
-        }
-
-
-        users.forEach(
-          function (user) {
-
-            user.style.opacity =
-              "1";
-
-            user.style.animation =
-              "glitchOpacity 0.4s steps(5, end)";
-
-          }
-        );
-
-      }
-    );
-
-
-
-    /* =====================================================
-       INDIVIDUAL USER HOVER
-       ===================================================== */
-
-    users.forEach(
-      function (user) {
-
-        user.addEventListener(
-          "mouseenter",
-          function () {
-
-            user.style.opacity =
-              "1";
-
-            user.style.animation =
-              "";
-
-          }
-        );
-
-
-        user.addEventListener(
-          "mouseleave",
-          function () {
-
-            if (
-              user.classList.contains(
-                "selected"
-              )
-            ) {
-
-              user.style.opacity =
-                "1";
-
-              user.style.animation =
-                "";
-
-            } else {
-
-              if (
-                userList.matches(
-                  ":hover"
-                ) &&
-                !userList.classList.contains(
-                  "is-padding-anim"
-                )
-              ) {
-
-                user.style.opacity =
-                  "0.5";
-
-                user.style.animation =
-                  "glitchOpacityReverse 0.4s steps(5, end)";
-
-              }
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-
-
-    /* =====================================================
-       USER IMAGE BORDER
-       ===================================================== */
-
-    users.forEach(
-      function (user) {
-
-        const userimg =
-          user.querySelector(
-            "img"
-          );
-
-
-        if (userimg) {
-
-          user.addEventListener(
-            "mouseenter",
-            function () {
-
-              userimg.style.border =
-                "2px solid #bfa304";
-
-            }
-          );
-
-
-          user.addEventListener(
-            "mouseleave",
-            function () {
-
-              userimg.style.border =
-                "2px solid white";
-
-            }
-          );
-
-        }
-
-      }
-    );
-
-
-
-    /* =====================================================
-       GUEST MOUSE DOWN
-       ===================================================== */
-
-    const guestUser =
-      document.getElementById(
-        "guest-user"
-      );
-
-
-    if (guestUser) {
-
-      guestUser.addEventListener(
-        "mousedown",
-        function () {
-
-          const guestP =
-            guestUser.querySelector(
-              "p"
-            );
-
-
-          if (guestP) {
-
-            guestP.style.color =
-              "white";
-
-          }
-
-        }
-      );
+      loginAsGuest();
 
     }
-
-
-
-    /* =====================================================
-       USER MOUSE SELECTION
-       ===================================================== */
-
-    users.forEach(
-      function (user) {
-
-        user.addEventListener(
-          "mousedown",
-          function () {
-
-            users.forEach(
-              function (u) {
-
-                u.classList.remove(
-                  "selected"
-                );
-
-              }
-            );
-
-
-            this.classList.add(
-              "selected"
-            );
-
-          }
-        );
-
-
-        user.addEventListener(
-          "mouseup",
-          function () {
-
-            users.forEach(
-              function (u) {
-
-                u.classList.remove(
-                  "selected"
-                );
-
-              }
-            );
-
-
-            this.style.opacity =
-              "1";
-
-          }
-        );
-
-
-        document.addEventListener(
-          "click",
-          function () {
-
-            user.classList.remove(
-              "selected"
-            );
-
-            hasArrowBeenUsed =
-              false;
-
-            user.style.opacity =
-              "1";
-
-          }
-        );
-
-      }
-    );
 
   }
-);
+
+});
+
+
+/* =========================================
+   MOUSE SUPPORT
+   ========================================= */
+
+document.addEventListener("click", (event) => {
+
+  const user =
+    event.target.closest(".user");
+
+
+  if (!user) {
+    return;
+  }
+
+
+  if (user.id === "guest-user") {
+
+    loginAsGuest();
+
+  }
+
+});
