@@ -1,248 +1,446 @@
 /* =========================================================
-   PRE-BOOT SEQUENCE
-   COMMAND PROMPT
-   ↓
-   WINDOWS 95 GIF
-   ↓
-   WINDOWS XP BOOT
+   STARTUP SEQUENCE
+
+   1. Command prompt
+   2. Windows95Happyyay.gif
+   3. Existing Windows XP boot screen
+   4. Existing XP login screen
    ========================================================= */
 
 window.addEventListener("load", function () {
 
-  const prebootConsole = document.getElementById("preboot-console");
-  const consoleOutput = document.getElementById("console-output");
-  const prebootGif = document.getElementById("preboot-gif");
-  const loader = document.getElementById("loader");
-  const loginScreen = document.getElementById("login-screen");
+  const prebootConsole =
+    document.getElementById("preboot-console");
 
-  /*
-   * Hide the XP boot screen while the pre-boot sequence
-   * is running.
-   */
-  if (loader) {
-    loader.style.display = "none";
+  const consoleOutput =
+    document.getElementById("console-output");
+
+  const prebootGif =
+    document.getElementById("preboot-gif");
+
+  const loader =
+    document.getElementById("loader");
+
+  const loginScreen =
+    document.getElementById("login-screen");
+
+
+  /* =======================================================
+     CHECK REQUIRED ELEMENTS
+     ======================================================= */
+
+  if (
+    !prebootConsole ||
+    !consoleOutput ||
+    !prebootGif ||
+    !loader
+  ) {
+    console.error(
+      "Pre-boot elements are missing!"
+    );
+
+    return;
   }
 
-  /*
-   * Make sure the GIF is hidden initially.
-   */
-  if (prebootGif) {
-    prebootGif.classList.add("hidden");
-  }
 
-  /*
-   * Computer-looking startup messages.
-   */
+  /* =======================================================
+     INITIAL STATE
+
+     Hide XP boot.
+     Show command prompt.
+     Hide GIF.
+     ======================================================= */
+
+  loader.style.display = "none";
+
+  prebootConsole.style.display = "block";
+
+  prebootGif.classList.add("hidden");
+
+
+  /* =======================================================
+     COMMAND PROMPT TEXT
+     ======================================================= */
+
   const systemLines = [
+
     "RAUTATIENTORI BIOS v95.09",
+
     "",
+
     "Initializing system...",
+
     "",
-    "Checking CPU.................... OK",
-    "Checking memory................. OK",
-    "Checking display................ OK",
-    "Checking audio................. OK",
-    "Checking storage............... OK",
-    "Checking network............... OK",
+
+    "CPU.................... OK",
+    "RAM.................... OK",
+    "GPU.................... OK",
+    "AUDIO.................. OK",
+    "STORAGE................ OK",
+    "NETWORK................ OK",
+
     "",
-    "Detecting portfolio core........ OK",
-    "Detecting Windows services..... OK",
-    "Detecting Webamp engine......... OK",
+
+    "Checking Windows services...",
+    "Windows services....... OK",
+
     "",
-    "Loading user environment...",
-    "Loading system configuration...",
-    "Loading personal settings...",
+
+    "Loading portfolio core...",
+    "Portfolio core......... OK",
+
+    "Loading Webamp engine...",
+    "Webamp engine.......... OK",
+
+    "Loading user profile...",
+    "User profile........... OK",
+
     "",
+
+    "Starting system services...",
+    "System services........ OK",
+
+    "",
+
     "SYSTEM READY.",
+
     "",
-    "Starting Windows..."
+
+    "Starting Windows XP..."
+
   ];
 
-  /*
-   * Type the command-prompt lines one by one.
-   */
-  function runCommandPrompt() {
 
-    if (!prebootConsole || !consoleOutput) {
-      startGif();
+  /* =======================================================
+     TYPE COMMAND PROMPT
+     ======================================================= */
+
+  let currentLine = 0;
+
+  function showNextLine() {
+
+    if (
+      currentLine >=
+      systemLines.length
+    ) {
+
+      /*
+       * Finished typing.
+       * Wait a little before showing GIF.
+       */
+
+      setTimeout(() => {
+
+        startGif();
+
+      }, 800);
+
       return;
     }
 
-    let currentLine = 0;
 
-    function showNextLine() {
+    const line =
+      document.createElement("div");
 
-      if (currentLine >= systemLines.length) {
+    line.className =
+      "console-line";
 
-        /*
-         * Give the final "SYSTEM READY" / "Starting Windows..."
-         * line a tiny moment before moving on.
-         */
-        setTimeout(() => {
-          startGif();
-        }, 700);
+    line.textContent =
+      systemLines[currentLine];
 
-        return;
-      }
+    consoleOutput.appendChild(line);
 
-      const line = document.createElement("div");
+    currentLine++;
 
-      line.className = "console-line";
 
-      line.textContent = systemLines[currentLine];
+    /*
+     * Speed of command prompt.
+     * Smaller = faster.
+     */
 
-      consoleOutput.appendChild(line);
-
-      currentLine++;
-
-      /*
-       * Speed of the fake computer startup.
-       */
-      setTimeout(showNextLine, 110);
-    }
-
-    showNextLine();
+    setTimeout(
+      showNextLine,
+      120
+    );
   }
 
 
-  /* =========================================================
-     GIF
-     ========================================================= */
+  /* =======================================================
+     START GIF
+     ======================================================= */
 
   function startGif() {
 
-    if (prebootConsole) {
-      prebootConsole.classList.add("hidden");
-    }
+    /*
+     * Hide command prompt.
+     */
 
-    if (prebootGif) {
-      prebootGif.classList.remove("hidden");
-    }
+    prebootConsole.style.display =
+      "none";
+
 
     /*
-     * How long the GIF stays on screen.
+     * Show GIF.
+     */
+
+    prebootGif.classList.remove(
+      "hidden"
+    );
+
+
+    /*
+     * GIF duration.
      *
      * 3000 = 3 seconds.
-     *
-     * Change this number if you want it longer/shorter.
      */
+
     setTimeout(() => {
+
       startXPBoot();
+
     }, 3000);
   }
 
 
-  /* =========================================================
-     EXISTING WINDOWS XP BOOT
-     ========================================================= */
+  /* =======================================================
+     START EXISTING WINDOWS XP BOOT
+     ======================================================= */
 
   function startXPBoot() {
 
-    if (prebootGif) {
-      prebootGif.classList.add("hidden");
-    }
+    /*
+     * Hide GIF.
+     */
+
+    prebootGif.classList.add(
+      "hidden"
+    );
+
 
     /*
-     * NOW we reveal the existing XP boot screen.
+     * Show the ORIGINAL XP boot screen.
      */
-    if (loader) {
-      loader.style.display = "flex";
-    }
+
+    loader.style.display =
+      "flex";
+
 
     /*
-     * This is your original XP boot timing.
+     * Original XP boot duration.
+     *
+     * 4000 = 4 seconds.
      */
+
     setTimeout(() => {
 
-      if (!loader || !loginScreen) {
-        console.error("Missing #loader or #login-screen");
-        return;
-      }
-
-      loader.style.display = "none";
-
-      const blackScreen = document.createElement("div");
-
-      blackScreen.style.position = "fixed";
-      blackScreen.style.inset = "0";
-      blackScreen.style.background = "black";
-      blackScreen.style.zIndex = "10000";
-      blackScreen.style.opacity = "1";
-
-      document.body.appendChild(blackScreen);
-
-
-      setTimeout(() => {
-
-        const transitionDiv = document.createElement("div");
-
-        transitionDiv.id = "transition-screen";
-
-        transitionDiv.style.position = "fixed";
-        transitionDiv.style.inset = "0";
-        transitionDiv.style.zIndex = "10001";
-        transitionDiv.style.display = "flex";
-        transitionDiv.style.alignItems = "center";
-        transitionDiv.style.justifyContent = "center";
-        transitionDiv.style.background = "black";
-
-        document.body.appendChild(transitionDiv);
-
-        blackScreen.remove();
-
-
-        fetch("/Loader_Login/Startup_Transition.html")
-
-          .then((response) => response.text())
-
-          .then((html) => {
-
-            transitionDiv.innerHTML = html;
-
-            setTimeout(() => {
-
-              transitionDiv.remove();
-
-              loginScreen.classList.remove("hidden");
-
-            }, 800);
-
-          })
-
-          .catch((error) => {
-
-            console.error(
-              "Failed to load startup transition:",
-              error
-            );
-
-            transitionDiv.remove();
-
-            loginScreen.classList.remove("hidden");
-
-          });
-
-      }, 1000);
+      finishXPBoot();
 
     }, 4000);
   }
 
 
-  /*
-   * Start the whole sequence.
-   */
-  runCommandPrompt();
+  /* =======================================================
+     FINISH XP BOOT
+     ======================================================= */
+
+  function finishXPBoot() {
+
+    if (!loader || !loginScreen) {
+
+      console.error(
+        "Missing #loader or #login-screen"
+      );
+
+      return;
+    }
+
+
+    /*
+     * Hide XP boot.
+     */
+
+    loader.style.display =
+      "none";
+
+
+    /*
+     * Original black transition.
+     */
+
+    const blackScreen =
+      document.createElement("div");
+
+    blackScreen.style.position =
+      "fixed";
+
+    blackScreen.style.inset =
+      "0";
+
+    blackScreen.style.background =
+      "black";
+
+    blackScreen.style.zIndex =
+      "10000";
+
+    blackScreen.style.opacity =
+      "1";
+
+
+    document.body.appendChild(
+      blackScreen
+    );
+
+
+    /*
+     * Wait before Startup_Transition.
+     */
+
+    setTimeout(() => {
+
+      const transitionDiv =
+        document.createElement("div");
+
+
+      transitionDiv.id =
+        "transition-screen";
+
+
+      transitionDiv.style.position =
+        "fixed";
+
+      transitionDiv.style.inset =
+        "0";
+
+      transitionDiv.style.zIndex =
+        "10001";
+
+      transitionDiv.style.display =
+        "flex";
+
+      transitionDiv.style.alignItems =
+        "center";
+
+      transitionDiv.style.justifyContent =
+        "center";
+
+      transitionDiv.style.background =
+        "black";
+
+
+      document.body.appendChild(
+        transitionDiv
+      );
+
+
+      blackScreen.remove();
+
+
+      /*
+       * Load the existing startup
+       * transition.
+       */
+
+      fetch(
+        "/Loader_Login/Startup_Transition.html"
+      )
+
+        .then((response) => {
+
+          if (!response.ok) {
+
+            throw new Error(
+              "Startup transition returned " +
+              response.status
+            );
+
+          }
+
+          return response.text();
+
+        })
+
+
+        .then((html) => {
+
+          transitionDiv.innerHTML =
+            html;
+
+
+          /*
+           * Original transition
+           * duration.
+           */
+
+          setTimeout(() => {
+
+            transitionDiv.remove();
+
+
+            /*
+             * Show the ORIGINAL
+             * XP login screen.
+             */
+
+            loginScreen.classList.remove(
+              "hidden"
+            );
+
+          }, 800);
+
+        })
+
+
+        .catch((error) => {
+
+          console.error(
+            "Failed to load startup transition:",
+            error
+          );
+
+
+          transitionDiv.remove();
+
+
+          /*
+           * Still show login if
+           * transition fails.
+           */
+
+          loginScreen.classList.remove(
+            "hidden"
+          );
+
+        });
+
+    }, 1000);
+  }
+
+
+  /* =======================================================
+     START EVERYTHING
+     ======================================================= */
+
+  showNextLine();
 
 });
+
 
 
 /* =========================================================
    FADE-IN EFFECT
    ========================================================= */
 
-window.addEventListener("DOMContentLoaded", function () {
-  document.body.classList.add("fade-in-steps");
-});
+window.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    document.body.classList.add(
+      "fade-in-steps"
+    );
+
+  }
+);
+
 
 
 /* =========================================================
@@ -251,10 +449,15 @@ window.addEventListener("DOMContentLoaded", function () {
 
 function switchUserLogOn() {
 
-  localStorage.setItem("fromSwitchUser", "1");
+  localStorage.setItem(
+    "fromSwitchUser",
+    "1"
+  );
 
-  window.location.href = "/Bureau/Bureau.html";
+  window.location.href =
+    "/Bureau/Bureau.html";
 }
+
 
 
 /* =========================================================
@@ -263,17 +466,42 @@ function switchUserLogOn() {
 
 let hasLoggedInAsGuest = false;
 
+
 function loginAsGuest() {
 
-  if (hasLoggedInAsGuest) return;
+  if (hasLoggedInAsGuest) {
+    return;
+  }
+
 
   hasLoggedInAsGuest = true;
 
-  const leftSection = document.getElementById("left-section");
-  const rightText = document.getElementById("right-text");
-  const leftPanel = document.getElementById("left-panel");
-  const userList = document.getElementById("user-list");
-  const guestUser = document.getElementById("guest-user");
+
+  const leftSection =
+    document.getElementById(
+      "left-section"
+    );
+
+  const rightText =
+    document.getElementById(
+      "right-text"
+    );
+
+  const leftPanel =
+    document.getElementById(
+      "left-panel"
+    );
+
+  const userList =
+    document.getElementById(
+      "user-list"
+    );
+
+  const guestUser =
+    document.getElementById(
+      "guest-user"
+    );
+
 
   if (
     !leftSection ||
@@ -287,35 +515,58 @@ function loginAsGuest() {
       "Required login elements are missing."
     );
 
-    hasLoggedInAsGuest = false;
+    hasLoggedInAsGuest =
+      false;
 
     return;
   }
 
-  const guestSpan = guestUser.querySelector("span");
 
-  leftPanel.innerHTML = `<p>welcome</p>`;
+  const guestSpan =
+    guestUser.querySelector(
+      "span"
+    );
 
-  leftPanel.style.paddingTop = "18%";
 
-  const leftPanelP = leftPanel.querySelector("p");
+  leftPanel.innerHTML =
+    `<p>welcome</p>`;
+
+
+  leftPanel.style.paddingTop =
+    "18%";
+
+
+  const leftPanelP =
+    leftPanel.querySelector(
+      "p"
+    );
+
 
   if (leftPanelP) {
 
-    Object.assign(leftPanelP.style, {
+    Object.assign(
+      leftPanelP.style,
+      {
 
-      fontSize: "5rem",
+        fontSize: "5rem",
 
-      fontFamily: "Arial, sans-serif",
+        fontFamily:
+          "Arial, sans-serif",
 
-      fontStyle: "italic",
+        fontStyle:
+          "italic",
 
-      fontWeight: "bold",
+        fontWeight:
+          "bold",
 
-      textShadow: "2px 3px #3454b4",
+        textShadow:
+          "2px 3px #3454b4"
 
-    });
+      }
+    );
+
   }
+
 
   if (guestSpan) {
 
@@ -326,10 +577,15 @@ function loginAsGuest() {
 
   }
 
-  userList.classList.add("is-padding-anim");
+
+  userList.classList.add(
+    "is-padding-anim"
+  );
+
 
   userList.style.animation =
     "paddingTopLog 1s forwards";
+
 
   setTimeout(() => {
 
@@ -340,11 +596,17 @@ function loginAsGuest() {
   }, 1000);
 
 
-  leftSection.style.display = "none";
+  leftSection.style.display =
+    "none";
 
-  rightText.style.display = "none";
 
-  guestUser.classList.remove("selected");
+  rightText.style.display =
+    "none";
+
+
+  guestUser.classList.remove(
+    "selected"
+  );
 
 
   setTimeout(() => {
@@ -353,7 +615,9 @@ function loginAsGuest() {
       "/Bureau/Bureau.html";
 
   }, 1000);
+
 }
+
 
 
 /* =========================================================
@@ -365,50 +629,78 @@ document.addEventListener(
   function () {
 
     const userList =
-      document.getElementById("user-list");
+      document.getElementById(
+        "user-list"
+      );
+
 
     const users =
-      document.querySelectorAll(".user");
-
-    let selectedIndex = null;
-
-    let hasArrowBeenUsed = false;
+      document.querySelectorAll(
+        ".user"
+      );
 
 
-    function updateUserSelection(index) {
+    let selectedIndex =
+      null;
 
-      users.forEach((user, i) => {
 
-        user.classList.toggle(
-          "selected",
-          i === index
-        );
+    let hasArrowBeenUsed =
+      false;
 
-      });
+
+
+    /* =====================================================
+       USER SELECTION
+       ===================================================== */
+
+    function updateUserSelection(
+      index
+    ) {
+
+      users.forEach(
+        (user, i) => {
+
+          user.classList.toggle(
+            "selected",
+            i === index
+          );
+
+        }
+      );
 
     }
 
 
-    updateUserSelection(selectedIndex);
+    updateUserSelection(
+      selectedIndex
+    );
 
 
-    /* =============================================
+
+    /* =====================================================
        ENTER KEY
-       ============================================= */
+       ===================================================== */
 
     document.addEventListener(
       "keydown",
       function (e) {
 
         const guestUser =
-          document.getElementById("guest-user");
+          document.getElementById(
+            "guest-user"
+          );
 
-        if (!guestUser) return;
+
+        if (!guestUser) {
+          return;
+        }
 
 
         if (
           e.key === "Enter" &&
-          guestUser.classList.contains("selected")
+          guestUser.classList.contains(
+            "selected"
+          )
         ) {
 
           if (
@@ -431,9 +723,10 @@ document.addEventListener(
     );
 
 
-    /* =============================================
+
+    /* =====================================================
        ARROW KEYS
-       ============================================= */
+       ===================================================== */
 
     document.addEventListener(
       "keydown",
@@ -452,27 +745,35 @@ document.addEventListener(
               selectedIndex
             );
 
-            hasArrowBeenUsed = true;
+            hasArrowBeenUsed =
+              true;
 
 
-            users.forEach((user, i) => {
+            users.forEach(
+              (user, i) => {
 
-              if (i === selectedIndex) {
+                if (
+                  i === selectedIndex
+                ) {
 
-                user.style.opacity = "1";
+                  user.style.opacity =
+                    "1";
 
-                user.style.animation = "";
+                  user.style.animation =
+                    "";
 
-              } else {
+                } else {
 
-                user.style.opacity = "0.5";
+                  user.style.opacity =
+                    "0.5";
 
-                user.style.animation =
-                  "glitchOpacityReverse 0.4s steps(5, end)";
+                  user.style.animation =
+                    "glitchOpacityReverse 0.4s steps(5, end)";
+
+                }
 
               }
-
-            });
+            );
 
 
             e.preventDefault();
@@ -485,7 +786,9 @@ document.addEventListener(
 
         if (hasArrowBeenUsed) {
 
-          if (e.key === "ArrowDown") {
+          if (
+            e.key === "ArrowDown"
+          ) {
 
             if (
               selectedIndex <
@@ -499,35 +802,47 @@ document.addEventListener(
               );
 
 
-              users.forEach((user, i) => {
+              users.forEach(
+                (user, i) => {
 
-                if (i === selectedIndex) {
+                  if (
+                    i === selectedIndex
+                  ) {
 
-                  user.style.opacity = "1";
+                    user.style.opacity =
+                      "1";
 
-                  user.style.animation = "";
+                    user.style.animation =
+                      "";
 
-                } else {
+                  } else {
 
-                  user.style.opacity = "0.5";
+                    user.style.opacity =
+                      "0.5";
 
-                  user.style.animation =
-                    "glitchOpacityReverse 0.4s steps(5, end)";
+                    user.style.animation =
+                      "glitchOpacityReverse 0.4s steps(5, end)";
+
+                  }
 
                 }
-
-              });
+              );
 
             }
+
 
             e.preventDefault();
 
           }
 
 
-          else if (e.key === "ArrowUp") {
+          else if (
+            e.key === "ArrowUp"
+          ) {
 
-            if (selectedIndex > 0) {
+            if (
+              selectedIndex > 0
+            ) {
 
               selectedIndex--;
 
@@ -536,26 +851,34 @@ document.addEventListener(
               );
 
 
-              users.forEach((user, i) => {
+              users.forEach(
+                (user, i) => {
 
-                if (i === selectedIndex) {
+                  if (
+                    i === selectedIndex
+                  ) {
 
-                  user.style.opacity = "1";
+                    user.style.opacity =
+                      "1";
 
-                  user.style.animation = "";
+                    user.style.animation =
+                      "";
 
-                } else {
+                  } else {
 
-                  user.style.opacity = "0.5";
+                    user.style.opacity =
+                      "0.5";
 
-                  user.style.animation =
-                    "glitchOpacityReverse 0.4s steps(5, end)";
+                    user.style.animation =
+                      "glitchOpacityReverse 0.4s steps(5, end)";
+
+                  }
 
                 }
-
-              });
+              );
 
             }
+
 
             e.preventDefault();
 
@@ -567,9 +890,10 @@ document.addEventListener(
     );
 
 
-    /* =============================================
-       CHECK LOGIN ELEMENTS
-       ============================================= */
+
+    /* =====================================================
+       CHECK USER LIST
+       ===================================================== */
 
     if (
       !userList ||
@@ -584,9 +908,10 @@ document.addEventListener(
     }
 
 
-    /* =============================================
-       USER LIST HOVER
-       ============================================= */
+
+    /* =====================================================
+       USER LIST MOUSE ENTER
+       ===================================================== */
 
     userList.addEventListener(
       "mouseenter",
@@ -600,21 +925,32 @@ document.addEventListener(
               )
           );
 
-        if (hasSelected) return;
+
+        if (hasSelected) {
+          return;
+        }
 
 
-        users.forEach((user) => {
+        users.forEach(
+          (user) => {
 
-          user.style.opacity = "0.5";
+            user.style.opacity =
+              "0.5";
 
-          user.style.animation =
-            "glitchOpacityReverse 0.4s steps(5, end)";
+            user.style.animation =
+              "glitchOpacityReverse 0.4s steps(5, end)";
 
-        });
+          }
+        );
 
       }
     );
 
+
+
+    /* =====================================================
+       USER LIST MOUSE LEAVE
+       ===================================================== */
 
     userList.addEventListener(
       "mouseleave",
@@ -628,96 +964,45 @@ document.addEventListener(
               )
           );
 
-        if (hasSelected) return;
+
+        if (hasSelected) {
+          return;
+        }
 
 
-        users.forEach((user) => {
+        users.forEach(
+          (user) => {
 
-          user.style.opacity = "1";
+            user.style.opacity =
+              "1";
 
-          user.style.animation =
-            "glitchOpacity 0.4s steps(5, end)";
+            user.style.animation =
+              "glitchOpacity 0.4s steps(5, end)";
 
-        });
+          }
+        );
 
       }
     );
 
 
-    /* =============================================
+
+    /* =====================================================
        INDIVIDUAL USER HOVER
-       ============================================= */
+       ===================================================== */
 
-    users.forEach((user) => {
-
-      user.addEventListener(
-        "mouseenter",
-        function () {
-
-          user.style.opacity = "1";
-
-          user.style.animation = "";
-
-        }
-      );
-
-
-      user.addEventListener(
-        "mouseleave",
-        function () {
-
-          if (
-            user.classList.contains(
-              "selected"
-            )
-          ) {
-
-            user.style.opacity = "1";
-
-            user.style.animation = "";
-
-          } else {
-
-            if (
-              userList.matches(":hover") &&
-              !userList.classList.contains(
-                "is-padding-anim"
-              )
-            ) {
-
-              user.style.opacity = "0.5";
-
-              user.style.animation =
-                "glitchOpacityReverse 0.4s steps(5, end)";
-
-            }
-
-          }
-
-        }
-      );
-
-    });
-
-
-    /* =============================================
-       USER IMAGE BORDER
-       ============================================= */
-
-    users.forEach((user) => {
-
-      const userimg =
-        user.querySelector("img");
-
-
-      if (userimg) {
+    users.forEach(
+      (user) => {
 
         user.addEventListener(
           "mouseenter",
           function () {
 
-            userimg.style.border =
-              "2px solid #bfa304";
+            user.style.opacity =
+              "1";
+
+            user.style.animation =
+              "";
 
           }
         );
@@ -727,23 +1012,98 @@ document.addEventListener(
           "mouseleave",
           function () {
 
-            userimg.style.border =
-              "2px solid white";
+            if (
+              user.classList.contains(
+                "selected"
+              )
+            ) {
+
+              user.style.opacity =
+                "1";
+
+              user.style.animation =
+                "";
+
+            } else {
+
+              if (
+                userList.matches(
+                  ":hover"
+                ) &&
+                !userList.classList.contains(
+                  "is-padding-anim"
+                )
+              ) {
+
+                user.style.opacity =
+                  "0.5";
+
+                user.style.animation =
+                  "glitchOpacityReverse 0.4s steps(5, end)";
+
+              }
+
+            }
 
           }
         );
 
       }
+    );
 
-    });
 
 
-    /* =============================================
+    /* =====================================================
+       USER IMAGE BORDER
+       ===================================================== */
+
+    users.forEach(
+      (user) => {
+
+        const userimg =
+          user.querySelector(
+            "img"
+          );
+
+
+        if (userimg) {
+
+          user.addEventListener(
+            "mouseenter",
+            function () {
+
+              userimg.style.border =
+                "2px solid #bfa304";
+
+            }
+          );
+
+
+          user.addEventListener(
+            "mouseleave",
+            function () {
+
+              userimg.style.border =
+                "2px solid white";
+
+            }
+          );
+
+        }
+
+      }
+    );
+
+
+
+    /* =====================================================
        GUEST MOUSE DOWN
-       ============================================= */
+       ===================================================== */
 
     const guestUser =
-      document.getElementById("guest-user");
+      document.getElementById(
+        "guest-user"
+      );
 
 
     if (guestUser) {
@@ -753,7 +1113,9 @@ document.addEventListener(
         function () {
 
           const guestP =
-            guestUser.querySelector("p");
+            guestUser.querySelector(
+              "p"
+            );
 
 
           if (guestP) {
@@ -769,62 +1131,72 @@ document.addEventListener(
     }
 
 
-    /* =============================================
+
+    /* =====================================================
        USER MOUSE SELECTION
-       ============================================= */
+       ===================================================== */
 
-    users.forEach((user) => {
+    users.forEach(
+      (user) => {
 
-      user.addEventListener(
-        "mousedown",
-        function () {
+        user.addEventListener(
+          "mousedown",
+          function () {
 
-          users.forEach((u) =>
-            u.classList.remove(
+            users.forEach(
+              (u) =>
+                u.classList.remove(
+                  "selected"
+                )
+            );
+
+
+            this.classList.add(
               "selected"
-            )
-          );
+            );
 
-          this.classList.add(
-            "selected"
-          );
-
-        }
-      );
+          }
+        );
 
 
-      user.addEventListener(
-        "mouseup",
-        function () {
+        user.addEventListener(
+          "mouseup",
+          function () {
 
-          users.forEach((u) =>
-            u.classList.remove(
+            users.forEach(
+              (u) =>
+                u.classList.remove(
+                  "selected"
+                )
+            );
+
+
+            this.style.opacity =
+              "1";
+
+          }
+        );
+
+
+        document.addEventListener(
+          "click",
+          () => {
+
+            user.classList.remove(
               "selected"
-            )
-          );
+            );
 
-          this.style.opacity = "1";
+            hasArrowBeenUsed =
+              false;
 
-        }
-      );
+            user.style.opacity =
+              "1";
 
+          }
+        );
 
-      document.addEventListener(
-        "click",
-        () => {
-
-          user.classList.remove(
-            "selected"
-          );
-
-          hasArrowBeenUsed = false;
-
-          user.style.opacity = "1";
-
-        }
-      );
-
-    });
+      }
+    );
 
   }
 );
