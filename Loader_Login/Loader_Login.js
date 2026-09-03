@@ -1,20 +1,23 @@
-
 /*
  * =========================================================
  * WINDOWS XP PORTFOLIO STARTUP / LOGIN
  * =========================================================
  *
- * STARTUP FLOW:
+ * Startup flow:
  *
- *   1. CMD / COMPUTER INFORMATION
- *              ↓
- *   2. Windows95Happyyay.gif
- *              ↓
- *   3. WINDOWS XP LOGIN SCREEN
- *              ↓
- *   4. User logs in
- *              ↓
- *   5. Bureau.html / Desktop
+ *   WINDOWS XP LOADING SCREEN
+ *          ↓
+ *   LoadingScreenTransition / Startup_Transition.html
+ *          ↓
+ *   CMD / COMPUTER INFO SCREEN
+ *          ↓
+ *   Windows95Happyyay.gif
+ *          ↓
+ *   WINDOWS XP LOGIN SCREEN
+ *          ↓
+ *   User logs in
+ *          ↓
+ *   Bureau.html / Desktop
  *
  * IMPORTANT:
  * The desktop is NOT loaded during startup.
@@ -22,9 +25,11 @@
  */
 
 
-/* =========================================================
+/*
+ * =========================================================
  * STARTUP SEQUENCE
- * ========================================================= */
+ * =========================================================
+ */
 
 window.addEventListener("load", function () {
 
@@ -38,99 +43,250 @@ window.addEventListener("load", function () {
 
 
   /*
-   * Hide the original XP boot screen.
+   * =======================================================
+   * 1. LET THE ORIGINAL WINDOWS XP LOADING SCREEN RUN
+   * =======================================================
+   *
+   * The HTML #loader is the actual XP loading screen.
+   *
+   * Do NOT hide it immediately.
+   *
+   * This delay gives the original XP loading animation
+   * time to play before we move to the next stage.
    */
 
-  loader.style.display = "none";
+  setTimeout(() => {
+
+    /*
+     * Hide the original XP loading screen.
+     */
+
+    loader.style.display = "none";
 
 
-  /*
-   * =======================================================
-   * 1. CMD / COMPUTER STARTUP SCREEN
-   * =======================================================
-   */
+    /*
+     * =====================================================
+     * 2. EXISTING WINDOWS XP LOADING TRANSITION
+     * =====================================================
+     *
+     * This loads:
+     *
+     * /Loader_Login/Startup_Transition.html
+     *
+     * This is your existing LoadingScreenTransition.
+     */
 
-  const bootScreen = document.createElement("div");
+    const transitionScreen = document.createElement("div");
 
-  bootScreen.id = "custom-boot-screen";
+    transitionScreen.id = "transition-screen";
+
+    Object.assign(transitionScreen.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      background: "#000",
+      zIndex: "10000",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    });
+
+    document.body.appendChild(transitionScreen);
+
+
+    fetch("/Loader_Login/Startup_Transition.html")
+      .then((response) => {
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status}`
+          );
+        }
+
+        return response.text();
+
+      })
+      .then((html) => {
+
+        transitionScreen.innerHTML = html;
+
+
+        /*
+         * Give the existing XP transition time to play.
+         */
+
+        setTimeout(() => {
+
+          transitionScreen.remove();
+
+          showComputerInfoScreen();
+
+        }, 800);
+
+      })
+      .catch((error) => {
+
+        console.error(
+          "Failed to load startup transition:",
+          error
+        );
+
+
+        /*
+         * If the transition file fails,
+         * continue with the startup sequence.
+         */
+
+        transitionScreen.remove();
+
+        showComputerInfoScreen();
+
+      });
+
+  }, 4000);
+
+});
+
+
+/*
+ * =========================================================
+ * 3. CMD / COMPUTER INFORMATION SCREEN
+ * =========================================================
+ */
+
+function showComputerInfoScreen() {
+
+  const bootScreen =
+    document.createElement("div");
+
+  bootScreen.id =
+    "custom-boot-screen";
+
 
   Object.assign(bootScreen.style, {
+
     position: "fixed",
     inset: "0",
+
     width: "100%",
     height: "100%",
+
     background: "#000",
+
     color: "#c0c0c0",
-    zIndex: "10000",
-    fontFamily: "Consolas, 'Courier New', monospace",
+
+    zIndex: "10001",
+
+    fontFamily:
+      "Consolas, 'Courier New', monospace",
+
     fontSize: "15px",
+
     lineHeight: "1.5",
+
     padding: "28px",
+
     boxSizing: "border-box",
+
     overflow: "hidden",
+
     whiteSpace: "pre-wrap",
-    cursor: "default"
+
+    cursor: "default",
+
   });
+
 
   document.body.appendChild(bootScreen);
 
 
   /*
-   * Boot information.
+   * Computer information.
    */
 
   const bootLines = [
 
     "RAUTATIENTORI SYSTEM BIOS",
+
     "==========================================",
+
     "",
 
-    "Copyright (C) Rautatietori Industries",
+    "Copyright (C) Rautatientori Industries",
+
     "",
+
+    "SYSTEM INFORMATION",
+
+    "------------------------------------------",
 
     "CPU ................. DETECTED",
+
+    "CPU SPEED ........... 3.40 GHz",
+
     "MEMORY .............. 16384 MB OK",
-    "STORAGE ............. OK",
+
+    "STORAGE ............. 512 GB OK",
+
     "DISPLAY ............. OK",
+
     "AUDIO ............... OK",
+
     "NETWORK ............. OK",
 
     "",
 
     "Initializing hardware...",
+
     "",
 
     "[ OK ] CPU initialization",
+
     "[ OK ] Memory check",
+
     "[ OK ] Storage check",
+
     "[ OK ] Display adapter",
+
     "[ OK ] Audio device",
+
     "[ OK ] Network device",
+
     "[ OK ] System devices",
 
     "",
 
     "Checking system files...",
+
     "",
 
     "[ OK ] WINXP_CORE.SYS",
+
     "[ OK ] USER32.DLL",
+
     "[ OK ] KERNEL32.DLL",
+
     "[ OK ] SHELL32.DLL",
+
     "[ OK ] RAUTATIENTORI.EXE",
 
     "",
 
     "Loading Windows components...",
+
     "",
 
     "[ OK ] Login subsystem",
+
     "[ OK ] User profile system",
+
     "[ OK ] Desktop environment",
 
     "",
 
     "System initialization complete.",
+
     "",
 
     "Starting Windows..."
@@ -142,7 +298,7 @@ window.addEventListener("load", function () {
 
 
   /*
-   * Type each line onto the screen.
+   * Type each line.
    */
 
   function addBootLine() {
@@ -150,169 +306,179 @@ window.addEventListener("load", function () {
     if (lineIndex >= bootLines.length) {
 
       /*
-       * Boot finished.
+       * CMD screen finished.
        */
 
-      setTimeout(showGifScreen, 700);
+      setTimeout(() => {
+
+        showGifScreen();
+
+      }, 700);
 
       return;
+
     }
 
 
     bootScreen.textContent +=
       bootLines[lineIndex] + "\n";
 
+
     lineIndex++;
 
 
-    /*
-     * Slightly randomized terminal timing.
-     */
-
     const delay =
-      lineIndex < 4
+      lineIndex < 5
         ? 80
         : 45 + Math.random() * 90;
 
 
-    setTimeout(addBootLine, delay);
-  }
-
-
-
-  /*
-   * =======================================================
-   * 2. WINDOWS 95 HAPPY GIF
-   * =======================================================
-   */
-
-  function showGifScreen() {
-
-    /*
-     * Remove CMD screen.
-     */
-
-    bootScreen.remove();
-
-
-    /*
-     * Create black GIF screen.
-     */
-
-    const gifScreen = document.createElement("div");
-
-    gifScreen.id = "gif-startup-screen";
-
-    Object.assign(gifScreen.style, {
-
-      position: "fixed",
-
-      inset: "0",
-
-      width: "100%",
-      height: "100%",
-
-      background: "#000",
-
-      zIndex: "10001",
-
-      display: "flex",
-
-      alignItems: "center",
-
-      justifyContent: "center",
-
-      opacity: "1"
-
-    });
-
-
-    /*
-     * Create GIF.
-     */
-
-    const gif = document.createElement("img");
-
-    gif.src =
-      "/Assets/Windows95Happyyay.gif";
-
-    gif.alt =
-      "Windows startup animation";
-
-
-    Object.assign(gif.style, {
-
-      display: "block",
-
-      maxWidth: "100%",
-      maxHeight: "100%",
-
-      width: "auto",
-      height: "auto",
-
-      objectFit: "contain"
-
-    });
-
-
-    gifScreen.appendChild(gif);
-
-    document.body.appendChild(gifScreen);
-
-
-    /*
-     * =====================================================
-     * GIF DISPLAY TIME
-     * =====================================================
-     *
-     * 3000 = 3 seconds
-     */
-
-    setTimeout(function () {
-
-      /*
-       * Fade GIF away.
-       */
-
-      gifScreen.style.transition =
-        "opacity 500ms ease";
-
-      gifScreen.style.opacity = "0";
-
-
-      /*
-       * After fade:
-       * SHOW LOGIN SCREEN.
-       *
-       * DO NOT redirect to Bureau.html here.
-       */
-
-      setTimeout(function () {
-
-        gifScreen.remove();
-
-        loginScreen.classList.remove("hidden");
-
-      }, 500);
-
-    }, 3000);
+    setTimeout(
+      addBootLine,
+      delay
+    );
 
   }
 
-
-  /*
-   * Begin CMD startup.
-   */
 
   addBootLine();
 
-});
+}
 
 
 
-/* =========================================================
+/*
+ * =========================================================
+ * 4. WINDOWS95HAPPYYAY.GIF
+ * =========================================================
+ */
+
+function showGifScreen() {
+
+  const gifScreen =
+    document.createElement("div");
+
+
+  gifScreen.id =
+    "gif-startup-screen";
+
+
+  Object.assign(gifScreen.style, {
+
+    position: "fixed",
+
+    inset: "0",
+
+    width: "100%",
+
+    height: "100%",
+
+    background: "#000",
+
+    zIndex: "10002",
+
+    display: "flex",
+
+    alignItems: "center",
+
+    justifyContent: "center",
+
+    opacity: "1",
+
+  });
+
+
+  const gif =
+    document.createElement("img");
+
+
+  gif.src =
+    "/Assets/Windows95Happyyay.gif";
+
+
+  gif.alt =
+    "Windows startup animation";
+
+
+  Object.assign(gif.style, {
+
+    display: "block",
+
+    maxWidth: "100%",
+
+    maxHeight: "100%",
+
+    width: "auto",
+
+    height: "auto",
+
+    objectFit: "contain",
+
+  });
+
+
+  gifScreen.appendChild(gif);
+
+  document.body.appendChild(gifScreen);
+
+
+  /*
+   * Keep the GIF visible for 3 seconds.
+   */
+
+  setTimeout(() => {
+
+    gifScreen.style.transition =
+      "opacity 500ms ease";
+
+    gifScreen.style.opacity = "0";
+
+
+    /*
+     * Reveal the LOGIN SCREEN only after
+     * the GIF has faded away.
+     */
+
+    setTimeout(() => {
+
+      gifScreen.remove();
+
+
+      /*
+       * IMPORTANT:
+       *
+       * This is the XP LOGIN SCREEN.
+       *
+       * We do NOT go to Bureau.html here.
+       */
+
+      const loginScreen =
+        document.getElementById(
+          "login-screen"
+        );
+
+
+      if (loginScreen) {
+
+        loginScreen.classList.remove(
+          "hidden"
+        );
+
+      }
+
+    }, 500);
+
+  }, 3000);
+
+}
+
+
+
+/*
+ * =========================================================
  * PAGE FADE
- * ========================================================= */
+ * =========================================================
+ */
 
 window.addEventListener(
   "DOMContentLoaded",
@@ -327,9 +493,11 @@ window.addEventListener(
 
 
 
-/* =========================================================
+/*
+ * =========================================================
  * SWITCH USER
- * ========================================================= */
+ * =========================================================
+ */
 
 function switchUserLogOn() {
 
@@ -338,58 +506,62 @@ function switchUserLogOn() {
     "1"
   );
 
+
   window.location.href =
     "/Bureau/Bureau.html";
+
 }
 
 
 
-/* =========================================================
+/*
+ * =========================================================
  * LOGIN STATE
- * ========================================================= */
+ * =========================================================
+ */
 
 let hasLoggedInAsGuest = false;
 
 
 
-/* =========================================================
+/*
+ * =========================================================
  * LOGIN AS GUEST
- * ========================================================= */
+ * =========================================================
+ */
 
 function loginAsGuest() {
-
-  /*
-   * Prevent multiple login attempts.
-   */
 
   if (hasLoggedInAsGuest) return;
 
   hasLoggedInAsGuest = true;
 
 
-  /*
-   * Get login elements.
-   */
-
   const leftSection =
-    document.getElementById("left-section");
+    document.getElementById(
+      "left-section"
+    );
 
   const rightText =
-    document.getElementById("right-text");
+    document.getElementById(
+      "right-text"
+    );
 
   const leftPanel =
-    document.getElementById("left-panel");
+    document.getElementById(
+      "left-panel"
+    );
 
   const userList =
-    document.getElementById("user-list");
+    document.getElementById(
+      "user-list"
+    );
 
   const guestUser =
-    document.getElementById("guest-user");
+    document.getElementById(
+      "guest-user"
+    );
 
-
-  /*
-   * Verify elements.
-   */
 
   if (
     !leftSection ||
@@ -406,49 +578,54 @@ function loginAsGuest() {
     hasLoggedInAsGuest = false;
 
     return;
+
   }
 
 
-  /*
-   * Get username.
-   */
-
   const guestSpan =
-    guestUser.querySelector("span");
+    guestUser.querySelector(
+      "span"
+    );
 
 
   /*
-   * Change left panel to welcome.
+   * Change the left panel.
    */
 
   leftPanel.innerHTML =
     `<p>welcome</p>`;
+
 
   leftPanel.style.paddingTop =
     "18%";
 
 
   const leftPanelP =
-    leftPanel.querySelector("p");
+    leftPanel.querySelector(
+      "p"
+    );
 
 
   if (leftPanelP) {
 
-    Object.assign(leftPanelP.style, {
+    Object.assign(
+      leftPanelP.style,
+      {
 
-      fontSize: "5rem",
+        fontSize: "5rem",
 
-      fontFamily:
-        "Arial, sans-serif",
+        fontFamily:
+          "Arial, sans-serif",
 
-      fontStyle: "italic",
+        fontStyle: "italic",
 
-      fontWeight: "bold",
+        fontWeight: "bold",
 
-      textShadow:
-        "2px 3px #3454b4"
+        textShadow:
+          "2px 3px #3454b4",
 
-    });
+      }
+    );
 
   }
 
@@ -475,11 +652,12 @@ function loginAsGuest() {
     "is-padding-anim"
   );
 
+
   userList.style.animation =
     "paddingTopLog 1s forwards";
 
 
-  setTimeout(function () {
+  setTimeout(() => {
 
     userList.classList.remove(
       "is-padding-anim"
@@ -495,13 +673,10 @@ function loginAsGuest() {
   leftSection.style.display =
     "none";
 
+
   rightText.style.display =
     "none";
 
-
-  /*
-   * Remove selection.
-   */
 
   guestUser.classList.remove(
     "selected"
@@ -513,11 +688,10 @@ function loginAsGuest() {
    * ACTUAL LOGIN
    * =======================================================
    *
-   * This is the ONLY place in the startup flow
-   * where the desktop is entered.
+   * ONLY HERE does the desktop load.
    */
 
-  setTimeout(function () {
+  setTimeout(() => {
 
     window.location.href =
       "/Bureau/Bureau.html";
@@ -528,19 +702,26 @@ function loginAsGuest() {
 
 
 
-/* =========================================================
+/*
+ * =========================================================
  * LOGIN SCREEN CONTROLS
- * ========================================================= */
+ * =========================================================
+ */
 
 document.addEventListener(
   "DOMContentLoaded",
   function () {
 
     const userList =
-      document.getElementById("user-list");
+      document.getElementById(
+        "user-list"
+      );
+
 
     const users =
-      document.querySelectorAll(".user");
+      document.querySelectorAll(
+        ".user"
+      );
 
 
     let selectedIndex = null;
@@ -549,20 +730,26 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * UPDATE USER SELECTION
-     * ===================================================== */
+     * =====================================================
+     */
 
-    function updateUserSelection(index) {
+    function updateUserSelection(
+      index
+    ) {
 
-      users.forEach(function (user, i) {
+      users.forEach(
+        (user, i) => {
 
-        user.classList.toggle(
-          "selected",
-          i === index
-        );
+          user.classList.toggle(
+            "selected",
+            i === index
+          );
 
-      });
+        }
+      );
 
     }
 
@@ -573,9 +760,11 @@ document.addEventListener(
 
 
 
-    /* =====================================================
-     * ENTER = LOGIN
-     * ===================================================== */
+    /*
+     * =====================================================
+     * ENTER KEY
+     * =====================================================
+     */
 
     document.addEventListener(
       "keydown",
@@ -597,10 +786,6 @@ document.addEventListener(
           )
         ) {
 
-          /*
-           * Switch User page.
-           */
-
           if (
             window.location.pathname.endsWith(
               "/Start_Menu/Log_Off/Transition/Switch_User.html"
@@ -609,13 +794,7 @@ document.addEventListener(
 
             switchUserLogOn();
 
-          }
-
-          /*
-           * Normal login.
-           */
-
-          else {
+          } else {
 
             loginAsGuest();
 
@@ -628,17 +807,15 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * ARROW KEY NAVIGATION
-     * ===================================================== */
+     * =====================================================
+     */
 
     document.addEventListener(
       "keydown",
       function (e) {
-
-        /*
-         * First arrow press selects first user.
-         */
 
         if (
           e.key === "ArrowDown" ||
@@ -657,7 +834,7 @@ document.addEventListener(
 
 
             users.forEach(
-              function (user, i) {
+              (user, i) => {
 
                 if (
                   i === selectedIndex
@@ -669,9 +846,7 @@ document.addEventListener(
                   user.style.animation =
                     "";
 
-                }
-
-                else {
+                } else {
 
                   user.style.opacity =
                     "0.5";
@@ -688,23 +863,21 @@ document.addEventListener(
             e.preventDefault();
 
             return;
+
           }
 
         }
 
 
-        /*
-         * Arrow navigation after
-         * first selection.
-         */
-
         if (hasArrowBeenUsed) {
 
           /*
-           * Arrow Down.
+           * DOWN
            */
 
-          if (e.key === "ArrowDown") {
+          if (
+            e.key === "ArrowDown"
+          ) {
 
             if (
               selectedIndex <
@@ -719,7 +892,7 @@ document.addEventListener(
 
 
               users.forEach(
-                function (user, i) {
+                (user, i) => {
 
                   if (
                     i === selectedIndex
@@ -731,9 +904,7 @@ document.addEventListener(
                     user.style.animation =
                       "";
 
-                  }
-
-                  else {
+                  } else {
 
                     user.style.opacity =
                       "0.5";
@@ -755,7 +926,7 @@ document.addEventListener(
 
 
           /*
-           * Arrow Up.
+           * UP
            */
 
           else if (
@@ -774,7 +945,7 @@ document.addEventListener(
 
 
               users.forEach(
-                function (user, i) {
+                (user, i) => {
 
                   if (
                     i === selectedIndex
@@ -786,9 +957,7 @@ document.addEventListener(
                     user.style.animation =
                       "";
 
-                  }
-
-                  else {
+                  } else {
 
                     user.style.opacity =
                       "0.5";
@@ -815,9 +984,11 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * USER LIST CHECK
-     * ===================================================== */
+     * =====================================================
+     */
 
     if (
       !userList ||
@@ -834,9 +1005,11 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * USER LIST MOUSE ENTER
-     * ===================================================== */
+     * =====================================================
+     */
 
     userList.addEventListener(
       "mouseenter",
@@ -844,13 +1017,10 @@ document.addEventListener(
 
         const hasSelected =
           Array.from(users).some(
-            function (user) {
-
-              return user.classList.contains(
+            (user) =>
+              user.classList.contains(
                 "selected"
-              );
-
-            }
+              )
           );
 
 
@@ -858,7 +1028,7 @@ document.addEventListener(
 
 
         users.forEach(
-          function (user) {
+          (user) => {
 
             user.style.opacity =
               "0.5";
@@ -874,9 +1044,11 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * USER LIST MOUSE LEAVE
-     * ===================================================== */
+     * =====================================================
+     */
 
     userList.addEventListener(
       "mouseleave",
@@ -884,13 +1056,10 @@ document.addEventListener(
 
         const hasSelected =
           Array.from(users).some(
-            function (user) {
-
-              return user.classList.contains(
+            (user) =>
+              user.classList.contains(
                 "selected"
-              );
-
-            }
+              )
           );
 
 
@@ -898,7 +1067,7 @@ document.addEventListener(
 
 
         users.forEach(
-          function (user) {
+          (user) => {
 
             user.style.opacity =
               "1";
@@ -914,12 +1083,14 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * INDIVIDUAL USER HOVER
-     * ===================================================== */
+     * =====================================================
+     */
 
     users.forEach(
-      function (user) {
+      (user) => {
 
         user.addEventListener(
           "mouseenter",
@@ -951,12 +1122,12 @@ document.addEventListener(
               user.style.animation =
                 "";
 
-            }
-
-            else {
+            } else {
 
               if (
-                userList.matches(":hover") &&
+                userList.matches(
+                  ":hover"
+                ) &&
                 !userList.classList.contains(
                   "is-padding-anim"
                 )
@@ -980,15 +1151,19 @@ document.addEventListener(
 
 
 
-    /* =====================================================
-     * USER IMAGE HIGHLIGHT
-     * ===================================================== */
+    /*
+     * =====================================================
+     * USER IMAGE BORDER
+     * =====================================================
+     */
 
     users.forEach(
-      function (user) {
+      (user) => {
 
         const userimg =
-          user.querySelector("img");
+          user.querySelector(
+            "img"
+          );
 
 
         if (userimg) {
@@ -1021,9 +1196,11 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * MOUSE DOWN TEXT COLOR
-     * ===================================================== */
+     * =====================================================
+     */
 
     const guestUser =
       document.getElementById(
@@ -1038,7 +1215,9 @@ document.addEventListener(
         function () {
 
           const guestP =
-            guestUser.querySelector("p");
+            guestUser.querySelector(
+              "p"
+            );
 
 
           if (guestP) {
@@ -1055,29 +1234,24 @@ document.addEventListener(
 
 
 
-    /* =====================================================
+    /*
+     * =====================================================
      * MOUSE SELECTION
-     * ===================================================== */
+     * =====================================================
+     */
 
     users.forEach(
-      function (user) {
-
-        /*
-         * Mouse down selects user.
-         */
+      (user) => {
 
         user.addEventListener(
           "mousedown",
           function () {
 
             users.forEach(
-              function (u) {
-
+              (u) =>
                 u.classList.remove(
                   "selected"
-                );
-
-              }
+                )
             );
 
 
@@ -1089,22 +1263,15 @@ document.addEventListener(
         );
 
 
-        /*
-         * Mouse up clears selection styling.
-         */
-
         user.addEventListener(
           "mouseup",
           function () {
 
             users.forEach(
-              function (u) {
-
+              (u) =>
                 u.classList.remove(
                   "selected"
-                );
-
-              }
+                )
             );
 
 
@@ -1115,21 +1282,15 @@ document.addEventListener(
         );
 
 
-        /*
-         * Clicking elsewhere resets
-         * the selection state.
-         */
-
         document.addEventListener(
           "click",
-          function () {
+          () => {
 
             user.classList.remove(
               "selected"
             );
 
-            hasArrowBeenUsed =
-              false;
+            hasArrowBeenUsed = false;
 
             user.style.opacity =
               "1";
@@ -1142,4 +1303,3 @@ document.addEventListener(
 
   }
 );
-
