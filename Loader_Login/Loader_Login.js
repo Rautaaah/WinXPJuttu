@@ -95,7 +95,7 @@ function showComputerInfoScreen(loader) {
 
 // ==================================================
 // FULL-SCREEN GIF
-// This replaces the separate spinning-screen stage.
+// This takes the job of the NEW spinning screen.
 // ==================================================
 
 function showGifScreenBeforeLoader(loader) {
@@ -130,6 +130,8 @@ function showGifScreenBeforeLoader(loader) {
     position: "absolute",
     top: "0",
     left: "0",
+    right: "0",
+    bottom: "0",
     width: "100vw",
     height: "100vh",
     margin: "0",
@@ -143,8 +145,8 @@ function showGifScreenBeforeLoader(loader) {
   document.body.appendChild(gifScreen);
 
   /*
-   * Let the GIF play first.
-   * Then remove it and reveal the ORIGINAL #loader.
+   * Let the FULL-SCREEN GIF play first.
+   * Then reveal the ORIGINAL #loader.
    */
   setTimeout(() => {
     gifScreen.style.transition = "opacity 500ms ease";
@@ -155,6 +157,7 @@ function showGifScreenBeforeLoader(loader) {
 
       // GIF → ORIGINAL #loader
       showExistingLoader(loader);
+
     }, 500);
 
   }, 3000);
@@ -163,11 +166,11 @@ function showGifScreenBeforeLoader(loader) {
 
 // ==================================================
 // ORIGINAL LOADER
-// DO NOT CREATE A NEW LOADER
+// KEEP #loader FROM index.html
 // ==================================================
 
 function showExistingLoader(loader) {
-  // This is the original #loader from index.html.
+  // This is the ORIGINAL #loader.
   loader.style.display = "flex";
   loader.style.opacity = "1";
 
@@ -326,6 +329,8 @@ function showGifScreen(blackOverlay) {
     position: "absolute",
     top: "0",
     left: "0",
+    right: "0",
+    bottom: "0",
     width: "100vw",
     height: "100vh",
     margin: "0",
