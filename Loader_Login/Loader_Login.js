@@ -10,18 +10,17 @@
  *   2. WINDOWS XP SPINNING LOADING SCREEN
  *          ↓
  *   3. WINDOWS XP LoadingScreenTransition
- *      / Startup_Transition.html
  *          ↓
- *   4. Windows95Happyyay.gif
+ *   4. BLACK FADE-IN
  *          ↓
- *   5. WINDOWS XP LOGIN SCREEN
+ *   5. Windows95Happyyay.gif
  *          ↓
- *   6. USER LOGS IN
+ *   6. WINDOWS XP LOGIN SCREEN
  *          ↓
- *   7. Bureau.html / DESKTOP
+ *   7. USER LOGS IN
+ *          ↓
+ *   8. DESKTOP
  *
- * IMPORTANT:
- * The desktop is NOT loaded during startup.
  * =========================================================
  */
 
@@ -43,10 +42,8 @@ window.addEventListener("load", function () {
   }
 
   /*
-   * FIRST:
-   * Show the BIOS / computer information screen.
+   * 1. BIOS FIRST
    */
-
   showComputerInfoScreen(loader);
 
 });
@@ -84,9 +81,7 @@ function showComputerInfoScreen(loader) {
 
   document.body.appendChild(bootScreen);
 
-
   const bootLines = [
-
     "RAUTATIENTORI SYSTEM BIOS",
     "==========================================",
     "",
@@ -130,22 +125,19 @@ function showComputerInfoScreen(loader) {
     "System initialization complete.",
     "",
     "Starting Windows..."
-
   ];
 
-
   let lineIndex = 0;
-
 
   function addBootLine() {
 
     if (lineIndex >= bootLines.length) {
 
       /*
-       * BIOS finished.
+       * BIOS FINISHED.
        *
-       * Now start the REAL Windows XP
-       * loading screen.
+       * Now remove BIOS and reveal
+       * the EXISTING Windows XP spinning loader.
        */
 
       setTimeout(() => {
@@ -159,108 +151,74 @@ function showComputerInfoScreen(loader) {
       return;
     }
 
-
     bootScreen.textContent +=
       bootLines[lineIndex] + "\n";
 
-
     lineIndex++;
-
 
     const delay =
       lineIndex < 5
         ? 80
         : 45 + Math.random() * 90;
 
-
-    setTimeout(
-      addBootLine,
-      delay
-    );
-
+    setTimeout(addBootLine, delay);
   }
 
-
   addBootLine();
-
 }
-
 
 
 /*
  * =========================================================
- * 2. WINDOWS XP SPINNING LOADING SCREEN
+ * 2. WINDOWS XP SPINNING / LOADING SCREEN
  * =========================================================
  *
- * This uses the EXISTING #loader from index.html.
- *
- * It contains:
- *
- *   Windows XP logo
- *   Progress bar
- *   Microsoft logo
- *   Copyright
- *
- * We do NOT recreate it.
- * We simply show the existing loader.
+ * This uses the existing #loader from index.html.
  * =========================================================
  */
 
 function showWindowsXPLoader(loader) {
 
   /*
-   * Make sure the XP loading screen is visible.
+   * Make sure the original XP loader is visible.
    */
 
   loader.style.display = "";
-
-
-  /*
-   * Make sure it is above everything else.
-   */
-
   loader.style.position = "fixed";
   loader.style.inset = "0";
   loader.style.zIndex = "10000";
 
-
   /*
-   * Let the XP loading screen run.
-   *
-   * Change 4000 if you want it longer/shorter.
+   * Let the XP spinning screen play.
    */
 
   setTimeout(() => {
 
     /*
-     * Hide the XP loading screen.
+     * XP spinning screen finished.
      */
 
     loader.style.display = "none";
 
-
     /*
-     * Continue to the XP transition.
+     * 3. Go to the XP LoadingScreenTransition.
      */
 
     showLoadingScreenTransition();
 
   }, 4000);
-
 }
-
 
 
 /*
  * =========================================================
- * 3. WINDOWS XP LOADING SCREEN TRANSITION
+ * 3. WINDOWS XP LoadingScreenTransition
  * =========================================================
  *
  * Existing file:
  *
  * /Loader_Login/Startup_Transition.html
  *
- * This is shown AFTER the XP spinning/loading screen.
  * =========================================================
  */
 
@@ -269,71 +227,75 @@ function showLoadingScreenTransition() {
   const transitionScreen =
     document.createElement("div");
 
-
   transitionScreen.id =
     "transition-screen";
 
+  Object.assign(transitionScreen.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    background: "#000",
+    zIndex: "10001",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: "1"
+  });
 
-  Object.assign(
-    transitionScreen.style,
-    {
-      position: "fixed",
-      inset: "0",
-      width: "100%",
-      height: "100%",
-      background: "#000",
-      zIndex: "10001",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
-  );
+  document.body.appendChild(transitionScreen);
 
-
-  document.body.appendChild(
-    transitionScreen
-  );
-
-
-  fetch(
-    "/Loader_Login/Startup_Transition.html"
-  )
-
+  fetch("/Loader_Login/Startup_Transition.html")
     .then((response) => {
 
       if (!response.ok) {
-
         throw new Error(
           `HTTP ${response.status}`
         );
-
       }
 
       return response.text();
 
     })
-
     .then((html) => {
 
-      transitionScreen.innerHTML =
-        html;
-
+      transitionScreen.innerHTML = html;
 
       /*
-       * Let the existing transition
-       * play before continuing.
+       * Allow the LoadingScreenTransition
+       * to play before fading to black.
        */
 
       setTimeout(() => {
 
-        transitionScreen.remove();
+        /*
+         * DO NOT immediately remove it.
+         *
+         * First perform the BLACK FADE-IN.
+         */
 
-        showGifScreen();
+        transitionScreen.style.transition =
+          "opacity 700ms ease";
+
+        transitionScreen.style.opacity =
+          "0";
+
+        /*
+         * Once the transition has completely
+         * faded to black, continue to the GIF.
+         */
+
+        setTimeout(() => {
+
+          transitionScreen.remove();
+
+          showBlackFadeIn();
+
+        }, 700);
 
       }, 800);
 
     })
-
     .catch((error) => {
 
       console.error(
@@ -341,25 +303,108 @@ function showLoadingScreenTransition() {
         error
       );
 
-
       /*
-       * Don't get stuck if the transition
-       * file cannot be loaded.
+       * Even if the transition fails,
+       * keep the black fade sequence.
        */
 
-      transitionScreen.remove();
+      transitionScreen.style.transition =
+        "opacity 700ms ease";
 
-      showGifScreen();
+      transitionScreen.style.opacity =
+        "0";
+
+      setTimeout(() => {
+
+        transitionScreen.remove();
+
+        showBlackFadeIn();
+
+      }, 700);
 
     });
-
 }
-
 
 
 /*
  * =========================================================
- * 4. WINDOWS95HAPPYYAY.GIF
+ * 4. BLACK FADE-IN
+ * =========================================================
+ *
+ * THIS IS THE BLACK FADE THAT WAS MISSING.
+ *
+ * The screen starts completely black and then
+ * fades into the Windows 95 GIF.
+ * =========================================================
+ */
+
+function showBlackFadeIn() {
+
+  const blackScreen =
+    document.createElement("div");
+
+  blackScreen.id =
+    "black-fade-screen";
+
+  Object.assign(blackScreen.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    background: "#000",
+    zIndex: "10002",
+    opacity: "1",
+    transition: "opacity 1000ms ease",
+    pointerEvents: "none"
+  });
+
+  document.body.appendChild(blackScreen);
+
+  /*
+   * Small pause while completely black.
+   */
+
+  setTimeout(() => {
+
+    /*
+     * Now reveal the GIF underneath.
+     */
+
+    showGifScreen();
+
+    /*
+     * Fade the black layer away.
+     */
+
+    requestAnimationFrame(() => {
+
+      requestAnimationFrame(() => {
+
+        blackScreen.style.opacity =
+          "0";
+
+      });
+
+    });
+
+    /*
+     * Remove the black layer after
+     * the fade has completed.
+     */
+
+    setTimeout(() => {
+
+      blackScreen.remove();
+
+    }, 1000);
+
+  }, 250);
+}
+
+
+/*
+ * =========================================================
+ * 5. WINDOWS95HAPPYYAY.GIF
  * =========================================================
  */
 
@@ -368,62 +413,51 @@ function showGifScreen() {
   const gifScreen =
     document.createElement("div");
 
-
   gifScreen.id =
     "gif-startup-screen";
 
-
-  Object.assign(
-    gifScreen.style,
-    {
-      position: "fixed",
-      inset: "0",
-      width: "100%",
-      height: "100%",
-      background: "#000",
-      zIndex: "10002",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      opacity: "1"
-    }
-  );
-
+  Object.assign(gifScreen.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    background: "#000",
+    zIndex: "10001",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: "1"
+  });
 
   const gif =
     document.createElement("img");
 
-
   gif.src =
     "/Assets/Windows95Happyyay.gif";
-
 
   gif.alt =
     "Windows startup animation";
 
-
-  Object.assign(
-    gif.style,
-    {
-      display: "block",
-      maxWidth: "100%",
-      maxHeight: "100%",
-      width: "auto",
-      height: "auto",
-      objectFit: "contain"
-    }
-  );
-
+  Object.assign(gif.style, {
+    display: "block",
+    maxWidth: "100%",
+    maxHeight: "100%",
+    width: "auto",
+    height: "auto",
+    objectFit: "contain"
+  });
 
   gifScreen.appendChild(gif);
 
-  document.body.appendChild(
-    gifScreen
-  );
+  /*
+   * Put GIF on the page BEFORE the black
+   * fade layer is removed.
+   */
 
+  document.body.appendChild(gifScreen);
 
   /*
-   * Keep the GIF on screen for 3 seconds.
+   * Keep GIF visible.
    */
 
   setTimeout(() => {
@@ -434,22 +468,18 @@ function showGifScreen() {
     gifScreen.style.opacity =
       "0";
 
-
-    /*
-     * After the fade:
-     * SHOW THE XP LOGIN SCREEN.
-     */
-
     setTimeout(() => {
 
       gifScreen.remove();
 
+      /*
+       * 6. NOW show XP LOGIN SCREEN.
+       */
 
       const loginScreen =
         document.getElementById(
           "login-screen"
         );
-
 
       if (!loginScreen) {
 
@@ -458,15 +488,7 @@ function showGifScreen() {
         );
 
         return;
-
       }
-
-
-      /*
-       * ===================================================
-       * 5. WINDOWS XP LOGIN SCREEN
-       * ===================================================
-       */
 
       loginScreen.classList.remove(
         "hidden"
@@ -475,9 +497,7 @@ function showGifScreen() {
     }, 500);
 
   }, 3000);
-
 }
-
 
 
 /*
@@ -498,7 +518,6 @@ window.addEventListener(
 );
 
 
-
 /*
  * =========================================================
  * SWITCH USER
@@ -512,12 +531,9 @@ function switchUserLogOn() {
     "1"
   );
 
-
   window.location.href =
     "/Bureau/Bureau.html";
-
 }
-
 
 
 /*
@@ -527,7 +543,6 @@ function switchUserLogOn() {
  */
 
 let hasLoggedInAsGuest = false;
-
 
 
 /*
@@ -542,36 +557,30 @@ function loginAsGuest() {
 
   hasLoggedInAsGuest = true;
 
-
   const leftSection =
     document.getElementById(
       "left-section"
     );
-
 
   const rightText =
     document.getElementById(
       "right-text"
     );
 
-
   const leftPanel =
     document.getElementById(
       "left-panel"
     );
-
 
   const userList =
     document.getElementById(
       "user-list"
     );
 
-
   const guestUser =
     document.getElementById(
       "guest-user"
     );
-
 
   if (
     !leftSection ||
@@ -585,37 +594,26 @@ function loginAsGuest() {
       "Required login elements are missing."
     );
 
-
     hasLoggedInAsGuest = false;
 
     return;
-
   }
-
 
   const guestSpan =
     guestUser.querySelector(
       "span"
     );
 
-
-  /*
-   * Change left panel to "welcome".
-   */
-
   leftPanel.innerHTML =
     `<p>welcome</p>`;
 
-
   leftPanel.style.paddingTop =
     "18%";
-
 
   const leftPanelP =
     leftPanel.querySelector(
       "p"
     );
-
 
   if (leftPanelP) {
 
@@ -631,13 +629,7 @@ function loginAsGuest() {
           "2px 3px #3454b4"
       }
     );
-
   }
-
-
-  /*
-   * Loading message.
-   */
 
   if (guestSpan) {
 
@@ -648,19 +640,12 @@ function loginAsGuest() {
 
   }
 
-
-  /*
-   * Animate user list.
-   */
-
   userList.classList.add(
     "is-padding-anim"
   );
 
-
   userList.style.animation =
     "paddingTopLog 1s forwards";
-
 
   setTimeout(() => {
 
@@ -670,30 +655,19 @@ function loginAsGuest() {
 
   }, 1000);
 
-
-  /*
-   * Hide bottom login controls.
-   */
-
   leftSection.style.display =
     "none";
 
-
   rightText.style.display =
     "none";
-
 
   guestUser.classList.remove(
     "selected"
   );
 
-
   /*
-   * =======================================================
-   * 6. ACTUAL LOGIN
-   * =======================================================
-   *
-   * ONLY NOW does the desktop load.
+   * ONLY AFTER LOGIN:
+   * go to desktop.
    */
 
   setTimeout(() => {
@@ -702,9 +676,7 @@ function loginAsGuest() {
       "/Bureau/Bureau.html";
 
   }, 1000);
-
 }
-
 
 
 /*
@@ -722,17 +694,13 @@ document.addEventListener(
         "user-list"
       );
 
-
     const users =
       document.querySelectorAll(
         ".user"
       );
 
-
     let selectedIndex = null;
-
     let hasArrowBeenUsed = false;
-
 
 
     /*
@@ -741,9 +709,7 @@ document.addEventListener(
      * =====================================================
      */
 
-    function updateUserSelection(
-      index
-    ) {
+    function updateUserSelection(index) {
 
       users.forEach(
         (user, i) => {
@@ -755,18 +721,12 @@ document.addEventListener(
 
         }
       );
-
     }
 
-
-    /*
-     * Initially no user selected.
-     */
 
     updateUserSelection(
       selectedIndex
     );
-
 
 
     /*
@@ -784,9 +744,7 @@ document.addEventListener(
             "guest-user"
           );
 
-
         if (!guestUser) return;
-
 
         if (
           e.key === "Enter" &&
@@ -815,7 +773,6 @@ document.addEventListener(
     );
 
 
-
     /*
      * =====================================================
      * ARROW KEY NAVIGATION
@@ -831,11 +788,6 @@ document.addEventListener(
           e.key === "ArrowUp"
         ) {
 
-          /*
-           * First arrow press selects
-           * the first user.
-           */
-
           if (!hasArrowBeenUsed) {
 
             selectedIndex = 0;
@@ -845,7 +797,6 @@ document.addEventListener(
             );
 
             hasArrowBeenUsed = true;
-
 
             users.forEach(
               (user, i) => {
@@ -873,29 +824,16 @@ document.addEventListener(
               }
             );
 
-
             e.preventDefault();
 
             return;
-
           }
 
         }
 
-
-        /*
-         * Navigation after first selection.
-         */
-
         if (hasArrowBeenUsed) {
 
-          /*
-           * DOWN
-           */
-
-          if (
-            e.key === "ArrowDown"
-          ) {
+          if (e.key === "ArrowDown") {
 
             if (
               selectedIndex <
@@ -907,7 +845,6 @@ document.addEventListener(
               updateUserSelection(
                 selectedIndex
               );
-
 
               users.forEach(
                 (user, i) => {
@@ -937,17 +874,9 @@ document.addEventListener(
 
             }
 
-
             e.preventDefault();
 
-          }
-
-
-          /*
-           * UP
-           */
-
-          else if (
+          } else if (
             e.key === "ArrowUp"
           ) {
 
@@ -961,7 +890,6 @@ document.addEventListener(
                 selectedIndex
               );
 
-
               users.forEach(
                 (user, i) => {
 
@@ -990,7 +918,6 @@ document.addEventListener(
 
             }
 
-
             e.preventDefault();
 
           }
@@ -999,7 +926,6 @@ document.addEventListener(
 
       }
     );
-
 
 
     /*
@@ -1018,9 +944,7 @@ document.addEventListener(
       );
 
       return;
-
     }
-
 
 
     /*
@@ -1041,9 +965,7 @@ document.addEventListener(
               )
           );
 
-
         if (hasSelected) return;
-
 
         users.forEach(
           (user) => {
@@ -1059,7 +981,6 @@ document.addEventListener(
 
       }
     );
-
 
 
     /*
@@ -1080,9 +1001,7 @@ document.addEventListener(
               )
           );
 
-
         if (hasSelected) return;
-
 
         users.forEach(
           (user) => {
@@ -1098,7 +1017,6 @@ document.addEventListener(
 
       }
     );
-
 
 
     /*
@@ -1123,7 +1041,6 @@ document.addEventListener(
           }
         );
 
-
         user.addEventListener(
           "mouseleave",
           function () {
@@ -1143,9 +1060,7 @@ document.addEventListener(
             } else {
 
               if (
-                userList.matches(
-                  ":hover"
-                ) &&
+                userList.matches(":hover") &&
                 !userList.classList.contains(
                   "is-padding-anim"
                 )
@@ -1168,7 +1083,6 @@ document.addEventListener(
     );
 
 
-
     /*
      * =====================================================
      * USER IMAGE BORDER
@@ -1183,7 +1097,6 @@ document.addEventListener(
             "img"
           );
 
-
         if (userimg) {
 
           user.addEventListener(
@@ -1195,7 +1108,6 @@ document.addEventListener(
 
             }
           );
-
 
           user.addEventListener(
             "mouseleave",
@@ -1213,7 +1125,6 @@ document.addEventListener(
     );
 
 
-
     /*
      * =====================================================
      * MOUSE DOWN TEXT COLOR
@@ -1225,7 +1136,6 @@ document.addEventListener(
         "guest-user"
       );
 
-
     if (guestUser) {
 
       guestUser.addEventListener(
@@ -1236,7 +1146,6 @@ document.addEventListener(
             guestUser.querySelector(
               "p"
             );
-
 
           if (guestP) {
 
@@ -1251,7 +1160,6 @@ document.addEventListener(
     }
 
 
-
     /*
      * =====================================================
      * MOUSE SELECTION
@@ -1260,10 +1168,6 @@ document.addEventListener(
 
     users.forEach(
       (user) => {
-
-        /*
-         * Mouse down selects user.
-         */
 
         user.addEventListener(
           "mousedown",
@@ -1276,18 +1180,12 @@ document.addEventListener(
                 )
             );
 
-
             this.classList.add(
               "selected"
             );
 
           }
         );
-
-
-        /*
-         * Mouse up clears selection styling.
-         */
 
         user.addEventListener(
           "mouseup",
@@ -1300,17 +1198,11 @@ document.addEventListener(
                 )
             );
 
-
             this.style.opacity =
               "1";
 
           }
         );
-
-
-        /*
-         * Clicking elsewhere clears selection.
-         */
 
         document.addEventListener(
           "click",
