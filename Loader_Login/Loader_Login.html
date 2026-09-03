@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -12,7 +13,7 @@
       sizes="32x32"
       href="/Assets/Images/Windows_XP-min.ico"
     />
-    
+
     <link
       rel="preload"
       href="/Start_Menu/Log_Off/Base/Log_Off.css"
@@ -22,24 +23,149 @@
 
     <link rel="stylesheet" href="Loader.css" />
     <link rel="stylesheet" href="Login_Screen.css" />
-    
+
     <script src="Loader_Login.js"></script>
     <script src="/Bureau/Bureau.js"></script>
+
+    <style>
+      /* =====================================================
+         RETRO TERMINAL STARTUP SCREEN
+         ===================================================== */
+
+      #retro-startup {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+
+        background: #050505;
+        color: #00ff66;
+
+        font-family: "Courier New", Courier, monospace;
+        font-size: 15px;
+
+        padding: 28px;
+        box-sizing: border-box;
+
+        overflow: hidden;
+
+        text-shadow: 0 0 5px rgba(0, 255, 100, 0.5);
+      }
+
+      #retro-terminal {
+        width: 100%;
+        height: 100%;
+
+        white-space: pre-wrap;
+        line-height: 1.45;
+
+        overflow: hidden;
+      }
+
+      #terminal-cursor {
+        display: inline-block;
+
+        width: 9px;
+        height: 17px;
+
+        background: #00ff66;
+
+        vertical-align: -2px;
+
+        animation: terminalBlink 0.7s steps(1) infinite;
+      }
+
+      @keyframes terminalBlink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+
+      /* =====================================================
+         WINDOWS 95 HAPPY SCREEN
+         ===================================================== */
+
+      #happy-screen {
+        position: fixed;
+        inset: 0;
+
+        z-index: 99998;
+
+        background: #000;
+
+        display: none;
+
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
+      }
+
+      #happy-screen img {
+        max-width: 100%;
+        max-height: 100%;
+
+        image-rendering: pixelated;
+      }
+
+
+      /* =====================================================
+         HIDE EXISTING XP STARTUP WHILE INITIAL SEQUENCE RUNS
+         ===================================================== */
+
+      body.starting #loader,
+      body.starting #login-screen {
+        visibility: hidden;
+      }
+    </style>
   </head>
 
-  <body>
+
+  <body class="starting">
+
+    <!-- =====================================================
+         RETRO TERMINAL
+         ===================================================== -->
+
+    <div id="retro-startup">
+      <div id="retro-terminal"></div>
+      <span id="terminal-cursor"></span>
+    </div>
+
+
+    <!-- =====================================================
+         WINDOWS 95 HAPPY GIF
+         ===================================================== -->
+
+    <div id="happy-screen">
+      <img
+        src="/Assets/Windows95Happyyay.gif"
+        alt="Windows 95"
+      />
+    </div>
+
+
+    <!-- =====================================================
+         EXISTING WINDOWS XP BOOT SCREEN
+         ===================================================== -->
+
     <div id="loader">
+
       <img
         src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
         alt="Windows XP Logo"
         id="logo"
       />
 
+
       <div id="progress-bar">
+
         <div class="progress-block"></div>
         <div class="progress-block"></div>
         <div class="progress-block"></div>
+
       </div>
+
 
       <img
         src="/Assets/Images/Microsoft logo démarrage.png"
@@ -47,18 +173,29 @@
         id="Copyright"
       />
 
+
       <img
         src="/Assets/Images/Copyright.png"
         alt="Copyright de microsoft corporation sur l'écran de démarrage"
         id="Microsoft"
       />
+
     </div>
 
+
+    <!-- =====================================================
+         WINDOWS XP LOGIN SCREEN
+         ===================================================== -->
+
     <div id="login-screen" class="hidden">
+
       <div id="top-bar"></div>
 
+
       <div id="content">
+
         <div id="left-panel">
+
           <img
             src="/Assets/Images/White writting Windows XP logo.png"
             alt="Windows XP Logo"
@@ -66,24 +203,44 @@
           />
 
           <p>To begin, click your user name</p>
+
         </div>
 
+
         <div id="user-list">
-          <div class="user" id="guest-user" onclick="loginAsGuest()">
+
+          <div
+            class="user"
+            id="guest-user"
+            onclick="loginAsGuest()"
+          >
+
             <img
               src="/Assets/Images/Flower PP.png"
               alt="Guest"
             />
 
             <div class="user-text">
-              <span>YOUU!!! :3 <3</span>
+
+              <span>YOUU!!! :3 &lt;3</span>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
 
+
+      <!-- =====================================================
+           BOTTOM LOGIN BAR
+           ===================================================== -->
+
       <div id="bottom-bar">
+
         <div id="left-section">
+
           <img
             id="Power"
             src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
@@ -91,24 +248,216 @@
             onclick="turnOffComputer()"
           />
 
-          <p id="shutdown-p" onclick="turnOffComputer()">
+          <p
+            id="shutdown-p"
+            onclick="turnOffComputer()"
+          >
             Turn off computer
           </p>
+
         </div>
+
 
         <p id="right-text">
           After you log on, you can add or change accounts.<br />
           Just go to Control Panel and click User Accounts.
         </p>
+
       </div>
+
     </div>
 
-    <!-- RAUTATIENTORI title animation -->
+
+    <!-- =====================================================
+         RETRO TERMINAL STARTUP SEQUENCE
+         ===================================================== -->
+
+    <script>
+      const terminal = document.getElementById("retro-terminal");
+      const retroStartup = document.getElementById("retro-startup");
+      const happyScreen = document.getElementById("happy-screen");
+
+      /*
+       * Information displayed by the fake system terminal.
+       *
+       * Some values are pulled from the actual browser so
+       * the screen feels more like a real system diagnostic.
+       */
+
+      const terminalLines = [
+        "RAUTATIENTORI SYSTEM BIOS v1.0",
+        "Copyright (C) 2026 RAUTATIENTORI",
+        "",
+        "----------------------------------------",
+        "        SYSTEM INITIALIZATION",
+        "----------------------------------------",
+        "",
+        "Initializing system...",
+        "",
+        "CPU............... OK",
+        "MEMORY............ OK",
+        "DISPLAY............ OK",
+        "AUDIO.............. OK",
+        "NETWORK............ OK",
+        "STORAGE............ OK",
+        "",
+        "Detecting browser...",
+        "",
+        "BROWSER INFORMATION",
+        "-------------------",
+        "User Agent: " + navigator.userAgent,
+        "Platform: " + navigator.platform,
+        "Language: " + navigator.language,
+        "Screen: " + window.screen.width + "x" + window.screen.height,
+        "Color Depth: " + window.screen.colorDepth + " bit",
+        "Online: " + (navigator.onLine ? "YES" : "NO"),
+        "",
+        "Checking system environment...",
+        "",
+        "Loading RAUTATIENTORI environment...",
+        "Loading graphical interface...",
+        "Loading user profile...",
+        "",
+        "SYSTEM CHECK COMPLETE.",
+        "",
+        "BOOT SEQUENCE READY.",
+        "",
+        "Welcome."
+      ];
+
+
+      let lineIndex = 0;
+      let charIndex = 0;
+
+
+      /*
+       * Type the terminal text character by character.
+       */
+
+      function typeTerminal() {
+
+        /*
+         * Finished typing everything.
+         */
+
+        if (lineIndex >= terminalLines.length) {
+
+          finishTerminal();
+
+          return;
+        }
+
+
+        const currentLine = terminalLines[lineIndex];
+
+
+        /*
+         * Still typing the current line.
+         */
+
+        if (charIndex < currentLine.length) {
+
+          terminal.textContent += currentLine.charAt(charIndex);
+
+          charIndex++;
+
+          setTimeout(typeTerminal, 12);
+
+        }
+
+
+        /*
+         * Current line finished.
+         */
+
+        else {
+
+          terminal.textContent += "\n";
+
+          lineIndex++;
+          charIndex = 0;
+
+          setTimeout(typeTerminal, 90);
+
+        }
+
+      }
+
+
+      /*
+       * Terminal finished.
+       *
+       * Show the Windows 95 GIF for exactly 3 seconds.
+       */
+
+      function finishTerminal() {
+
+        /*
+         * Leave the final "Welcome." message on screen
+         * briefly before switching screens.
+         */
+
+        setTimeout(() => {
+
+          /*
+           * Hide terminal.
+           */
+
+          retroStartup.style.display = "none";
+
+
+          /*
+           * Show black screen + Windows 95 GIF.
+           */
+
+          happyScreen.style.display = "flex";
+
+
+          /*
+           * Keep the GIF screen visible for 3 seconds.
+           */
+
+          setTimeout(() => {
+
+            /*
+             * Hide GIF.
+             */
+
+            happyScreen.style.display = "none";
+
+
+            /*
+             * Allow the existing Windows XP loader
+             * to become visible.
+             */
+
+            document.body.classList.remove("starting");
+
+          }, 3000);
+
+        }, 500);
+
+      }
+
+
+      /*
+       * Start the terminal as soon as the page loads.
+       */
+
+      typeTerminal();
+    </script>
+
+
+    <!-- =====================================================
+         RAUTATIENTORI TITLE ANIMATION
+         ===================================================== -->
+
     <script>
       const titleText = "RAUTATIENTORI";
       let titleIndex = 1;
 
       function animateTitle() {
+
         document.title = titleText.substring(0, titleIndex);
 
         titleIndex++;
@@ -117,8 +466,12 @@
           titleIndex = 1;
         }
 
-        // Faster when the tab is active,
-        // slower when the tab is inactive.
+
+        /*
+         * Faster when the tab is active,
+         * slower when the tab is inactive.
+         */
+
         const delay =
           document.visibilityState === "visible"
             ? 100
@@ -126,6 +479,7 @@
 
         setTimeout(animateTitle, delay);
       }
+
 
       animateTitle();
     </script>
