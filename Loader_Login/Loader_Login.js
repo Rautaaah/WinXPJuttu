@@ -1,325 +1,467 @@
+/*
+ * ============================================================
+ * WINDOWS XP LOADER / LOGIN
+ * ============================================================
+ *
+ * The normal window "load" event only prepares the listener.
+ *
+ * The actual XP loader sequence does NOT start until
+ * "biosIntroFinished" is dispatched by index.html.
+ *
+ * This prevents the XP loader from being 10 seconds ahead.
+ * ============================================================
+ */
+
 window.addEventListener("load", function () {
-  setTimeout(() => {
-    const loader = document.getElementById("loader");
-    const loginScreen = document.getElementById("login-screen");
 
-    if (loader && loginScreen) {
-      loader.style.display = "none";
+    window.addEventListener(
+        "biosIntroFinished",
+        function () {
 
-      const blackScreen = document.createElement("div");
-      blackScreen.style.position = "fixed";
-      blackScreen.style.inset = "0";
-      blackScreen.style.background = "black";
-      blackScreen.style.zIndex = "10000";
-      blackScreen.style.opacity = "1";
+            /*
+             * Original XP loader delay.
+             *
+             * BIOS:
+             *     0s -> 10s
+             *
+             * XP loader:
+             *     10s -> 14s
+             */
+            setTimeout(function () {
 
-      document.body.appendChild(blackScreen);
+                const loader =
+                    document.getElementById("loader");
 
-      setTimeout(() => {
-        const transitionDiv = document.createElement("div");
+                const loginScreen =
+                    document.getElementById("login-screen");
 
-        transitionDiv.id = "transition-screen";
-        transitionDiv.style.position = "fixed";
-        transitionDiv.style.inset = "0";
-        transitionDiv.style.zIndex = "10001";
-        transitionDiv.style.display = "flex";
-        transitionDiv.style.alignItems = "center";
-        transitionDiv.style.justifyContent = "center";
-        transitionDiv.style.background = "black";
 
-        document.body.appendChild(transitionDiv);
+                if (loader && loginScreen) {
 
-        blackScreen.remove();
+                    /*
+                     * Hide the XP loader.
+                     */
+                    loader.style.display = "none";
 
-        fetch("/Loader_Login/Startup_Transition.html")
-          .then((response) => response.text())
-          .then((html) => {
-            transitionDiv.innerHTML = html;
 
-            setTimeout(() => {
-              transitionDiv.remove();
-              loginScreen.classList.remove("hidden");
-            }, 800);
-          })
-          .catch((error) => {
-            console.error("Failed to load startup transition:", error);
+                    /*
+                     * Black transition screen.
+                     */
+                    const blackScreen =
+                        document.createElement("div");
 
-            transitionDiv.remove();
-            loginScreen.classList.remove("hidden");
-          });
-      }, 1000);
-    } else {
-      console.error("Missing #loader or #login-screen");
+                    blackScreen.style.position = "fixed";
+                    blackScreen.style.inset = "0";
+                    blackScreen.style.background = "black";
+                    blackScreen.style.zIndex = "10000";
+                    blackScreen.style.opacity = "1";
+
+
+                    document.body.appendChild(
+                        blackScreen
+                    );
+
+
+                    /*
+                     * Give the black screen time
+                     * before the startup transition.
+                     */
+                    setTimeout(function () {
+
+                        const transitionDiv =
+                            document.createElement("div");
+
+                        transitionDiv.id =
+                            "transition-screen";
+
+                        transitionDiv.style.position =
+                            "fixed";
+
+                        transitionDiv.style.inset = "0";
+
+                        transitionDiv.style.zIndex =
+                            "10001";
+
+                        transitionDiv.style.display =
+                            "flex";
+
+                        transitionDiv.style.alignItems =
+                            "center";
+
+                        transitionDiv.style.justifyContent =
+                            "center";
+
+                        transitionDiv.style.background =
+                            "black";
+
+
+                        document.body.appendChild(
+                            transitionDiv
+                        );
+
+
+                        /*
+                         * Remove the black screen.
+                         */
+                        blackScreen.remove();
+
+
+                        /*
+                         * Load the original startup
+                         * transition.
+                         */
+                        fetch(
+                            "/Loader_Login/Startup_Transition.html"
+                        )
+                            .then(function (response) {
+
+                                if (!response.ok) {
+                                    throw new Error(
+                                        "HTTP " +
+                                        response.status
+                                    );
+                                }
+
+                                return response.text();
+                            })
+
+                            .then(function (html) {
+
+                                transitionDiv.innerHTML =
+                                    html;
+
+
+                                /*
+                                 * Original transition timing.
+                                 */
+                                setTimeout(function () {
+
+                                    transitionDiv.remove();
+
+                                    loginScreen.classList.remove(
+                                        "hidden"
+                                    );
+
+                                }, 800);
+                            })
+
+                            .catch(function (error) {
+
+                                console.error(
+                                    "Failed to load startup transition:",
+                                    error
+                                );
+
+
+                                transitionDiv.remove();
+
+                                loginScreen.classList.remove(
+                                    "hidden"
+                                );
+                            });
+
+                    }, 1000);
+
+                } else {
+
+                    console.error(
+                        "Missing #loader or #login-screen"
+                    );
+                }
+
+            }, 4000);
+
+        },
+        {
+            once: true
+        }
+    );
+
+});
+
+
+/*
+ * ============================================================
+ * FADE-IN SETUP
+ * ============================================================
+ */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        document.body.classList.add(
+            "fade-in-steps"
+        );
+
     }
-  }, 4000);
-});
+);
 
-window.addEventListener("DOMContentLoaded", function () {
-  document.body.classList.add("fade-in-steps");
-});
+
+/*
+ * ============================================================
+ * USER LOGIN
+ * ============================================================
+ */
 
 function switchUserLogOn() {
-  localStorage.setItem("fromSwitchUser", "1");
-  window.location.href = "/Bureau/Bureau.html";
+
+    localStorage.setItem(
+        "hasLoggedInAsGuest",
+        "true"
+    );
+
+    window.location.href =
+        "/Bureau/Bureau.html";
 }
 
-let hasLoggedInAsGuest = false;
+
+/*
+ * ============================================================
+ * GUEST LOGIN CHECK
+ * ============================================================
+ */
+
+function hasLoggedInAsGuest() {
+
+    return localStorage.getItem(
+        "hasLoggedInAsGuest"
+    ) === "true";
+}
+
+
+/*
+ * ============================================================
+ * GUEST LOGIN
+ * ============================================================
+ */
 
 function loginAsGuest() {
-  if (hasLoggedInAsGuest) return;
 
-  hasLoggedInAsGuest = true;
+    const leftPanel =
+        document.getElementById("left-panel");
 
-  const leftSection = document.getElementById("left-section");
-  const rightText = document.getElementById("right-text");
-  const leftPanel = document.getElementById("left-panel");
-  const userList = document.getElementById("user-list");
-  const guestUser = document.getElementById("guest-user");
+    const rightPanel =
+        document.getElementById("right-panel");
 
-  if (!leftSection || !rightText || !leftPanel || !userList || !guestUser) {
-    console.error("Required login elements are missing.");
-    hasLoggedInAsGuest = false;
-    return;
-  }
+    const guestUser =
+        document.getElementById("guest-user");
 
-  const guestSpan = guestUser.querySelector("span");
 
-  leftPanel.innerHTML = `<p>welcome</p>`;
-  leftPanel.style.paddingTop = "18%";
+    /*
+     * Change the guest panel.
+     */
+    if (leftPanel) {
 
-  const leftPanelP = leftPanel.querySelector("p");
+        leftPanel.classList.add(
+            "paddingTopLog"
+        );
+    }
 
-  if (leftPanelP) {
-    Object.assign(leftPanelP.style, {
-      fontSize: "5rem",
-      fontFamily: "Arial, sans-serif",
-      fontStyle: "italic",
-      fontWeight: "bold",
-      textShadow: "2px 3px #3454b4",
-    });
-  }
 
-  if (guestSpan) {
-    guestSpan.insertAdjacentHTML(
-      "afterend",
-      `<p>Loading your personal settings...</p>`
+    /*
+     * Loading message.
+     */
+    const loadingText =
+        document.createElement("div");
+
+    loadingText.id =
+        "guest-loading";
+
+    loadingText.textContent =
+        "Loading your personal settings...";
+
+
+    if (guestUser) {
+
+        guestUser.appendChild(
+            loadingText
+        );
+    }
+
+
+    /*
+     * Hide the other login UI.
+     */
+    const leftBottom =
+        document.getElementById("left-bottom");
+
+    const rightBottom =
+        document.getElementById("right-bottom");
+
+
+    if (leftBottom) {
+        leftBottom.style.display = "none";
+    }
+
+    if (rightBottom) {
+        rightBottom.style.display = "none";
+    }
+
+
+    /*
+     * Remember guest login.
+     */
+    localStorage.setItem(
+        "hasLoggedInAsGuest",
+        "true"
     );
-  }
 
-  userList.classList.add("is-padding-anim");
-  userList.style.animation = "paddingTopLog 1s forwards";
 
-  setTimeout(() => {
-    userList.classList.remove("is-padding-anim");
-  }, 1000);
+    /*
+     * Give the loading screen time to display.
+     */
+    setTimeout(function () {
 
-  leftSection.style.display = "none";
-  rightText.style.display = "none";
+        window.location.href =
+            "/Bureau/Bureau.html";
 
-  guestUser.classList.remove("selected");
-
-  setTimeout(() => {
-    window.location.href = "/Bureau/Bureau.html";
-  }, 1000);
+    }, 1000);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const userList = document.getElementById("user-list");
-  const users = document.querySelectorAll(".user");
 
-  let selectedIndex = null;
-  let hasArrowBeenUsed = false;
+/*
+ * ============================================================
+ * LOGIN SCREEN INTERACTION
+ * ============================================================
+ */
 
-  function updateUserSelection(index) {
-    users.forEach((user, i) => {
-      user.classList.toggle("selected", i === index);
-    });
-  }
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-  updateUserSelection(selectedIndex);
+        const guestUser =
+            document.getElementById("guest-user");
 
-  document.addEventListener("keydown", function (e) {
-    const guestUser = document.getElementById("guest-user");
+        const guestImage =
+            document.getElementById("guest-image");
 
-    if (!guestUser) return;
 
-    if (
-      e.key === "Enter" &&
-      guestUser.classList.contains("selected")
-    ) {
-      if (
-        window.location.pathname.endsWith(
-          "/Start_Menu/Log_Off/Transition/Switch_User.html"
-        )
-      ) {
-        switchUserLogOn();
-      } else {
-        loginAsGuest();
-      }
-    }
-  });
+        /*
+         * Guest image border.
+         */
+        if (guestImage) {
 
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      if (!hasArrowBeenUsed) {
-        selectedIndex = 0;
-        updateUserSelection(selectedIndex);
-        hasArrowBeenUsed = true;
+            guestImage.addEventListener(
+                "mouseenter",
+                function () {
 
-        users.forEach((user, i) => {
-          if (i === selectedIndex) {
-            user.style.opacity = "1";
-            user.style.animation = "";
-          } else {
-            user.style.opacity = "0.5";
-            user.style.animation =
-              "glitchOpacityReverse 0.4s steps(5, end)";
-          }
-        });
+                    guestImage.classList.add(
+                        "selected"
+                    );
 
-        e.preventDefault();
-        return;
-      }
-    }
+                }
+            );
 
-    if (hasArrowBeenUsed) {
-      if (e.key === "ArrowDown") {
-        if (selectedIndex < users.length - 1) {
-          selectedIndex++;
-          updateUserSelection(selectedIndex);
 
-          users.forEach((user, i) => {
-            if (i === selectedIndex) {
-              user.style.opacity = "1";
-              user.style.animation = "";
-            } else {
-              user.style.opacity = "0.5";
-              user.style.animation =
-                "glitchOpacityReverse 0.4s steps(5, end)";
+            guestImage.addEventListener(
+                "mouseleave",
+                function () {
+
+                    guestImage.classList.remove(
+                        "selected"
+                    );
+
+                }
+            );
+        }
+
+
+        /*
+         * Guest user hover.
+         */
+        if (guestUser) {
+
+            guestUser.addEventListener(
+                "mouseenter",
+                function () {
+
+                    guestUser.classList.add(
+                        "selected"
+                    );
+
+                }
+            );
+
+
+            guestUser.addEventListener(
+                "mouseleave",
+                function () {
+
+                    guestUser.classList.remove(
+                        "selected"
+                    );
+
+                }
+            );
+
+
+            /*
+             * Mouse press.
+             */
+            guestUser.addEventListener(
+                "mousedown",
+                function () {
+
+                    guestUser.classList.add(
+                        "pressed"
+                    );
+
+                }
+            );
+
+
+            /*
+             * Mouse release.
+             */
+            guestUser.addEventListener(
+                "mouseup",
+                function () {
+
+                    guestUser.classList.remove(
+                        "pressed"
+                    );
+
+                }
+            );
+        }
+
+
+        /*
+         * Keyboard navigation.
+         */
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    if (
+                        document.activeElement ===
+                        guestUser
+                    ) {
+
+                        loginAsGuest();
+                    }
+                }
+
             }
-          });
+        );
+
+
+        /*
+         * Make guest selectable.
+         */
+        if (guestUser) {
+
+            guestUser.setAttribute(
+                "tabindex",
+                "0"
+            );
         }
 
-        e.preventDefault();
-      } else if (e.key === "ArrowUp") {
-        if (selectedIndex > 0) {
-          selectedIndex--;
-          updateUserSelection(selectedIndex);
-
-          users.forEach((user, i) => {
-            if (i === selectedIndex) {
-              user.style.opacity = "1";
-              user.style.animation = "";
-            } else {
-              user.style.opacity = "0.5";
-              user.style.animation =
-                "glitchOpacityReverse 0.4s steps(5, end)";
-            }
-          });
-        }
-
-        e.preventDefault();
-      }
     }
-  });
-
-  if (!userList || users.length === 0) {
-    console.error("Element '#user-list' or '.user' missing!");
-    return;
-  }
-
-  userList.addEventListener("mouseenter", function () {
-    const hasSelected = Array.from(users).some((user) =>
-      user.classList.contains("selected")
-    );
-
-    if (hasSelected) return;
-
-    users.forEach((user) => {
-      user.style.opacity = "0.5";
-      user.style.animation =
-        "glitchOpacityReverse 0.4s steps(5, end)";
-    });
-  });
-
-  userList.addEventListener("mouseleave", function () {
-    const hasSelected = Array.from(users).some((user) =>
-      user.classList.contains("selected")
-    );
-
-    if (hasSelected) return;
-
-    users.forEach((user) => {
-      user.style.opacity = "1";
-      user.style.animation =
-        "glitchOpacity 0.4s steps(5, end)";
-    });
-  });
-
-  users.forEach((user) => {
-    user.addEventListener("mouseenter", function () {
-      user.style.opacity = "1";
-      user.style.animation = "";
-    });
-
-    user.addEventListener("mouseleave", function () {
-      if (user.classList.contains("selected")) {
-        user.style.opacity = "1";
-        user.style.animation = "";
-      } else {
-        if (
-          userList.matches(":hover") &&
-          !userList.classList.contains("is-padding-anim")
-        ) {
-          user.style.opacity = "0.5";
-          user.style.animation =
-            "glitchOpacityReverse 0.4s steps(5, end)";
-        }
-      }
-    });
-  });
-
-  users.forEach((user) => {
-    const userimg = user.querySelector("img");
-
-    if (userimg) {
-      user.addEventListener("mouseenter", function () {
-        userimg.style.border = "2px solid #bfa304";
-      });
-
-      user.addEventListener("mouseleave", function () {
-        userimg.style.border = "2px solid white";
-      });
-    }
-  });
-
-  const guestUser = document.getElementById("guest-user");
-
-  if (guestUser) {
-    guestUser.addEventListener("mousedown", function () {
-      const guestP = guestUser.querySelector("p");
-
-      if (guestP) {
-        guestP.style.color = "white";
-      }
-    });
-  }
-
-  users.forEach((user) => {
-    user.addEventListener("mousedown", function () {
-      users.forEach((u) => u.classList.remove("selected"));
-      this.classList.add("selected");
-    });
-
-    user.addEventListener("mouseup", function () {
-      users.forEach((u) => u.classList.remove("selected"));
-      this.style.opacity = "1";
-    });
-
-    document.addEventListener("click", () => {
-      user.classList.remove("selected");
-      hasArrowBeenUsed = false;
-      user.style.opacity = "1";
-    });
-  });
-});
+);
