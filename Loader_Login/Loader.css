@@ -130,3 +130,18 @@ bottom: 5%;
 left: 3%;
 }
 
+/*
+ * ============================================================
+ * BIOS PAUSE
+ * ============================================================
+ *
+ * The entire XP animation system remains frozen while
+ * /Assets/biosgif.gif is playing.
+ */
+
+body.bios-paused *,
+body.bios-paused::before,
+body.bios-paused::after {
+    animation-play-state: paused !important;
+    transition: none !important;
+}
