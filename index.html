@@ -48,28 +48,54 @@
 
 <script defer src="/_vercel/insights/script.js"></script>
 
-<!-- BIOS background -->
 <style>
-  body {
+  /* BIOS GIF boot screen */
+  #bios-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
     background-image: url("assets/biosgif.gif");
     background-size: 55% auto;
     background-position: top left;
     background-repeat: no-repeat;
-    background-attachment: fixed;
     background-color: #000000;
+
+    opacity: 1;
+    visibility: visible;
+
+    transition: opacity 0.3s ease;
+  }
+
+  /* Hide the BIOS screen after 10 seconds */
+  #bios-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 </style>
+
 
   </head>
 
   <body>
-    <div id="loader">
-      <img
-        src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
-        alt="Windows XP Logo"
-        id="logo"
-      />
+    <!-- ========================================= -->
+    <!-- BIOS GIF — PLAYS FOR 10 SECONDS          -->
+    <!-- ========================================= -->
 
+
+<div id="bios-screen"></div>
+
+<!-- ========================================= -->
+<!-- YOUR ORIGINAL XP LOADER                  -->
+<!-- ========================================= -->
+
+<div id="loader">
+  <img
+    src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
+    alt="Windows XP Logo"
+    id="logo"
+  />
 
   <div id="progress-bar">
     <div class="progress-block"></div>
@@ -89,6 +115,10 @@
     id="Microsoft"
   />
 </div>
+
+<!-- ========================================= -->
+<!-- LOGIN SCREEN                             -->
+<!-- ========================================= -->
 
 <div id="login-screen" class="hidden">
   <div id="top-bar"></div>
@@ -139,7 +169,22 @@
   </div>
 </div>
 
-<!-- Animated browser title -->
+<!-- ========================================= -->
+<!-- BIOS TIMER                               -->
+<!-- ========================================= -->
+
+<script>
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      document.getElementById("bios-screen").classList.add("hidden");
+    }, 10000);
+  });
+</script>
+
+<!-- ========================================= -->
+<!-- ANIMATED BROWSER TITLE                   -->
+<!-- ========================================= -->
+
 <script>
   const titleText = "RAUTATIENTORI";
   let titleIndex = 1;
@@ -153,8 +198,6 @@
       titleIndex = 1;
     }
 
-    // FAST when the tab is active
-    // SLOWER when the tab is inactive
     const delay =
       document.visibilityState === "visible"
         ? 100
@@ -165,6 +208,7 @@
 
   animateTitle();
 </script>
+
 
   </body>
 </html>
