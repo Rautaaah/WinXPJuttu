@@ -1,19 +1,204 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>𝖂𝖔𝖜𝕷𝖔𝖆𝖉𝖎𝖓𝖌𝕭𝖎𝖔𝖘</title>
-<style>
-        body {
+
+    <style>
+        /* First 10-second GIF screen */
+        #intro {
+            position: fixed;
+            inset: 0;
             background-image: url('Assets/biosgif.gif');
             background-size: 55% auto;
             background-position: top left;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-color: #000000;
+            background-color: #000;
+            z-index: 9999;
         }
-</style>
+
+        /* The XP page starts completely hidden */
+        #xp-page {
+            display: none;
+        }
+    </style>
+
+    <!-- Your XP page CSS -->
+    <link rel="preload"
+          href="/Start_Menu/Log_Off/Base/Log_Off.css"
+          as="style"
+          onload="this.onload=null;this.rel='stylesheet';">
+
+    <link rel="stylesheet" href="/Loader_Login/Loader.css">
+    <link rel="stylesheet" href="/Loader_Login/Login_Screen.css">
+
+    <script src="/Loader_Login/Loader_Login.js"></script>
+    <script src="/Bureau/Bureau.js"></script>
 </head>
+
 <body>
-    <h1>Hello World!</h1>
+
+    <!-- ============================= -->
+    <!-- 10 SECOND INTRO -->
+    <!-- ============================= -->
+
+    <div id="intro"></div>
+
+
+    <!-- ============================= -->
+    <!-- YOUR WHOLE XP PAGE -->
+    <!-- ============================= -->
+
+    <div id="xp-page">
+
+        <div id="loader">
+            <img
+                src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
+                alt="Windows XP Logo"
+                id="logo"
+            />
+
+            <div id="progress-bar">
+                <div class="progress-block"></div>
+                <div class="progress-block"></div>
+                <div class="progress-block"></div>
+            </div>
+
+            <img
+                src="/Assets/Images/Microsoft logo démarrage.png"
+                alt="Microsoft logo"
+                id="Copyright"
+            />
+
+            <img
+                src="/Assets/Images/Copyright.png"
+                alt="Copyright"
+                id="Microsoft"
+            />
+        </div>
+
+
+        <div id="login-screen" class="hidden">
+
+            <div id="top-bar"></div>
+
+            <div id="content">
+
+                <div id="left-panel">
+
+                    <img
+                        src="/Assets/Images/White writting Windows XP logo.png"
+                        alt="Windows XP Logo"
+                        id="xp-logo"
+                    />
+
+                    <p>To begin, click your user name</p>
+
+                </div>
+
+
+                <div id="user-list">
+
+                    <div
+                        class="user"
+                        id="guest-user"
+                        onclick="loginAsGuest()"
+                    >
+
+                        <img
+                            src="/Assets/Images/Flower PP.png"
+                            alt="Guest"
+                        />
+
+                        <div class="user-text">
+                            <span>YOUUU!!! :3 &lt;3</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="bottom-bar">
+
+                <div id="left-section">
+
+                    <img
+                        id="Power"
+                        src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
+                        alt="Turn off computer button"
+                        onclick="turnOffComputer()"
+                    />
+
+                    <p
+                        id="shutdown-p"
+                        onclick="turnOffComputer()"
+                    >
+                        Turn off computer
+                    </p>
+
+                </div>
+
+
+                <p id="right-text">
+                    After you log on, you can add or change accounts.<br>
+                    Just go to Control Panel and click User Accounts.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- SWITCH AFTER 10 SECONDS -->
+    <!-- ============================= -->
+
+    <script>
+        setTimeout(function () {
+
+            // Remove the GIF intro completely
+            document.getElementById("intro").remove();
+
+            // Show the entire XP page
+            document.getElementById("xp-page").style.display = "block";
+
+        }, 10000);
+    </script>
+
+
+    <!-- Animated browser title -->
+    <script>
+        const titleText = "RAUTATIENTORI";
+        let titleIndex = 1;
+
+        function animateTitle() {
+
+            document.title = titleText.substring(0, titleIndex);
+
+            titleIndex++;
+
+            if (titleIndex > titleText.length) {
+                titleIndex = 1;
+            }
+
+            const delay =
+                document.visibilityState === "visible"
+                    ? 100
+                    : 300;
+
+            setTimeout(animateTitle, delay);
+        }
+
+        animateTitle();
+    </script>
+
 </body>
 </html>
