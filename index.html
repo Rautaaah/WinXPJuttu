@@ -49,29 +49,33 @@
 <script defer src="/_vercel/insights/script.js"></script>
 
 <style>
-  /* BIOS GIF boot screen */
+  /* =========================================
+     BIOS GIF
+     ========================================= */
+
   #bios-screen {
     position: fixed;
     inset: 0;
     z-index: 99999;
 
-    background-image: url("Assets/biosgif.gif");
+    background-image: url("assets/biosgif.gif");
     background-size: 55% auto;
     background-position: top left;
     background-repeat: no-repeat;
     background-color: #000000;
-
-    opacity: 1;
-    visibility: visible;
-
-    transition: opacity 0.3s ease;
   }
 
-  /* Hide the BIOS screen after 10 seconds */
   #bios-screen.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    display: none;
+  }
+
+  /* =========================================
+     IMPORTANT:
+     XP LOADER IS HIDDEN DURING BIOS SCREEN
+     ========================================= */
+
+  #loader.boot-wait {
+    display: none !important;
   }
 </style>
 
@@ -79,18 +83,22 @@
   </head>
 
   <body>
-    <!-- ========================================= -->
-    <!-- BIOS GIF — PLAYS FOR 10 SECONDS          -->
-    <!-- ========================================= -->
 
+
+<!-- =========================================
+     BIOS — 10 SECONDS
+     ========================================= -->
 
 <div id="bios-screen"></div>
 
-<!-- ========================================= -->
-<!-- YOUR ORIGINAL XP LOADER                  -->
-<!-- ========================================= -->
 
-<div id="loader">
+<!-- =========================================
+     WINDOWS XP LOADER
+     Hidden until BIOS is finished
+     ========================================= -->
+
+<div id="loader" class="boot-wait">
+
   <img
     src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
     alt="Windows XP Logo"
@@ -105,26 +113,31 @@
 
   <img
     src="/Assets/Images/Microsoft logo démarrage.png"
-    alt="Logo Microsoft en bas à right on the startup screen"
+    alt="Microsoft logo"
     id="Copyright"
   />
 
   <img
     src="/Assets/Images/Copyright.png"
-    alt="Copyright de Microsoft Corporation sur l'écran de démarrage"
+    alt="Copyright de Microsoft Corporation"
     id="Microsoft"
   />
+
 </div>
 
-<!-- ========================================= -->
-<!-- LOGIN SCREEN                             -->
-<!-- ========================================= -->
+
+<!-- =========================================
+     WINDOWS XP LOGIN
+     ========================================= -->
 
 <div id="login-screen" class="hidden">
+
   <div id="top-bar"></div>
 
   <div id="content">
+
     <div id="left-panel">
+
       <img
         src="/Assets/Images/White writting Windows XP logo.png"
         alt="Windows XP Logo"
@@ -132,10 +145,18 @@
       />
 
       <p>To begin, click your user name</p>
+
     </div>
 
+
     <div id="user-list">
-      <div class="user" id="guest-user" onclick="loginAsGuest()">
+
+      <div
+        class="user"
+        id="guest-user"
+        onclick="loginAsGuest()"
+      >
+
         <img
           src="/Assets/Images/Flower PP.png"
           alt="Guest"
@@ -144,12 +165,18 @@
         <div class="user-text">
           <span>YOUUU!!! :3 &lt;3</span>
         </div>
+
       </div>
+
     </div>
+
   </div>
 
+
   <div id="bottom-bar">
+
     <div id="left-section">
+
       <img
         id="Power"
         src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
@@ -157,40 +184,63 @@
         onclick="turnOffComputer()"
       />
 
-      <p id="shutdown-p" onclick="turnOffComputer()">
+      <p
+        id="shutdown-p"
+        onclick="turnOffComputer()"
+      >
         Turn off computer
       </p>
+
     </div>
+
 
     <p id="right-text">
       After you log on, you can add or change accounts.<br />
       Just go to Control Panel and click User Accounts.
     </p>
+
   </div>
+
 </div>
 
-<!-- ========================================= -->
-<!-- BIOS TIMER                               -->
-<!-- ========================================= -->
+
+<!-- =========================================
+     BIOS → XP LOADER
+     ========================================= -->
 
 <script>
   window.addEventListener("load", function () {
+
     setTimeout(function () {
-      document.getElementById("bios-screen").classList.add("hidden");
+
+      // Remove BIOS screen
+      document
+        .getElementById("bios-screen")
+        .classList.add("hidden");
+
+      // Reveal the EXISTING XP loader
+      document
+        .getElementById("loader")
+        .classList.remove("boot-wait");
+
     }, 10000);
+
   });
 </script>
 
-<!-- ========================================= -->
-<!-- ANIMATED BROWSER TITLE                   -->
-<!-- ========================================= -->
+
+<!-- =========================================
+     ANIMATED BROWSER TITLE
+     ========================================= -->
 
 <script>
   const titleText = "RAUTATIENTORI";
   let titleIndex = 1;
 
   function animateTitle() {
-    document.title = titleText.substring(0, titleIndex);
+
+    document.title =
+      titleText.substring(0, titleIndex);
 
     titleIndex++;
 
