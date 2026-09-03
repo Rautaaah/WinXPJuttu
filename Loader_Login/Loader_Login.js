@@ -5,21 +5,23 @@
  *
  * STARTUP ORDER:
  *
- *   1. BIOS / COMPUTER INFORMATION
+ *   1. BIOS
  *          ↓
- *   2. WINDOWS XP SPINNING LOADING SCREEN
+ *   2. WINDOWS XP SPINNING SCREEN
  *          ↓
- *   3. WINDOWS XP LoadingScreenTransition
+ *   3. EXISTING LOADER
  *          ↓
- *   4. BLACK FADE-IN
+ *   4. EXISTING LoadingScreenTransition
  *          ↓
- *   5. Windows95Happyyay.gif
+ *   5. BLACK FADE
  *          ↓
- *   6. WINDOWS XP LOGIN SCREEN
+ *   6. Windows95Happyyay.gif
  *          ↓
- *   7. USER LOGS IN
+ *   7. EXISTING LOGIN SCREEN
  *          ↓
- *   8. DESKTOP
+ *   8. USER LOGS IN
+ *          ↓
+ *   9. DESKTOP
  *
  * =========================================================
  */
@@ -42,7 +44,17 @@ window.addEventListener("load", function () {
   }
 
   /*
-   * 1. BIOS FIRST
+   * Hide the EXISTING loader while BIOS is running.
+   */
+  loader.style.display = "none";
+
+  /*
+   * Hide login until the entire startup sequence is finished.
+   */
+  loginScreen.classList.add("hidden");
+
+  /*
+   * 1. BIOS
    */
   showComputerInfoScreen(loader);
 
@@ -51,7 +63,7 @@ window.addEventListener("load", function () {
 
 /*
  * =========================================================
- * 1. BIOS / COMPUTER INFORMATION SCREEN
+ * 1. BIOS / COMPUTER INFORMATION
  * =========================================================
  */
 
@@ -68,7 +80,7 @@ function showComputerInfoScreen(loader) {
     height: "100%",
     background: "#000",
     color: "#c0c0c0",
-    zIndex: "10000",
+    zIndex: "99999",
     fontFamily: "Consolas, 'Courier New', monospace",
     fontSize: "15px",
     lineHeight: "1.5",
@@ -85,7 +97,7 @@ function showComputerInfoScreen(loader) {
     "RAUTATIENTORI SYSTEM BIOS",
     "==========================================",
     "",
-    "Copyright (C) Rautatietori Industries",
+    "Copyright (C) Rautatientori Industries",
     "",
     "SYSTEM INFORMATION",
     "------------------------------------------",
@@ -133,18 +145,18 @@ function showComputerInfoScreen(loader) {
 
     if (lineIndex >= bootLines.length) {
 
-      /*
-       * BIOS FINISHED.
-       *
-       * Now remove BIOS and reveal
-       * the EXISTING Windows XP spinning loader.
-       */
-
       setTimeout(() => {
 
         bootScreen.remove();
 
-        showWindowsXPLoader(loader);
+        /*
+         * BIOS IS FINISHED.
+         *
+         * NOW:
+         * WINDOWS XP SPINNING SCREEN
+         */
+
+        showWindowsXPSPINNING(loader);
 
       }, 700);
 
@@ -170,38 +182,254 @@ function showComputerInfoScreen(loader) {
 
 /*
  * =========================================================
- * 2. WINDOWS XP SPINNING / LOADING SCREEN
+ * 2. WINDOWS XP SPINNING SCREEN
  * =========================================================
  *
- * This uses the existing #loader from index.html.
+ * IMPORTANT:
+ *
+ * This is SEPARATE from #loader.
+ *
+ * #loader does NOT appear until this screen is finished.
  * =========================================================
  */
 
-function showWindowsXPLoader(loader) {
+function showWindowsXPSPINNING(loader) {
+
+  const spinningScreen =
+    document.createElement("div");
+
+  spinningScreen.id =
+    "windows-xp-spinning-screen";
+
+  Object.assign(spinningScreen.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    background: "#000",
+    zIndex: "99998",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden"
+  });
+
 
   /*
-   * Make sure the original XP loader is visible.
+   * XP logo.
    */
 
-  loader.style.display = "";
-  loader.style.position = "fixed";
-  loader.style.inset = "0";
-  loader.style.zIndex = "10000";
+  const xpLogo =
+    document.createElement("img");
+
+  xpLogo.src =
+    "/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png";
+
+  xpLogo.alt =
+    "Windows XP";
+
+  Object.assign(xpLogo.style, {
+    position: "absolute",
+    top: "25%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "auto",
+    maxWidth: "70%",
+    maxHeight: "45%",
+    objectFit: "contain"
+  });
+
 
   /*
-   * Let the XP spinning screen play.
+   * Spinning/loading container.
+   */
+
+  const spinner =
+    document.createElement("div");
+
+  Object.assign(spinner.style, {
+    position: "absolute",
+    bottom: "25%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "180px",
+    height: "18px",
+    overflow: "hidden",
+    background: "transparent"
+  });
+
+
+  /*
+   * Moving XP-style blocks.
+   */
+
+  const spinnerTrack =
+    document.createElement("div");
+
+  Object.assign(spinnerTrack.style, {
+    display: "flex",
+    gap: "3px",
+    position: "absolute",
+    left: "-70px",
+    top: "0",
+    width: "260px",
+    height: "18px",
+    animation: "xpSpinnerMove 1.15s linear infinite"
+  });
+
+
+  for (let i = 0; i < 12; i++) {
+
+    const block =
+      document.createElement("div");
+
+    Object.assign(block.style, {
+      width: "14px",
+      height: "18px",
+      background: "#3b7ddd",
+      flexShrink: "0",
+      borderRadius: "1px"
+    });
+
+    spinnerTrack.appendChild(block);
+  }
+
+
+  spinner.appendChild(spinnerTrack);
+
+
+  /*
+   * Microsoft logo.
+   */
+
+  const microsoftLogo =
+    document.createElement("img");
+
+  microsoftLogo.src =
+    "/Assets/Images/Microsoft logo démarrage.png";
+
+  microsoftLogo.alt =
+    "Microsoft";
+
+  Object.assign(microsoftLogo.style, {
+    position: "absolute",
+    right: "35px",
+    bottom: "35px",
+    width: "auto",
+    maxWidth: "180px",
+    maxHeight: "60px",
+    objectFit: "contain"
+  });
+
+
+  /*
+   * Add spinner animation.
+   */
+
+  const spinnerStyle =
+    document.createElement("style");
+
+  spinnerStyle.textContent = `
+    @keyframes xpSpinnerMove {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(204px);
+      }
+    }
+  `;
+
+
+  document.head.appendChild(
+    spinnerStyle
+  );
+
+  spinningScreen.appendChild(
+    xpLogo
+  );
+
+  spinningScreen.appendChild(
+    spinner
+  );
+
+  spinningScreen.appendChild(
+    microsoftLogo
+  );
+
+  document.body.appendChild(
+    spinningScreen
+  );
+
+
+  /*
+   * Let the SPINNING SCREEN play.
+   *
+   * ONLY AFTER THIS finishes do we
+   * reveal the EXISTING #loader.
    */
 
   setTimeout(() => {
 
-    /*
-     * XP spinning screen finished.
-     */
+    spinningScreen.style.transition =
+      "opacity 350ms ease";
+
+    spinningScreen.style.opacity =
+      "0";
+
+    setTimeout(() => {
+
+      spinningScreen.remove();
+
+      /*
+       * Remove the temporary animation CSS.
+       */
+
+      spinnerStyle.remove();
+
+      /*
+       * 3. EXISTING LOADER
+       */
+
+      showExistingLoader(loader);
+
+    }, 350);
+
+  }, 3500);
+}
+
+
+/*
+ * =========================================================
+ * 3. EXISTING LOADER
+ * =========================================================
+ *
+ * THIS IS YOUR ORIGINAL #loader FROM index.html.
+ *
+ * It is NOT replaced by the spinning screen.
+ * =========================================================
+ */
+
+function showExistingLoader(loader) {
+
+  /*
+   * Reveal the original loader exactly as it
+   * exists in index.html.
+   */
+
+  loader.style.display = "";
+
+  /*
+   * Let the original loader play.
+   */
+
+  setTimeout(() => {
 
     loader.style.display = "none";
 
     /*
-     * 3. Go to the XP LoadingScreenTransition.
+     * 4. EXISTING XP LoadingScreenTransition
      */
 
     showLoadingScreenTransition();
@@ -212,13 +440,7 @@ function showWindowsXPLoader(loader) {
 
 /*
  * =========================================================
- * 3. WINDOWS XP LoadingScreenTransition
- * =========================================================
- *
- * Existing file:
- *
- * /Loader_Login/Startup_Transition.html
- *
+ * 4. WINDOWS XP LoadingScreenTransition
  * =========================================================
  */
 
@@ -243,7 +465,9 @@ function showLoadingScreenTransition() {
     opacity: "1"
   });
 
-  document.body.appendChild(transitionScreen);
+  document.body.appendChild(
+    transitionScreen
+  );
 
   fetch("/Loader_Login/Startup_Transition.html")
     .then((response) => {
@@ -259,20 +483,10 @@ function showLoadingScreenTransition() {
     })
     .then((html) => {
 
-      transitionScreen.innerHTML = html;
-
-      /*
-       * Allow the LoadingScreenTransition
-       * to play before fading to black.
-       */
+      transitionScreen.innerHTML =
+        html;
 
       setTimeout(() => {
-
-        /*
-         * DO NOT immediately remove it.
-         *
-         * First perform the BLACK FADE-IN.
-         */
 
         transitionScreen.style.transition =
           "opacity 700ms ease";
@@ -280,14 +494,13 @@ function showLoadingScreenTransition() {
         transitionScreen.style.opacity =
           "0";
 
-        /*
-         * Once the transition has completely
-         * faded to black, continue to the GIF.
-         */
-
         setTimeout(() => {
 
           transitionScreen.remove();
+
+          /*
+           * 5. BLACK FADE
+           */
 
           showBlackFadeIn();
 
@@ -302,11 +515,6 @@ function showLoadingScreenTransition() {
         "Failed to load startup transition:",
         error
       );
-
-      /*
-       * Even if the transition fails,
-       * keep the black fade sequence.
-       */
 
       transitionScreen.style.transition =
         "opacity 700ms ease";
@@ -328,13 +536,7 @@ function showLoadingScreenTransition() {
 
 /*
  * =========================================================
- * 4. BLACK FADE-IN
- * =========================================================
- *
- * THIS IS THE BLACK FADE THAT WAS MISSING.
- *
- * The screen starts completely black and then
- * fades into the Windows 95 GIF.
+ * 5. BLACK FADE-IN
  * =========================================================
  */
 
@@ -358,23 +560,17 @@ function showBlackFadeIn() {
     pointerEvents: "none"
   });
 
-  document.body.appendChild(blackScreen);
-
-  /*
-   * Small pause while completely black.
-   */
+  document.body.appendChild(
+    blackScreen
+  );
 
   setTimeout(() => {
 
     /*
-     * Now reveal the GIF underneath.
+     * GIF appears underneath.
      */
 
     showGifScreen();
-
-    /*
-     * Fade the black layer away.
-     */
 
     requestAnimationFrame(() => {
 
@@ -386,11 +582,6 @@ function showBlackFadeIn() {
       });
 
     });
-
-    /*
-     * Remove the black layer after
-     * the fade has completed.
-     */
 
     setTimeout(() => {
 
@@ -404,7 +595,7 @@ function showBlackFadeIn() {
 
 /*
  * =========================================================
- * 5. WINDOWS95HAPPYYAY.GIF
+ * 6. WINDOWS95HAPPYYAY.GIF
  * =========================================================
  */
 
@@ -447,17 +638,17 @@ function showGifScreen() {
     objectFit: "contain"
   });
 
-  gifScreen.appendChild(gif);
+  gifScreen.appendChild(
+    gif
+  );
+
+  document.body.appendChild(
+    gifScreen
+  );
+
 
   /*
-   * Put GIF on the page BEFORE the black
-   * fade layer is removed.
-   */
-
-  document.body.appendChild(gifScreen);
-
-  /*
-   * Keep GIF visible.
+   * Keep the GIF visible.
    */
 
   setTimeout(() => {
@@ -473,7 +664,7 @@ function showGifScreen() {
       gifScreen.remove();
 
       /*
-       * 6. NOW show XP LOGIN SCREEN.
+       * 7. EXISTING LOGIN SCREEN
        */
 
       const loginScreen =
@@ -664,11 +855,6 @@ function loginAsGuest() {
   guestUser.classList.remove(
     "selected"
   );
-
-  /*
-   * ONLY AFTER LOGIN:
-   * go to desktop.
-   */
 
   setTimeout(() => {
 
