@@ -1,60 +1,81 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>𝖂𝖔𝖜𝕷𝖔𝖆𝖉𝖎𝖓𝖌𝕭𝖎𝖔𝖘</title>
 
+    <link
+        rel="icon"
+        type="image/ico"
+        sizes="32x32"
+        href="/Assets/Images/Windows_XP-min.ico"
+    />
+
+    <!-- XP CSS can load while the GIF is playing.
+         It does NOT advance anything by itself. -->
+
+    <link
+        rel="preload"
+        href="/Start_Menu/Log_Off/Base/Log_Off.css"
+        as="style"
+        onload="this.onload=null;this.rel='stylesheet';"
+    />
+
+    <link rel="stylesheet" href="/Loader_Login/Loader.css" />
+    <link rel="stylesheet" href="/Loader_Login/Login_Screen.css" />
+
     <style>
-        /* First 10-second GIF screen */
+        /* ============================= */
+        /* BIOS GIF INTRO                 */
+        /* ============================= */
+
         #intro {
             position: fixed;
             inset: 0;
+
             background-image: url('Assets/biosgif.gif');
             background-size: 55% auto;
             background-position: top left;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-color: #000;
-            z-index: 9999;
+            background-color: #000000;
+
+            z-index: 999999;
         }
 
-        /* The XP page starts completely hidden */
+        /* XP system is completely hidden
+           until the GIF is finished */
+
         #xp-page {
             display: none;
         }
     </style>
-
-    <!-- Your XP page CSS -->
-    <link rel="preload"
-          href="/Start_Menu/Log_Off/Base/Log_Off.css"
-          as="style"
-          onload="this.onload=null;this.rel='stylesheet';">
-
-    <link rel="stylesheet" href="/Loader_Login/Loader.css">
-    <link rel="stylesheet" href="/Loader_Login/Login_Screen.css">
-
-    <script src="/Loader_Login/Loader_Login.js"></script>
-    <script src="/Bureau/Bureau.js"></script>
 </head>
 
 <body>
 
     <!-- ============================= -->
-    <!-- 10 SECOND INTRO -->
+    <!-- 10 SECOND BIOS GIF             -->
     <!-- ============================= -->
 
     <div id="intro"></div>
 
 
     <!-- ============================= -->
-    <!-- YOUR WHOLE XP PAGE -->
+    <!-- WINDOWS XP PAGE                -->
     <!-- ============================= -->
 
     <div id="xp-page">
 
+        <!-- ========================= -->
+        <!-- XP LOADER                  -->
+        <!-- ========================= -->
+
         <div id="loader">
+
             <img
                 src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
                 alt="Windows XP Logo"
@@ -69,17 +90,22 @@
 
             <img
                 src="/Assets/Images/Microsoft logo démarrage.png"
-                alt="Microsoft logo"
+                alt="Logo Microsoft"
                 id="Copyright"
             />
 
             <img
                 src="/Assets/Images/Copyright.png"
-                alt="Copyright"
+                alt="Copyright Microsoft"
                 id="Microsoft"
             />
+
         </div>
 
+
+        <!-- ========================= -->
+        <!-- LOGIN SCREEN               -->
+        <!-- ========================= -->
 
         <div id="login-screen" class="hidden">
 
@@ -124,6 +150,10 @@
             </div>
 
 
+            <!-- ========================= -->
+            <!-- BOTTOM BAR                 -->
+            <!-- ========================= -->
+
             <div id="bottom-bar">
 
                 <div id="left-section">
@@ -146,7 +176,7 @@
 
 
                 <p id="right-text">
-                    After you log on, you can add or change accounts.<br>
+                    After you log on, you can add or change accounts.<br />
                     Just go to Control Panel and click User Accounts.
                 </p>
 
@@ -158,23 +188,9 @@
 
 
     <!-- ============================= -->
-    <!-- SWITCH AFTER 10 SECONDS -->
+    <!-- ANIMATED BROWSER TITLE         -->
     <!-- ============================= -->
 
-    <script>
-        setTimeout(function () {
-
-            // Remove the GIF intro completely
-            document.getElementById("intro").remove();
-
-            // Show the entire XP page
-            document.getElementById("xp-page").style.display = "block";
-
-        }, 10000);
-    </script>
-
-
-    <!-- Animated browser title -->
     <script>
         const titleText = "RAUTATIENTORI";
         let titleIndex = 1;
@@ -198,6 +214,61 @@
         }
 
         animateTitle();
+    </script>
+
+
+    <!-- ============================= -->
+    <!-- WAIT 10 SECONDS                -->
+    <!-- THEN START XP FROM THE START   -->
+    <!-- ============================= -->
+
+    <script>
+        setTimeout(function () {
+
+            /*
+             * Remove the BIOS GIF completely.
+             */
+            const intro = document.getElementById("intro");
+
+            if (intro) {
+                intro.remove();
+            }
+
+
+            /*
+             * Reveal the XP page.
+             */
+            const xpPage = document.getElementById("xp-page");
+
+            if (xpPage) {
+                xpPage.style.display = "block";
+            }
+
+
+            /*
+             * NOW load Loader_Login.js.
+             *
+             * It was NOT running during the
+             * 10-second GIF, so the XP loader
+             * starts from the beginning.
+             */
+            const loaderScript = document.createElement("script");
+
+            loaderScript.src = "/Loader_Login/Loader_Login.js";
+
+            document.body.appendChild(loaderScript);
+
+
+            /*
+             * Load Bureau.js as well.
+             */
+            const bureauScript = document.createElement("script");
+
+            bureauScript.src = "/Bureau/Bureau.js";
+
+            document.body.appendChild(bureauScript);
+
+        }, 10000);
     </script>
 
 </body>
