@@ -1,472 +1,325 @@
-// ================================
-// Loader_Login.js
-// ================================
+window.addEventListener("load", function () {
+  setTimeout(() => {
+    const loader = document.getElementById("loader");
+    const loginScreen = document.getElementById("login-screen");
 
-window.addEventListener("load", () => {
-  const loader = document.getElementById("loader");
-  const loginScreen = document.getElementById("login-screen");
+    if (loader && loginScreen) {
+      loader.style.display = "none";
 
-  if (!loader || !loginScreen) {
-    console.error("Loader or login screen not found.");
-    return;
-  }
+      const blackScreen = document.createElement("div");
+      blackScreen.style.position = "fixed";
+      blackScreen.style.inset = "0";
+      blackScreen.style.background = "black";
+      blackScreen.style.zIndex = "10000";
+      blackScreen.style.opacity = "1";
 
-  // Hide the original loader and login screen
-  // while BIOS is running.
-  loader.style.display = "none";
-  loginScreen.classList.add("hidden");
+      document.body.appendChild(blackScreen);
 
-  // BIOS → FULL-SCREEN GIF → ORIGINAL #loader
-  showComputerInfoScreen(loader);
+      setTimeout(() => {
+        const transitionDiv = document.createElement("div");
+
+        transitionDiv.id = "transition-screen";
+        transitionDiv.style.position = "fixed";
+        transitionDiv.style.inset = "0";
+        transitionDiv.style.zIndex = "10001";
+        transitionDiv.style.display = "flex";
+        transitionDiv.style.alignItems = "center";
+        transitionDiv.style.justifyContent = "center";
+        transitionDiv.style.background = "black";
+
+        document.body.appendChild(transitionDiv);
+
+        blackScreen.remove();
+
+        fetch("/Loader_Login/Startup_Transition.html")
+          .then((response) => response.text())
+          .then((html) => {
+            transitionDiv.innerHTML = html;
+
+            setTimeout(() => {
+              transitionDiv.remove();
+              loginScreen.classList.remove("hidden");
+            }, 800);
+          })
+          .catch((error) => {
+            console.error("Failed to load startup transition:", error);
+
+            transitionDiv.remove();
+            loginScreen.classList.remove("hidden");
+          });
+      }, 1000);
+    } else {
+      console.error("Missing #loader or #login-screen");
+    }
+  }, 4000);
 });
 
+window.addEventListener("DOMContentLoaded", function () {
+  document.body.classList.add("fade-in-steps");
+});
 
-// ==================================================
-// BIOS SCREEN
-// ==================================================
-
-function showComputerInfoScreen(loader) {
-  const biosScreen = document.createElement("div");
-
-  biosScreen.id = "bios-screen";
-
-  Object.assign(biosScreen.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100vw",
-    height: "100vh",
-    margin: "0",
-    padding: "30px",
-    boxSizing: "border-box",
-    background: "#000",
-    color: "#fff",
-    fontFamily: "monospace",
-    fontSize: "16px",
-    lineHeight: "1.5",
-    zIndex: "999999",
-    overflow: "hidden"
-  });
-
-  biosScreen.innerHTML = `
-    <div>
-      <div>American Megatrends</div>
-      <div>Copyright (C) 1985-2005, American Megatrends, Inc.</div>
-      <br>
-
-      <div>BIOS Date: 04/21/05</div>
-      <div>CPU: Intel(R) Pentium(R) 4 CPU</div>
-      <div>Memory Test: 640K OK</div>
-      <br>
-
-      <div>Detecting Primary Master ...</div>
-      <div>Detecting Primary Slave ...</div>
-      <div>Detecting Secondary Master ...</div>
-      <div>Detecting Secondary Slave ...</div>
-      <br>
-
-      <div>USB Device(s): 1 Keyboard, 1 Mouse</div>
-      <br>
-
-      <div>Press DEL to enter SETUP</div>
-      <br>
-
-      <div>Starting Windows...</div>
-    </div>
-  `;
-
-  document.body.appendChild(biosScreen);
-
-  // BIOS duration
-  setTimeout(() => {
-    biosScreen.style.transition = "opacity 300ms ease";
-    biosScreen.style.opacity = "0";
-
-    setTimeout(() => {
-      biosScreen.remove();
-
-      // BIOS → FULL-SCREEN GIF
-      showGifScreenBeforeLoader(loader);
-    }, 300);
-
-  }, 3500);
+function switchUserLogOn() {
+  localStorage.setItem("fromSwitchUser", "1");
+  window.location.href = "/Bureau/Bureau.html";
 }
 
+let hasLoggedInAsGuest = false;
 
-// ==================================================
-// FULL-SCREEN GIF
-// This takes the job of the NEW spinning screen.
-// ==================================================
+function loginAsGuest() {
+  if (hasLoggedInAsGuest) return;
 
-function showGifScreenBeforeLoader(loader) {
-  const gifScreen = document.createElement("div");
+  hasLoggedInAsGuest = true;
 
-  gifScreen.id = "startup-gif-screen";
+  const leftSection = document.getElementById("left-section");
+  const rightText = document.getElementById("right-text");
+  const leftPanel = document.getElementById("left-panel");
+  const userList = document.getElementById("user-list");
+  const guestUser = document.getElementById("guest-user");
 
-  Object.assign(gifScreen.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    right: "0",
-    bottom: "0",
-    width: "100vw",
-    height: "100vh",
-    margin: "0",
-    padding: "0",
-    border: "0",
-    background: "#000",
-    overflow: "hidden",
-    zIndex: "999999",
-    display: "block",
-    opacity: "1"
-  });
-
-  const gif = document.createElement("img");
-
-  gif.src = "/Assets/Windows95Happyyay.gif";
-  gif.alt = "";
-
-  Object.assign(gif.style, {
-    position: "absolute",
-    top: "0",
-    left: "0",
-    right: "0",
-    bottom: "0",
-    width: "100vw",
-    height: "100vh",
-    margin: "0",
-    padding: "0",
-    border: "0",
-    display: "block",
-    objectFit: "cover"
-  });
-
-  gifScreen.appendChild(gif);
-  document.body.appendChild(gifScreen);
-
-  /*
-   * Let the FULL-SCREEN GIF play first.
-   * Then reveal the ORIGINAL #loader.
-   */
-  setTimeout(() => {
-    gifScreen.style.transition = "opacity 500ms ease";
-    gifScreen.style.opacity = "0";
-
-    setTimeout(() => {
-      gifScreen.remove();
-
-      // GIF → ORIGINAL #loader
-      showExistingLoader(loader);
-
-    }, 500);
-
-  }, 3000);
-}
-
-
-// ==================================================
-// ORIGINAL LOADER
-// KEEP #loader FROM index.html
-// ==================================================
-
-function showExistingLoader(loader) {
-  // This is the ORIGINAL #loader.
-  loader.style.display = "flex";
-  loader.style.opacity = "1";
-
-  /*
-   * Give the original XP loader time to run.
-   */
-  setTimeout(() => {
-    loader.style.transition = "opacity 700ms ease";
-    loader.style.opacity = "0";
-
-    setTimeout(() => {
-      loader.style.display = "none";
-      loader.style.opacity = "1";
-      loader.style.transition = "";
-
-      // ORIGINAL LOADING SCREEN TRANSITION
-      showLoadingScreenTransition();
-
-    }, 700);
-
-  }, 4000);
-}
-
-
-// ==================================================
-// LOADING SCREEN TRANSITION
-// ==================================================
-
-function showLoadingScreenTransition() {
-  fetch("/Loader_Login/Startup_Transition.html")
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(
-          `Failed to load Startup_Transition.html: ${response.status}`
-        );
-      }
-
-      return response.text();
-    })
-    .then(html => {
-      const transition = document.createElement("div");
-
-      transition.id = "loading-screen-transition";
-
-      Object.assign(transition.style, {
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width: "100vw",
-        height: "100vh",
-        margin: "0",
-        padding: "0",
-        zIndex: "999998",
-        opacity: "1"
-      });
-
-      transition.innerHTML = html;
-
-      document.body.appendChild(transition);
-
-      /*
-       * Let the existing transition play.
-       */
-      setTimeout(() => {
-        transition.style.transition = "opacity 700ms ease";
-        transition.style.opacity = "0";
-
-        setTimeout(() => {
-          transition.remove();
-
-          // Transition → BLACK FADE
-          showBlackFadeIn();
-
-        }, 700);
-
-      }, 800);
-    })
-    .catch(error => {
-      console.error("Loading screen transition error:", error);
-
-      // If the transition cannot load,
-      // continue with the startup sequence.
-      showBlackFadeIn();
-    });
-}
-
-
-// ==================================================
-// BLACK FADE
-// ==================================================
-
-function showBlackFadeIn() {
-  const blackOverlay = document.createElement("div");
-
-  blackOverlay.id = "startup-black-fade";
-
-  Object.assign(blackOverlay.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100vw",
-    height: "100vh",
-    margin: "0",
-    padding: "0",
-    background: "#000",
-    zIndex: "999999",
-    opacity: "1",
-    display: "block"
-  });
-
-  document.body.appendChild(blackOverlay);
-
-  /*
-   * Keep the screen black briefly,
-   * then reveal the GIF underneath.
-   */
-  setTimeout(() => {
-    showGifScreen(blackOverlay);
-  }, 250);
-}
-
-
-// ==================================================
-// EXISTING GIF STAGE
-// ==================================================
-
-function showGifScreen(blackOverlay) {
-  const gifScreen = document.createElement("div");
-
-  gifScreen.id = "gif-screen";
-
-  Object.assign(gifScreen.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    right: "0",
-    bottom: "0",
-    width: "100vw",
-    height: "100vh",
-    margin: "0",
-    padding: "0",
-    border: "0",
-    background: "#000",
-    overflow: "hidden",
-    zIndex: "999998",
-    display: "block",
-    opacity: "1"
-  });
-
-  const gif = document.createElement("img");
-
-  gif.src = "/Assets/Windows95Happyyay.gif";
-  gif.alt = "";
-
-  Object.assign(gif.style, {
-    position: "absolute",
-    top: "0",
-    left: "0",
-    right: "0",
-    bottom: "0",
-    width: "100vw",
-    height: "100vh",
-    margin: "0",
-    padding: "0",
-    border: "0",
-    display: "block",
-    objectFit: "cover"
-  });
-
-  gifScreen.appendChild(gif);
-  document.body.appendChild(gifScreen);
-
-  /*
-   * Fade the black overlay away so the GIF appears
-   * through the black fade.
-   */
-  requestAnimationFrame(() => {
-    blackOverlay.style.transition = "opacity 1000ms ease";
-    blackOverlay.style.opacity = "0";
-
-    setTimeout(() => {
-      blackOverlay.remove();
-    }, 1000);
-  });
-
-  /*
-   * Let the GIF play.
-   * Then fade it out and show the ORIGINAL login screen.
-   */
-  setTimeout(() => {
-    gifScreen.style.transition = "opacity 500ms ease";
-    gifScreen.style.opacity = "0";
-
-    setTimeout(() => {
-      gifScreen.remove();
-
-      showLoginScreen();
-
-    }, 500);
-
-  }, 3000);
-}
-
-
-// ==================================================
-// LOGIN SCREEN
-// ==================================================
-
-function showLoginScreen() {
-  const loginScreen = document.getElementById("login-screen");
-
-  if (!loginScreen) {
-    console.error("Login screen not found.");
+  if (!leftSection || !rightText || !leftPanel || !userList || !guestUser) {
+    console.error("Required login elements are missing.");
+    hasLoggedInAsGuest = false;
     return;
   }
 
-  loginScreen.classList.remove("hidden");
+  const guestSpan = guestUser.querySelector("span");
 
-  loginScreen.style.opacity = "0";
-  loginScreen.style.display = "block";
+  leftPanel.innerHTML = `<p>welcome</p>`;
+  leftPanel.style.paddingTop = "18%";
 
-  requestAnimationFrame(() => {
-    loginScreen.style.transition = "opacity 500ms ease";
-    loginScreen.style.opacity = "1";
-  });
+  const leftPanelP = leftPanel.querySelector("p");
+
+  if (leftPanelP) {
+    Object.assign(leftPanelP.style, {
+      fontSize: "5rem",
+      fontFamily: "Arial, sans-serif",
+      fontStyle: "italic",
+      fontWeight: "bold",
+      textShadow: "2px 3px #3454b4",
+    });
+  }
+
+  if (guestSpan) {
+    guestSpan.insertAdjacentHTML(
+      "afterend",
+      `<p>Loading your personal settings...</p>`
+    );
+  }
+
+  userList.classList.add("is-padding-anim");
+  userList.style.animation = "paddingTopLog 1s forwards";
+
+  setTimeout(() => {
+    userList.classList.remove("is-padding-anim");
+  }, 1000);
+
+  leftSection.style.display = "none";
+  rightText.style.display = "none";
+
+  guestUser.classList.remove("selected");
+
+  setTimeout(() => {
+    window.location.href = "/Bureau/Bureau.html";
+  }, 1000);
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  const userList = document.getElementById("user-list");
+  const users = document.querySelectorAll(".user");
 
-// ==================================================
-// LOGIN / USER SELECTION
-// ==================================================
+  let selectedIndex = null;
+  let hasArrowBeenUsed = false;
 
-function switchUserLogOn() {
+  function updateUserSelection(index) {
+    users.forEach((user, i) => {
+      user.classList.toggle("selected", i === index);
+    });
+  }
+
+  updateUserSelection(selectedIndex);
+
+  document.addEventListener("keydown", function (e) {
+    const guestUser = document.getElementById("guest-user");
+
+    if (!guestUser) return;
+
+    if (
+      e.key === "Enter" &&
+      guestUser.classList.contains("selected")
+    ) {
+      if (
+        window.location.pathname.endsWith(
+          "/Start_Menu/Log_Off/Transition/Switch_User.html"
+        )
+      ) {
+        switchUserLogOn();
+      } else {
+        loginAsGuest();
+      }
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!hasArrowBeenUsed) {
+        selectedIndex = 0;
+        updateUserSelection(selectedIndex);
+        hasArrowBeenUsed = true;
+
+        users.forEach((user, i) => {
+          if (i === selectedIndex) {
+            user.style.opacity = "1";
+            user.style.animation = "";
+          } else {
+            user.style.opacity = "0.5";
+            user.style.animation =
+              "glitchOpacityReverse 0.4s steps(5, end)";
+          }
+        });
+
+        e.preventDefault();
+        return;
+      }
+    }
+
+    if (hasArrowBeenUsed) {
+      if (e.key === "ArrowDown") {
+        if (selectedIndex < users.length - 1) {
+          selectedIndex++;
+          updateUserSelection(selectedIndex);
+
+          users.forEach((user, i) => {
+            if (i === selectedIndex) {
+              user.style.opacity = "1";
+              user.style.animation = "";
+            } else {
+              user.style.opacity = "0.5";
+              user.style.animation =
+                "glitchOpacityReverse 0.4s steps(5, end)";
+            }
+          });
+        }
+
+        e.preventDefault();
+      } else if (e.key === "ArrowUp") {
+        if (selectedIndex > 0) {
+          selectedIndex--;
+          updateUserSelection(selectedIndex);
+
+          users.forEach((user, i) => {
+            if (i === selectedIndex) {
+              user.style.opacity = "1";
+              user.style.animation = "";
+            } else {
+              user.style.opacity = "0.5";
+              user.style.animation =
+                "glitchOpacityReverse 0.4s steps(5, end)";
+            }
+          });
+        }
+
+        e.preventDefault();
+      }
+    }
+  });
+
+  if (!userList || users.length === 0) {
+    console.error("Element '#user-list' or '.user' missing!");
+    return;
+  }
+
+  userList.addEventListener("mouseenter", function () {
+    const hasSelected = Array.from(users).some((user) =>
+      user.classList.contains("selected")
+    );
+
+    if (hasSelected) return;
+
+    users.forEach((user) => {
+      user.style.opacity = "0.5";
+      user.style.animation =
+        "glitchOpacityReverse 0.4s steps(5, end)";
+    });
+  });
+
+  userList.addEventListener("mouseleave", function () {
+    const hasSelected = Array.from(users).some((user) =>
+      user.classList.contains("selected")
+    );
+
+    if (hasSelected) return;
+
+    users.forEach((user) => {
+      user.style.opacity = "1";
+      user.style.animation =
+        "glitchOpacity 0.4s steps(5, end)";
+    });
+  });
+
+  users.forEach((user) => {
+    user.addEventListener("mouseenter", function () {
+      user.style.opacity = "1";
+      user.style.animation = "";
+    });
+
+    user.addEventListener("mouseleave", function () {
+      if (user.classList.contains("selected")) {
+        user.style.opacity = "1";
+        user.style.animation = "";
+      } else {
+        if (
+          userList.matches(":hover") &&
+          !userList.classList.contains("is-padding-anim")
+        ) {
+          user.style.opacity = "0.5";
+          user.style.animation =
+            "glitchOpacityReverse 0.4s steps(5, end)";
+        }
+      }
+    });
+  });
+
+  users.forEach((user) => {
+    const userimg = user.querySelector("img");
+
+    if (userimg) {
+      user.addEventListener("mouseenter", function () {
+        userimg.style.border = "2px solid #bfa304";
+      });
+
+      user.addEventListener("mouseleave", function () {
+        userimg.style.border = "2px solid white";
+      });
+    }
+  });
+
   const guestUser = document.getElementById("guest-user");
 
   if (guestUser) {
-    guestUser.click();
-  }
-}
+    guestUser.addEventListener("mousedown", function () {
+      const guestP = guestUser.querySelector("p");
 
-
-function loginAsGuest() {
-  const loginScreen = document.getElementById("login-screen");
-
-  if (!loginScreen) {
-    return;
+      if (guestP) {
+        guestP.style.color = "white";
+      }
+    });
   }
 
-  loginScreen.style.transition = "opacity 500ms ease";
-  loginScreen.style.opacity = "0";
+  users.forEach((user) => {
+    user.addEventListener("mousedown", function () {
+      users.forEach((u) => u.classList.remove("selected"));
+      this.classList.add("selected");
+    });
 
-  setTimeout(() => {
-    loginScreen.classList.add("hidden");
-    loginScreen.style.display = "none";
+    user.addEventListener("mouseup", function () {
+      users.forEach((u) => u.classList.remove("selected"));
+      this.style.opacity = "1";
+    });
 
-    /*
-     * Desktop is handled by the existing Bureau system.
-     */
-    if (typeof showDesktop === "function") {
-      showDesktop();
-    }
-
-  }, 500);
-}
-
-
-// ==================================================
-// KEYBOARD / MOUSE USER SELECTION
-// ==================================================
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Enter") {
-    const loginScreen = document.getElementById("login-screen");
-
-    if (
-      loginScreen &&
-      !loginScreen.classList.contains("hidden")
-    ) {
-      switchUserLogOn();
-    }
-  }
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const guestUser = document.getElementById("guest-user");
-
-  if (!guestUser) {
-    return;
-  }
-
-  guestUser.addEventListener("mouseenter", () => {
-    guestUser.classList.add("selected");
-  });
-
-  guestUser.addEventListener("mouseleave", () => {
-    guestUser.classList.remove("selected");
+    document.addEventListener("click", () => {
+      user.classList.remove("selected");
+      hasArrowBeenUsed = false;
+      user.style.opacity = "1";
+    });
   });
 });
