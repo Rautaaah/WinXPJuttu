@@ -3,21 +3,22 @@
  * WINDOWS XP PORTFOLIO STARTUP / LOGIN
  * =========================================================
  *
- * Startup flow:
+ * STARTUP ORDER:
  *
- *   WINDOWS XP LOADING SCREEN
+ *   1. BIOS / COMPUTER INFORMATION
  *          ↓
- *   LoadingScreenTransition / Startup_Transition.html
+ *   2. WINDOWS XP SPINNING LOADING SCREEN
  *          ↓
- *   CMD / COMPUTER INFO SCREEN
+ *   3. WINDOWS XP LoadingScreenTransition
+ *      / Startup_Transition.html
  *          ↓
- *   Windows95Happyyay.gif
+ *   4. Windows95Happyyay.gif
  *          ↓
- *   WINDOWS XP LOGIN SCREEN
+ *   5. WINDOWS XP LOGIN SCREEN
  *          ↓
- *   User logs in
+ *   6. USER LOGS IN
  *          ↓
- *   Bureau.html / Desktop
+ *   7. Bureau.html / DESKTOP
  *
  * IMPORTANT:
  * The desktop is NOT loaded during startup.
@@ -27,7 +28,7 @@
 
 /*
  * =========================================================
- * STARTUP SEQUENCE
+ * STARTUP
  * =========================================================
  */
 
@@ -41,254 +42,93 @@ window.addEventListener("load", function () {
     return;
   }
 
-
   /*
-   * =======================================================
-   * 1. LET THE ORIGINAL WINDOWS XP LOADING SCREEN RUN
-   * =======================================================
-   *
-   * The HTML #loader is the actual XP loading screen.
-   *
-   * Do NOT hide it immediately.
-   *
-   * This delay gives the original XP loading animation
-   * time to play before we move to the next stage.
+   * FIRST:
+   * Show the BIOS / computer information screen.
    */
 
-  setTimeout(() => {
-
-    /*
-     * Hide the original XP loading screen.
-     */
-
-    loader.style.display = "none";
-
-
-    /*
-     * =====================================================
-     * 2. EXISTING WINDOWS XP LOADING TRANSITION
-     * =====================================================
-     *
-     * This loads:
-     *
-     * /Loader_Login/Startup_Transition.html
-     *
-     * This is your existing LoadingScreenTransition.
-     */
-
-    const transitionScreen = document.createElement("div");
-
-    transitionScreen.id = "transition-screen";
-
-    Object.assign(transitionScreen.style, {
-      position: "fixed",
-      inset: "0",
-      width: "100%",
-      height: "100%",
-      background: "#000",
-      zIndex: "10000",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    });
-
-    document.body.appendChild(transitionScreen);
-
-
-    fetch("/Loader_Login/Startup_Transition.html")
-      .then((response) => {
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP ${response.status}`
-          );
-        }
-
-        return response.text();
-
-      })
-      .then((html) => {
-
-        transitionScreen.innerHTML = html;
-
-
-        /*
-         * Give the existing XP transition time to play.
-         */
-
-        setTimeout(() => {
-
-          transitionScreen.remove();
-
-          showComputerInfoScreen();
-
-        }, 800);
-
-      })
-      .catch((error) => {
-
-        console.error(
-          "Failed to load startup transition:",
-          error
-        );
-
-
-        /*
-         * If the transition file fails,
-         * continue with the startup sequence.
-         */
-
-        transitionScreen.remove();
-
-        showComputerInfoScreen();
-
-      });
-
-  }, 4000);
+  showComputerInfoScreen(loader);
 
 });
 
 
 /*
  * =========================================================
- * 3. CMD / COMPUTER INFORMATION SCREEN
+ * 1. BIOS / COMPUTER INFORMATION SCREEN
  * =========================================================
  */
 
-function showComputerInfoScreen() {
+function showComputerInfoScreen(loader) {
 
-  const bootScreen =
-    document.createElement("div");
+  const bootScreen = document.createElement("div");
 
-  bootScreen.id =
-    "custom-boot-screen";
-
+  bootScreen.id = "custom-boot-screen";
 
   Object.assign(bootScreen.style, {
-
     position: "fixed",
     inset: "0",
-
     width: "100%",
     height: "100%",
-
     background: "#000",
-
     color: "#c0c0c0",
-
-    zIndex: "10001",
-
-    fontFamily:
-      "Consolas, 'Courier New', monospace",
-
+    zIndex: "10000",
+    fontFamily: "Consolas, 'Courier New', monospace",
     fontSize: "15px",
-
     lineHeight: "1.5",
-
     padding: "28px",
-
     boxSizing: "border-box",
-
     overflow: "hidden",
-
     whiteSpace: "pre-wrap",
-
-    cursor: "default",
-
+    cursor: "default"
   });
-
 
   document.body.appendChild(bootScreen);
 
 
-  /*
-   * Computer information.
-   */
-
   const bootLines = [
 
     "RAUTATIENTORI SYSTEM BIOS",
-
     "==========================================",
-
     "",
-
-    "Copyright (C) Rautatientori Industries",
-
+    "Copyright (C) Rautatietori Industries",
     "",
-
     "SYSTEM INFORMATION",
-
     "------------------------------------------",
-
+    "",
     "CPU ................. DETECTED",
-
     "CPU SPEED ........... 3.40 GHz",
-
     "MEMORY .............. 16384 MB OK",
-
     "STORAGE ............. 512 GB OK",
-
     "DISPLAY ............. OK",
-
     "AUDIO ............... OK",
-
     "NETWORK ............. OK",
-
     "",
-
     "Initializing hardware...",
-
     "",
-
     "[ OK ] CPU initialization",
-
     "[ OK ] Memory check",
-
     "[ OK ] Storage check",
-
     "[ OK ] Display adapter",
-
     "[ OK ] Audio device",
-
     "[ OK ] Network device",
-
     "[ OK ] System devices",
-
     "",
-
     "Checking system files...",
-
     "",
-
     "[ OK ] WINXP_CORE.SYS",
-
     "[ OK ] USER32.DLL",
-
     "[ OK ] KERNEL32.DLL",
-
     "[ OK ] SHELL32.DLL",
-
     "[ OK ] RAUTATIENTORI.EXE",
-
     "",
-
     "Loading Windows components...",
-
     "",
-
     "[ OK ] Login subsystem",
-
     "[ OK ] User profile system",
-
     "[ OK ] Desktop environment",
-
     "",
-
     "System initialization complete.",
-
     "",
-
     "Starting Windows..."
 
   ];
@@ -297,26 +137,26 @@ function showComputerInfoScreen() {
   let lineIndex = 0;
 
 
-  /*
-   * Type each line.
-   */
-
   function addBootLine() {
 
     if (lineIndex >= bootLines.length) {
 
       /*
-       * CMD screen finished.
+       * BIOS finished.
+       *
+       * Now start the REAL Windows XP
+       * loading screen.
        */
 
       setTimeout(() => {
 
-        showGifScreen();
+        bootScreen.remove();
+
+        showWindowsXPLoader(loader);
 
       }, 700);
 
       return;
-
     }
 
 
@@ -349,6 +189,176 @@ function showComputerInfoScreen() {
 
 /*
  * =========================================================
+ * 2. WINDOWS XP SPINNING LOADING SCREEN
+ * =========================================================
+ *
+ * This uses the EXISTING #loader from index.html.
+ *
+ * It contains:
+ *
+ *   Windows XP logo
+ *   Progress bar
+ *   Microsoft logo
+ *   Copyright
+ *
+ * We do NOT recreate it.
+ * We simply show the existing loader.
+ * =========================================================
+ */
+
+function showWindowsXPLoader(loader) {
+
+  /*
+   * Make sure the XP loading screen is visible.
+   */
+
+  loader.style.display = "";
+
+
+  /*
+   * Make sure it is above everything else.
+   */
+
+  loader.style.position = "fixed";
+  loader.style.inset = "0";
+  loader.style.zIndex = "10000";
+
+
+  /*
+   * Let the XP loading screen run.
+   *
+   * Change 4000 if you want it longer/shorter.
+   */
+
+  setTimeout(() => {
+
+    /*
+     * Hide the XP loading screen.
+     */
+
+    loader.style.display = "none";
+
+
+    /*
+     * Continue to the XP transition.
+     */
+
+    showLoadingScreenTransition();
+
+  }, 4000);
+
+}
+
+
+
+/*
+ * =========================================================
+ * 3. WINDOWS XP LOADING SCREEN TRANSITION
+ * =========================================================
+ *
+ * Existing file:
+ *
+ * /Loader_Login/Startup_Transition.html
+ *
+ * This is shown AFTER the XP spinning/loading screen.
+ * =========================================================
+ */
+
+function showLoadingScreenTransition() {
+
+  const transitionScreen =
+    document.createElement("div");
+
+
+  transitionScreen.id =
+    "transition-screen";
+
+
+  Object.assign(
+    transitionScreen.style,
+    {
+      position: "fixed",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      background: "#000",
+      zIndex: "10001",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  );
+
+
+  document.body.appendChild(
+    transitionScreen
+  );
+
+
+  fetch(
+    "/Loader_Login/Startup_Transition.html"
+  )
+
+    .then((response) => {
+
+      if (!response.ok) {
+
+        throw new Error(
+          `HTTP ${response.status}`
+        );
+
+      }
+
+      return response.text();
+
+    })
+
+    .then((html) => {
+
+      transitionScreen.innerHTML =
+        html;
+
+
+      /*
+       * Let the existing transition
+       * play before continuing.
+       */
+
+      setTimeout(() => {
+
+        transitionScreen.remove();
+
+        showGifScreen();
+
+      }, 800);
+
+    })
+
+    .catch((error) => {
+
+      console.error(
+        "Failed to load startup transition:",
+        error
+      );
+
+
+      /*
+       * Don't get stuck if the transition
+       * file cannot be loaded.
+       */
+
+      transitionScreen.remove();
+
+      showGifScreen();
+
+    });
+
+}
+
+
+
+/*
+ * =========================================================
  * 4. WINDOWS95HAPPYYAY.GIF
  * =========================================================
  */
@@ -363,29 +373,21 @@ function showGifScreen() {
     "gif-startup-screen";
 
 
-  Object.assign(gifScreen.style, {
-
-    position: "fixed",
-
-    inset: "0",
-
-    width: "100%",
-
-    height: "100%",
-
-    background: "#000",
-
-    zIndex: "10002",
-
-    display: "flex",
-
-    alignItems: "center",
-
-    justifyContent: "center",
-
-    opacity: "1",
-
-  });
+  Object.assign(
+    gifScreen.style,
+    {
+      position: "fixed",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      background: "#000",
+      zIndex: "10002",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      opacity: "1"
+    }
+  );
 
 
   const gif =
@@ -400,30 +402,28 @@ function showGifScreen() {
     "Windows startup animation";
 
 
-  Object.assign(gif.style, {
-
-    display: "block",
-
-    maxWidth: "100%",
-
-    maxHeight: "100%",
-
-    width: "auto",
-
-    height: "auto",
-
-    objectFit: "contain",
-
-  });
+  Object.assign(
+    gif.style,
+    {
+      display: "block",
+      maxWidth: "100%",
+      maxHeight: "100%",
+      width: "auto",
+      height: "auto",
+      objectFit: "contain"
+    }
+  );
 
 
   gifScreen.appendChild(gif);
 
-  document.body.appendChild(gifScreen);
+  document.body.appendChild(
+    gifScreen
+  );
 
 
   /*
-   * Keep the GIF visible for 3 seconds.
+   * Keep the GIF on screen for 3 seconds.
    */
 
   setTimeout(() => {
@@ -431,12 +431,13 @@ function showGifScreen() {
     gifScreen.style.transition =
       "opacity 500ms ease";
 
-    gifScreen.style.opacity = "0";
+    gifScreen.style.opacity =
+      "0";
 
 
     /*
-     * Reveal the LOGIN SCREEN only after
-     * the GIF has faded away.
+     * After the fade:
+     * SHOW THE XP LOGIN SCREEN.
      */
 
     setTimeout(() => {
@@ -444,27 +445,32 @@ function showGifScreen() {
       gifScreen.remove();
 
 
-      /*
-       * IMPORTANT:
-       *
-       * This is the XP LOGIN SCREEN.
-       *
-       * We do NOT go to Bureau.html here.
-       */
-
       const loginScreen =
         document.getElementById(
           "login-screen"
         );
 
 
-      if (loginScreen) {
+      if (!loginScreen) {
 
-        loginScreen.classList.remove(
-          "hidden"
+        console.error(
+          "Missing #login-screen"
         );
 
+        return;
+
       }
+
+
+      /*
+       * ===================================================
+       * 5. WINDOWS XP LOGIN SCREEN
+       * ===================================================
+       */
+
+      loginScreen.classList.remove(
+        "hidden"
+      );
 
     }, 500);
 
@@ -542,20 +548,24 @@ function loginAsGuest() {
       "left-section"
     );
 
+
   const rightText =
     document.getElementById(
       "right-text"
     );
+
 
   const leftPanel =
     document.getElementById(
       "left-panel"
     );
 
+
   const userList =
     document.getElementById(
       "user-list"
     );
+
 
   const guestUser =
     document.getElementById(
@@ -575,6 +585,7 @@ function loginAsGuest() {
       "Required login elements are missing."
     );
 
+
     hasLoggedInAsGuest = false;
 
     return;
@@ -589,7 +600,7 @@ function loginAsGuest() {
 
 
   /*
-   * Change the left panel.
+   * Change left panel to "welcome".
    */
 
   leftPanel.innerHTML =
@@ -611,19 +622,13 @@ function loginAsGuest() {
     Object.assign(
       leftPanelP.style,
       {
-
         fontSize: "5rem",
-
         fontFamily:
           "Arial, sans-serif",
-
         fontStyle: "italic",
-
         fontWeight: "bold",
-
         textShadow:
-          "2px 3px #3454b4",
-
+          "2px 3px #3454b4"
       }
     );
 
@@ -667,7 +672,7 @@ function loginAsGuest() {
 
 
   /*
-   * Hide bottom controls.
+   * Hide bottom login controls.
    */
 
   leftSection.style.display =
@@ -685,10 +690,10 @@ function loginAsGuest() {
 
   /*
    * =======================================================
-   * ACTUAL LOGIN
+   * 6. ACTUAL LOGIN
    * =======================================================
    *
-   * ONLY HERE does the desktop load.
+   * ONLY NOW does the desktop load.
    */
 
   setTimeout(() => {
@@ -753,6 +758,10 @@ document.addEventListener(
 
     }
 
+
+    /*
+     * Initially no user selected.
+     */
 
     updateUserSelection(
       selectedIndex
@@ -822,6 +831,11 @@ document.addEventListener(
           e.key === "ArrowUp"
         ) {
 
+          /*
+           * First arrow press selects
+           * the first user.
+           */
+
           if (!hasArrowBeenUsed) {
 
             selectedIndex = 0;
@@ -868,6 +882,10 @@ document.addEventListener(
 
         }
 
+
+        /*
+         * Navigation after first selection.
+         */
 
         if (hasArrowBeenUsed) {
 
@@ -1243,6 +1261,10 @@ document.addEventListener(
     users.forEach(
       (user) => {
 
+        /*
+         * Mouse down selects user.
+         */
+
         user.addEventListener(
           "mousedown",
           function () {
@@ -1263,6 +1285,10 @@ document.addEventListener(
         );
 
 
+        /*
+         * Mouse up clears selection styling.
+         */
+
         user.addEventListener(
           "mouseup",
           function () {
@@ -1281,6 +1307,10 @@ document.addEventListener(
           }
         );
 
+
+        /*
+         * Clicking elsewhere clears selection.
+         */
 
         document.addEventListener(
           "click",
