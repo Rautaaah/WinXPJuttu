@@ -29,36 +29,40 @@
 
     <style>
       /* =====================================================
-         RETRO TERMINAL STARTUP SCREEN
+         RETRO TERMINAL STARTUP
          ===================================================== */
 
       #retro-startup {
         position: fixed;
         inset: 0;
-        z-index: 99999;
+
+        z-index: 999999;
 
         background: #050505;
         color: #00ff66;
 
-        font-family: "Courier New", Courier, monospace;
-        font-size: 15px;
+        font-family:
+          "Courier New",
+          Courier,
+          monospace;
 
-        padding: 28px;
+        font-size: 15px;
+        line-height: 1.45;
+
+        padding: 30px;
+
         box-sizing: border-box;
 
         overflow: hidden;
 
-        text-shadow: 0 0 5px rgba(0, 255, 100, 0.5);
+        text-shadow:
+          0 0 4px #00ff66,
+          0 0 10px rgba(0, 255, 102, 0.35);
       }
 
       #retro-terminal {
-        width: 100%;
-        height: 100%;
-
         white-space: pre-wrap;
-        line-height: 1.45;
-
-        overflow: hidden;
+        word-break: break-word;
       }
 
       #terminal-cursor {
@@ -67,38 +71,47 @@
         width: 9px;
         height: 17px;
 
+        margin-left: 2px;
+
         background: #00ff66;
 
         vertical-align: -2px;
 
-        animation: terminalBlink 0.7s steps(1) infinite;
+        box-shadow: 0 0 8px #00ff66;
+
+        animation:
+          terminalBlink 0.7s steps(1) infinite;
       }
 
       @keyframes terminalBlink {
+        0%,
         50% {
+          opacity: 1;
+        }
+
+        51%,
+        100% {
           opacity: 0;
         }
       }
 
 
       /* =====================================================
-         WINDOWS 95 HAPPY SCREEN
+         WINDOWS 95 GIF SCREEN
          ===================================================== */
 
       #happy-screen {
         position: fixed;
         inset: 0;
 
-        z-index: 99998;
-
-        background: #000;
+        z-index: 999998;
 
         display: none;
 
         align-items: center;
         justify-content: center;
 
-        overflow: hidden;
+        background: #000;
       }
 
       #happy-screen img {
@@ -110,26 +123,31 @@
 
 
       /* =====================================================
-         HIDE EXISTING XP STARTUP WHILE INITIAL SEQUENCE RUNS
+         IMPORTANT:
+         The existing XP loader is hidden while our
+         terminal + GIF sequence is running.
          ===================================================== */
 
-      body.starting #loader,
-      body.starting #login-screen {
-        visibility: hidden;
+      body.retro-starting #loader,
+      body.retro-starting #login-screen {
+        visibility: hidden !important;
       }
     </style>
   </head>
 
 
-  <body class="starting">
+  <body class="retro-starting">
 
     <!-- =====================================================
          RETRO TERMINAL
          ===================================================== -->
 
     <div id="retro-startup">
+
       <div id="retro-terminal"></div>
+
       <span id="terminal-cursor"></span>
+
     </div>
 
 
@@ -138,15 +156,17 @@
          ===================================================== -->
 
     <div id="happy-screen">
+
       <img
         src="/Assets/Windows95Happyyay.gif"
         alt="Windows 95"
       />
+
     </div>
 
 
     <!-- =====================================================
-         EXISTING WINDOWS XP BOOT SCREEN
+         EXISTING WINDOWS XP LOADER
          ===================================================== -->
 
     <div id="loader">
@@ -234,7 +254,7 @@
 
 
       <!-- =====================================================
-           BOTTOM LOGIN BAR
+           BOTTOM BAR
            ===================================================== -->
 
       <div id="bottom-bar">
@@ -269,55 +289,84 @@
 
 
     <!-- =====================================================
-         RETRO TERMINAL STARTUP SEQUENCE
+         RETRO TERMINAL SCRIPT
          ===================================================== -->
 
     <script>
-      const terminal = document.getElementById("retro-terminal");
-      const retroStartup = document.getElementById("retro-startup");
-      const happyScreen = document.getElementById("happy-screen");
+      const retroStartup =
+        document.getElementById("retro-startup");
+
+      const terminal =
+        document.getElementById("retro-terminal");
+
+      const happyScreen =
+        document.getElementById("happy-screen");
+
 
       /*
-       * Information displayed by the fake system terminal.
-       *
-       * Some values are pulled from the actual browser so
-       * the screen feels more like a real system diagnostic.
+       * Information shown in the fake computer terminal.
        */
 
       const terminalLines = [
+
         "RAUTATIENTORI SYSTEM BIOS v1.0",
         "Copyright (C) 2026 RAUTATIENTORI",
         "",
+
         "----------------------------------------",
         "        SYSTEM INITIALIZATION",
         "----------------------------------------",
+
         "",
+
         "Initializing system...",
         "",
+
         "CPU............... OK",
         "MEMORY............ OK",
-        "DISPLAY............ OK",
-        "AUDIO.............. OK",
-        "NETWORK............ OK",
-        "STORAGE............ OK",
+        "DISPLAY........... OK",
+        "AUDIO............. OK",
+        "NETWORK........... OK",
+        "STORAGE........... OK",
+
         "",
+
         "Detecting browser...",
         "",
+
         "BROWSER INFORMATION",
         "-------------------",
+
         "User Agent: " + navigator.userAgent,
         "Platform: " + navigator.platform,
         "Language: " + navigator.language,
-        "Screen: " + window.screen.width + "x" + window.screen.height,
-        "Color Depth: " + window.screen.colorDepth + " bit",
-        "Online: " + (navigator.onLine ? "YES" : "NO"),
+
+        "Screen: "
+          + window.screen.width
+          + "x"
+          + window.screen.height,
+
+        "Color Depth: "
+          + window.screen.colorDepth
+          + " bit",
+
+        "Online: "
+          + (navigator.onLine ? "YES" : "NO"),
+
         "",
+
         "Checking system environment...",
+        "Checking display configuration...",
+        "Checking system resources...",
+
         "",
+
         "Loading RAUTATIENTORI environment...",
         "Loading graphical interface...",
         "Loading user profile...",
+
         "",
+
         "SYSTEM CHECK COMPLETE.",
         "",
         "BOOT SEQUENCE READY.",
@@ -327,18 +376,14 @@
 
 
       let lineIndex = 0;
-      let charIndex = 0;
+      let characterIndex = 0;
 
 
       /*
-       * Type the terminal text character by character.
+       * Types the fake terminal text.
        */
 
       function typeTerminal() {
-
-        /*
-         * Finished typing everything.
-         */
 
         if (lineIndex >= terminalLines.length) {
 
@@ -348,100 +393,67 @@
         }
 
 
-        const currentLine = terminalLines[lineIndex];
+        const line =
+          terminalLines[lineIndex];
 
 
-        /*
-         * Still typing the current line.
-         */
+        if (characterIndex < line.length) {
 
-        if (charIndex < currentLine.length) {
+          terminal.textContent +=
+            line.charAt(characterIndex);
 
-          terminal.textContent += currentLine.charAt(charIndex);
+          characterIndex++;
 
-          charIndex++;
+          setTimeout(typeTerminal, 10);
 
-          setTimeout(typeTerminal, 12);
-
-        }
-
-
-        /*
-         * Current line finished.
-         */
-
-        else {
+        } else {
 
           terminal.textContent += "\n";
 
           lineIndex++;
-          charIndex = 0;
+          characterIndex = 0;
 
-          setTimeout(typeTerminal, 90);
-
+          setTimeout(typeTerminal, 65);
         }
-
       }
 
 
       /*
        * Terminal finished.
        *
-       * Show the Windows 95 GIF for exactly 3 seconds.
+       * Show Windows95Happyyay.gif for 3 seconds.
        */
 
       function finishTerminal() {
 
-        /*
-         * Leave the final "Welcome." message on screen
-         * briefly before switching screens.
-         */
-
         setTimeout(() => {
 
-          /*
-           * Hide terminal.
-           */
-
           retroStartup.style.display = "none";
-
-
-          /*
-           * Show black screen + Windows 95 GIF.
-           */
 
           happyScreen.style.display = "flex";
 
 
-          /*
-           * Keep the GIF screen visible for 3 seconds.
-           */
-
           setTimeout(() => {
-
-            /*
-             * Hide GIF.
-             */
 
             happyScreen.style.display = "none";
 
-
             /*
-             * Allow the existing Windows XP loader
-             * to become visible.
+             * NOW allow your normal XP loader
+             * to take over.
              */
 
-            document.body.classList.remove("starting");
+            document.body.classList.remove(
+              "retro-starting"
+            );
 
           }, 3000);
 
         }, 500);
-
       }
 
 
       /*
-       * Start the terminal as soon as the page loads.
+       * Start the sequence.
        */
 
       typeTerminal();
@@ -458,19 +470,14 @@
 
       function animateTitle() {
 
-        document.title = titleText.substring(0, titleIndex);
+        document.title =
+          titleText.substring(0, titleIndex);
 
         titleIndex++;
 
         if (titleIndex > titleText.length) {
           titleIndex = 1;
         }
-
-
-        /*
-         * Faster when the tab is active,
-         * slower when the tab is inactive.
-         */
 
         const delay =
           document.visibilityState === "visible"
@@ -479,7 +486,6 @@
 
         setTimeout(animateTitle, delay);
       }
-
 
       animateTitle();
     </script>
