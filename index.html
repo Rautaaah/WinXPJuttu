@@ -1,269 +1,170 @@
-
 <!DOCTYPE html>
+
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Booting...</title>
-
-  <!-- =========================================================
-       BIOS GIF OVERLAY
-       ========================================================= -->
-
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #000000;
-    }
-
-    #bios-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-
-      background-image: url("Assets/biosgif.gif");
-      background-size: 55% auto;
-      background-position: top left;
-      background-repeat: no-repeat;
-      background-color: #000000;
-
-      z-index: 999999;
-    }
-  </style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 
-  <!-- =========================================================
-       YOUR ORIGINAL FAVICON + CSS
-       ========================================================= -->
+<title>R</title>
 
-  <link
-    rel="icon"
-    type="image/ico"
-    sizes="32x32"
-    href="/Assets/Images/Windows_XP-min.ico"
-  />
+<link
+  rel="icon"
+  type="image/ico"
+  sizes="32x32"
+  href="/Assets/Images/Windows_XP-min.ico"
+/>
 
-  <link
-    rel="preload"
-    href="/Start_Menu/Log_Off/Base/Log_Off.css"
-    as="style"
-    onload="this.onload=null;this.rel='stylesheet';"
-  />
+<link
+  rel="preload"
+  href="/Start_Menu/Log_Off/Base/Log_Off.css"
+  as="style"
+  onload="this.onload=null;this.rel='stylesheet';"
+/>
 
-  <link rel="stylesheet" href="/Loader_Login/Loader.css" />
-  <link rel="stylesheet" href="/Loader_Login/Login_Screen.css" />
+<link rel="stylesheet" href="/Loader_Login/Loader.css" />
+<link rel="stylesheet" href="/Loader_Login/Login_Screen.css" />
 
+<script src="/Loader_Login/Loader_Login.js"></script>
+<script src="/Bureau/Bureau.js"></script>
 
-  <!-- =========================================================
-       YOUR ORIGINAL JAVASCRIPT
-       ========================================================= -->
+<script>
+  window.si =
+    window.si ||
+    function () {
+      (window.siq = window.siq || []).push(arguments);
+    };
+</script>
 
-  <script src="/Loader_Login/Loader_Login.js"></script>
-  <script src="/Bureau/Bureau.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
 
-  <script>
-    window.si =
-      window.si ||
-      function () {
-        (window.siq = window.siq || []).push(arguments);
-      };
-  </script>
+<script>
+  window.va =
+    window.va ||
+    function () {
+      (window.vaq = window.vaq || []).push(arguments);
+    };
+</script>
 
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
 
-  <script>
-    window.va =
-      window.va ||
-      function () {
-        (window.vaq = window.vaq || []).push(arguments);
-      };
-  </script>
+<!-- BIOS background -->
+<style>
+  body {
+    background-image: url("assets/biosgif.gif");
+    background-size: 55% auto;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #000000;
+  }
+</style>
 
-  <script defer src="/_vercel/insights/script.js"></script>
+  </head>
 
-
-  <!-- =========================================================
-       BIOS → XP TRANSITION
-       ========================================================= -->
-
-  <script>
-    window.addEventListener("load", function () {
-      setTimeout(function () {
-
-        const bios = document.getElementById("bios-screen");
-
-        if (bios) {
-          bios.remove();
-        }
-
-        document.title = "R";
-
-      }, 10000);
-    });
-  </script>
-
-</head>
+  <body>
+    <div id="loader">
+      <img
+        src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
+        alt="Windows XP Logo"
+        id="logo"
+      />
 
 
-<body>
-
-  <!-- =========================================================
-       BIOS SCREEN
-       This sits ON TOP of the XP loader for 10 seconds.
-       ========================================================= -->
-
-  <div id="bios-screen"></div>
-
-
-  <!-- =========================================================
-       YOUR ORIGINAL XP LOADER
-       ========================================================= -->
-
-  <div id="loader">
-
-    <img
-      src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
-      alt="Windows XP Logo"
-      id="logo"
-    />
-
-    <div id="progress-bar">
-      <div class="progress-block"></div>
-      <div class="progress-block"></div>
-      <div class="progress-block"></div>
-    </div>
-
-    <img
-      src="/Assets/Images/Microsoft logo démarrage.png"
-      alt="Logo Microsoft en bas à right on the startup screen"
-      id="Copyright"
-    />
-
-    <img
-      src="/Assets/Images/Copyright.png"
-      alt="Copyright de Microsoft Corporation sur l'écran de démarrage"
-      id="Microsoft"
-    />
-
+  <div id="progress-bar">
+    <div class="progress-block"></div>
+    <div class="progress-block"></div>
+    <div class="progress-block"></div>
   </div>
 
+  <img
+    src="/Assets/Images/Microsoft logo démarrage.png"
+    alt="Logo Microsoft en bas à right on the startup screen"
+    id="Copyright"
+  />
 
-  <!-- =========================================================
-       YOUR ORIGINAL LOGIN SCREEN
-       ========================================================= -->
+  <img
+    src="/Assets/Images/Copyright.png"
+    alt="Copyright de Microsoft Corporation sur l'écran de démarrage"
+    id="Microsoft"
+  />
+</div>
 
-  <div id="login-screen" class="hidden">
+<div id="login-screen" class="hidden">
+  <div id="top-bar"></div>
 
-    <div id="top-bar"></div>
+  <div id="content">
+    <div id="left-panel">
+      <img
+        src="/Assets/Images/White writting Windows XP logo.png"
+        alt="Windows XP Logo"
+        id="xp-logo"
+      />
 
-    <div id="content">
+      <p>To begin, click your user name</p>
+    </div>
 
-      <div id="left-panel">
-
+    <div id="user-list">
+      <div class="user" id="guest-user" onclick="loginAsGuest()">
         <img
-          src="/Assets/Images/White writting Windows XP logo.png"
-          alt="Windows XP Logo"
-          id="xp-logo"
+          src="/Assets/Images/Flower PP.png"
+          alt="Guest"
         />
 
-        <p>To begin, click your user name</p>
-
-      </div>
-
-
-      <div id="user-list">
-
-        <div
-          class="user"
-          id="guest-user"
-          onclick="loginAsGuest()"
-        >
-
-          <img
-            src="/Assets/Images/Flower PP.png"
-            alt="Guest"
-          />
-
-          <div class="user-text">
-            <span>YOUUU!!! :3 &lt;3</span>
-          </div>
-
+        <div class="user-text">
+          <span>YOUUU!!! :3 &lt;3</span>
         </div>
-
       </div>
-
     </div>
-
-
-    <!-- =======================================================
-         BOTTOM BAR
-         ======================================================= -->
-
-    <div id="bottom-bar">
-
-      <div id="left-section">
-
-        <img
-          id="Power"
-          src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
-          alt="Turn off computer button"
-          onclick="turnOffComputer()"
-        />
-
-        <p
-          id="shutdown-p"
-          onclick="turnOffComputer()"
-        >
-          Turn off computer
-        </p>
-
-      </div>
-
-
-      <p id="right-text">
-        After you log on, you can add or change accounts.<br />
-        Just go to Control Panel and click User Accounts.
-      </p>
-
-    </div>
-
   </div>
 
+  <div id="bottom-bar">
+    <div id="left-section">
+      <img
+        id="Power"
+        src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
+        alt="Turn off computer button"
+        onclick="turnOffComputer()"
+      />
 
-  <!-- =========================================================
-       ANIMATED BROWSER TITLE
-       ========================================================= -->
+      <p id="shutdown-p" onclick="turnOffComputer()">
+        Turn off computer
+      </p>
+    </div>
 
-  <script>
-    const titleText = "RAUTATIENTORI";
-    let titleIndex = 1;
+    <p id="right-text">
+      After you log on, you can add or change accounts.<br />
+      Just go to Control Panel and click User Accounts.
+    </p>
+  </div>
+</div>
 
-    function animateTitle() {
-      document.title = titleText.substring(0, titleIndex);
+<!-- Animated browser title -->
+<script>
+  const titleText = "RAUTATIENTORI";
+  let titleIndex = 1;
 
-      titleIndex++;
+  function animateTitle() {
+    document.title = titleText.substring(0, titleIndex);
 
-      if (titleIndex > titleText.length) {
-        titleIndex = 1;
-      }
+    titleIndex++;
 
-      const delay =
-        document.visibilityState === "visible"
-          ? 100
-          : 300;
-
-      setTimeout(animateTitle, delay);
+    if (titleIndex > titleText.length) {
+      titleIndex = 1;
     }
 
-    animateTitle();
-  </script>
+    // FAST when the tab is active
+    // SLOWER when the tab is inactive
+    const delay =
+      document.visibilityState === "visible"
+        ? 100
+        : 300;
 
-</body>
+    setTimeout(animateTitle, delay);
+  }
+
+  animateTitle();
+</script>
+
+  </body>
 </html>
