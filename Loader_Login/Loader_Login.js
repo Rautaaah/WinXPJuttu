@@ -1,689 +1,368 @@
-/*
- * =========================================================
- * WINDOWS XP PORTFOLIO STARTUP / LOGIN
- * =========================================================
- *
- * STARTUP ORDER:
- *
- *   1. BIOS
- *          ↓
- *   2. WINDOWS XP SPINNING SCREEN
- *          ↓
- *   3. EXISTING LOADER
- *          ↓
- *   4. EXISTING LoadingScreenTransition
- *          ↓
- *   5. BLACK FADE
- *          ↓
- *   6. Windows95Happyyay.gif
- *          ↓
- *   7. EXISTING LOGIN SCREEN
- *          ↓
- *   8. USER LOGS IN
- *          ↓
- *   9. DESKTOP
- *
- * =========================================================
- */
+// ================================
+// Loader_Login.js
+// ================================
 
-
-/*
- * =========================================================
- * STARTUP
- * =========================================================
- */
-
-window.addEventListener("load", function () {
-
+window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
   const loginScreen = document.getElementById("login-screen");
 
   if (!loader || !loginScreen) {
-    console.error("Missing #loader or #login-screen");
+    console.error("Loader or login screen not found.");
     return;
   }
 
-  /*
-   * Hide the EXISTING loader while BIOS is running.
-   */
+  // Hide the original loader and login screen
+  // while BIOS is running.
   loader.style.display = "none";
-
-  /*
-   * Hide login until the entire startup sequence is finished.
-   */
   loginScreen.classList.add("hidden");
 
-  /*
-   * 1. BIOS
-   */
+  // BIOS → FULL-SCREEN GIF → ORIGINAL #loader
   showComputerInfoScreen(loader);
-
 });
 
 
-/*
- * =========================================================
- * 1. BIOS / COMPUTER INFORMATION
- * =========================================================
- */
+// ==================================================
+// BIOS SCREEN
+// ==================================================
 
 function showComputerInfoScreen(loader) {
+  const biosScreen = document.createElement("div");
 
-  const bootScreen = document.createElement("div");
+  biosScreen.id = "bios-screen";
 
-  bootScreen.id = "custom-boot-screen";
-
-  Object.assign(bootScreen.style, {
+  Object.assign(biosScreen.style, {
     position: "fixed",
-    inset: "0",
-    width: "100%",
-    height: "100%",
-    background: "#000",
-    color: "#c0c0c0",
-    zIndex: "99999",
-    fontFamily: "Consolas, 'Courier New', monospace",
-    fontSize: "15px",
-    lineHeight: "1.5",
-    padding: "28px",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    margin: "0",
+    padding: "30px",
     boxSizing: "border-box",
-    overflow: "hidden",
-    whiteSpace: "pre-wrap",
-    cursor: "default"
-  });
-
-  document.body.appendChild(bootScreen);
-
-  const bootLines = [
-    "RAUTATIENTORI SYSTEM BIOS",
-    "==========================================",
-    "",
-    "Copyright (C) Rautatientori Industries",
-    "",
-    "SYSTEM INFORMATION",
-    "------------------------------------------",
-    "",
-    "CPU ................. DETECTED",
-    "CPU SPEED ........... 3.40 GHz",
-    "MEMORY .............. 16384 MB OK",
-    "STORAGE ............. 512 GB OK",
-    "DISPLAY ............. OK",
-    "AUDIO ............... OK",
-    "NETWORK ............. OK",
-    "",
-    "Initializing hardware...",
-    "",
-    "[ OK ] CPU initialization",
-    "[ OK ] Memory check",
-    "[ OK ] Storage check",
-    "[ OK ] Display adapter",
-    "[ OK ] Audio device",
-    "[ OK ] Network device",
-    "[ OK ] System devices",
-    "",
-    "Checking system files...",
-    "",
-    "[ OK ] WINXP_CORE.SYS",
-    "[ OK ] USER32.DLL",
-    "[ OK ] KERNEL32.DLL",
-    "[ OK ] SHELL32.DLL",
-    "[ OK ] RAUTATIENTORI.EXE",
-    "",
-    "Loading Windows components...",
-    "",
-    "[ OK ] Login subsystem",
-    "[ OK ] User profile system",
-    "[ OK ] Desktop environment",
-    "",
-    "System initialization complete.",
-    "",
-    "Starting Windows..."
-  ];
-
-  let lineIndex = 0;
-
-  function addBootLine() {
-
-    if (lineIndex >= bootLines.length) {
-
-      setTimeout(() => {
-
-        bootScreen.remove();
-
-        /*
-         * BIOS IS FINISHED.
-         *
-         * NOW:
-         * WINDOWS XP SPINNING SCREEN
-         */
-
-        showWindowsXPSPINNING(loader);
-
-      }, 700);
-
-      return;
-    }
-
-    bootScreen.textContent +=
-      bootLines[lineIndex] + "\n";
-
-    lineIndex++;
-
-    const delay =
-      lineIndex < 5
-        ? 80
-        : 45 + Math.random() * 90;
-
-    setTimeout(addBootLine, delay);
-  }
-
-  addBootLine();
-}
-
-
-/*
- * =========================================================
- * 2. WINDOWS XP SPINNING SCREEN
- * =========================================================
- *
- * IMPORTANT:
- *
- * This is SEPARATE from #loader.
- *
- * #loader does NOT appear until this screen is finished.
- * =========================================================
- */
-
-function showWindowsXPSPINNING(loader) {
-
-  const spinningScreen =
-    document.createElement("div");
-
-  spinningScreen.id =
-    "windows-xp-spinning-screen";
-
-  Object.assign(spinningScreen.style, {
-    position: "fixed",
-    inset: "0",
-    width: "100%",
-    height: "100%",
     background: "#000",
-    zIndex: "99998",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    color: "#fff",
+    fontFamily: "monospace",
+    fontSize: "16px",
+    lineHeight: "1.5",
+    zIndex: "999999",
     overflow: "hidden"
   });
 
+  biosScreen.innerHTML = `
+    <div>
+      <div>American Megatrends</div>
+      <div>Copyright (C) 1985-2005, American Megatrends, Inc.</div>
+      <br>
 
-  /*
-   * XP logo.
-   */
+      <div>BIOS Date: 04/21/05</div>
+      <div>CPU: Intel(R) Pentium(R) 4 CPU</div>
+      <div>Memory Test: 640K OK</div>
+      <br>
 
-  const xpLogo =
-    document.createElement("img");
+      <div>Detecting Primary Master ...</div>
+      <div>Detecting Primary Slave ...</div>
+      <div>Detecting Secondary Master ...</div>
+      <div>Detecting Secondary Slave ...</div>
+      <br>
 
-  xpLogo.src =
-    "/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png";
+      <div>USB Device(s): 1 Keyboard, 1 Mouse</div>
+      <br>
 
-  xpLogo.alt =
-    "Windows XP";
+      <div>Press DEL to enter SETUP</div>
+      <br>
 
-  Object.assign(xpLogo.style, {
-    position: "absolute",
-    top: "25%",
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "auto",
-    maxWidth: "70%",
-    maxHeight: "45%",
-    objectFit: "contain"
-  });
-
-
-  /*
-   * Spinning/loading container.
-   */
-
-  const spinner =
-    document.createElement("div");
-
-  Object.assign(spinner.style, {
-    position: "absolute",
-    bottom: "25%",
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "180px",
-    height: "18px",
-    overflow: "hidden",
-    background: "transparent"
-  });
-
-
-  /*
-   * Moving XP-style blocks.
-   */
-
-  const spinnerTrack =
-    document.createElement("div");
-
-  Object.assign(spinnerTrack.style, {
-    display: "flex",
-    gap: "3px",
-    position: "absolute",
-    left: "-70px",
-    top: "0",
-    width: "260px",
-    height: "18px",
-    animation: "xpSpinnerMove 1.15s linear infinite"
-  });
-
-
-  for (let i = 0; i < 12; i++) {
-
-    const block =
-      document.createElement("div");
-
-    Object.assign(block.style, {
-      width: "14px",
-      height: "18px",
-      background: "#3b7ddd",
-      flexShrink: "0",
-      borderRadius: "1px"
-    });
-
-    spinnerTrack.appendChild(block);
-  }
-
-
-  spinner.appendChild(spinnerTrack);
-
-
-  /*
-   * Microsoft logo.
-   */
-
-  const microsoftLogo =
-    document.createElement("img");
-
-  microsoftLogo.src =
-    "/Assets/Images/Microsoft logo démarrage.png";
-
-  microsoftLogo.alt =
-    "Microsoft";
-
-  Object.assign(microsoftLogo.style, {
-    position: "absolute",
-    right: "35px",
-    bottom: "35px",
-    width: "auto",
-    maxWidth: "180px",
-    maxHeight: "60px",
-    objectFit: "contain"
-  });
-
-
-  /*
-   * Add spinner animation.
-   */
-
-  const spinnerStyle =
-    document.createElement("style");
-
-  spinnerStyle.textContent = `
-    @keyframes xpSpinnerMove {
-      0% {
-        transform: translateX(0);
-      }
-
-      100% {
-        transform: translateX(204px);
-      }
-    }
+      <div>Starting Windows...</div>
+    </div>
   `;
 
+  document.body.appendChild(biosScreen);
 
-  document.head.appendChild(
-    spinnerStyle
-  );
-
-  spinningScreen.appendChild(
-    xpLogo
-  );
-
-  spinningScreen.appendChild(
-    spinner
-  );
-
-  spinningScreen.appendChild(
-    microsoftLogo
-  );
-
-  document.body.appendChild(
-    spinningScreen
-  );
-
-
-  /*
-   * Let the SPINNING SCREEN play.
-   *
-   * ONLY AFTER THIS finishes do we
-   * reveal the EXISTING #loader.
-   */
-
+  // BIOS duration
   setTimeout(() => {
-
-    spinningScreen.style.transition =
-      "opacity 350ms ease";
-
-    spinningScreen.style.opacity =
-      "0";
+    biosScreen.style.transition = "opacity 300ms ease";
+    biosScreen.style.opacity = "0";
 
     setTimeout(() => {
+      biosScreen.remove();
 
-      spinningScreen.remove();
-
-      /*
-       * Remove the temporary animation CSS.
-       */
-
-      spinnerStyle.remove();
-
-      /*
-       * 3. EXISTING LOADER
-       */
-
-      showExistingLoader(loader);
-
-    }, 350);
+      // BIOS → FULL-SCREEN GIF
+      showGifScreenBeforeLoader(loader);
+    }, 300);
 
   }, 3500);
 }
 
 
-/*
- * =========================================================
- * 3. EXISTING LOADER
- * =========================================================
- *
- * THIS IS YOUR ORIGINAL #loader FROM index.html.
- *
- * It is NOT replaced by the spinning screen.
- * =========================================================
- */
+// ==================================================
+// FULL-SCREEN GIF
+// This replaces the separate spinning-screen stage.
+// ==================================================
+
+function showGifScreenBeforeLoader(loader) {
+  const gifScreen = document.createElement("div");
+
+  gifScreen.id = "startup-gif-screen";
+
+  Object.assign(gifScreen.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    width: "100vw",
+    height: "100vh",
+    margin: "0",
+    padding: "0",
+    border: "0",
+    background: "#000",
+    overflow: "hidden",
+    zIndex: "999999",
+    display: "block",
+    opacity: "1"
+  });
+
+  const gif = document.createElement("img");
+
+  gif.src = "/Assets/Windows95Happyyay.gif";
+  gif.alt = "";
+
+  Object.assign(gif.style, {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    margin: "0",
+    padding: "0",
+    border: "0",
+    display: "block",
+    objectFit: "cover"
+  });
+
+  gifScreen.appendChild(gif);
+  document.body.appendChild(gifScreen);
+
+  /*
+   * Let the GIF play first.
+   * Then remove it and reveal the ORIGINAL #loader.
+   */
+  setTimeout(() => {
+    gifScreen.style.transition = "opacity 500ms ease";
+    gifScreen.style.opacity = "0";
+
+    setTimeout(() => {
+      gifScreen.remove();
+
+      // GIF → ORIGINAL #loader
+      showExistingLoader(loader);
+    }, 500);
+
+  }, 3000);
+}
+
+
+// ==================================================
+// ORIGINAL LOADER
+// DO NOT CREATE A NEW LOADER
+// ==================================================
 
 function showExistingLoader(loader) {
+  // This is the original #loader from index.html.
+  loader.style.display = "flex";
+  loader.style.opacity = "1";
 
   /*
-   * Reveal the original loader exactly as it
-   * exists in index.html.
+   * Give the original XP loader time to run.
    */
-
-  loader.style.display = "";
-
-  /*
-   * Let the original loader play.
-   */
-
   setTimeout(() => {
+    loader.style.transition = "opacity 700ms ease";
+    loader.style.opacity = "0";
 
-    loader.style.display = "none";
+    setTimeout(() => {
+      loader.style.display = "none";
+      loader.style.opacity = "1";
+      loader.style.transition = "";
 
-    /*
-     * 4. EXISTING XP LoadingScreenTransition
-     */
+      // ORIGINAL LOADING SCREEN TRANSITION
+      showLoadingScreenTransition();
 
-    showLoadingScreenTransition();
+    }, 700);
 
   }, 4000);
 }
 
 
-/*
- * =========================================================
- * 4. WINDOWS XP LoadingScreenTransition
- * =========================================================
- */
+// ==================================================
+// LOADING SCREEN TRANSITION
+// ==================================================
 
 function showLoadingScreenTransition() {
-
-  const transitionScreen =
-    document.createElement("div");
-
-  transitionScreen.id =
-    "transition-screen";
-
-  Object.assign(transitionScreen.style, {
-    position: "fixed",
-    inset: "0",
-    width: "100%",
-    height: "100%",
-    background: "#000",
-    zIndex: "10001",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    opacity: "1"
-  });
-
-  document.body.appendChild(
-    transitionScreen
-  );
-
   fetch("/Loader_Login/Startup_Transition.html")
-    .then((response) => {
-
+    .then(response => {
       if (!response.ok) {
         throw new Error(
-          `HTTP ${response.status}`
+          `Failed to load Startup_Transition.html: ${response.status}`
         );
       }
 
       return response.text();
-
     })
-    .then((html) => {
+    .then(html => {
+      const transition = document.createElement("div");
 
-      transitionScreen.innerHTML =
-        html;
+      transition.id = "loading-screen-transition";
 
+      Object.assign(transition.style, {
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: "100vw",
+        height: "100vh",
+        margin: "0",
+        padding: "0",
+        zIndex: "999998",
+        opacity: "1"
+      });
+
+      transition.innerHTML = html;
+
+      document.body.appendChild(transition);
+
+      /*
+       * Let the existing transition play.
+       */
       setTimeout(() => {
-
-        transitionScreen.style.transition =
-          "opacity 700ms ease";
-
-        transitionScreen.style.opacity =
-          "0";
+        transition.style.transition = "opacity 700ms ease";
+        transition.style.opacity = "0";
 
         setTimeout(() => {
+          transition.remove();
 
-          transitionScreen.remove();
-
-          /*
-           * 5. BLACK FADE
-           */
-
+          // Transition → BLACK FADE
           showBlackFadeIn();
 
         }, 700);
 
       }, 800);
-
     })
-    .catch((error) => {
+    .catch(error => {
+      console.error("Loading screen transition error:", error);
 
-      console.error(
-        "Failed to load startup transition:",
-        error
-      );
-
-      transitionScreen.style.transition =
-        "opacity 700ms ease";
-
-      transitionScreen.style.opacity =
-        "0";
-
-      setTimeout(() => {
-
-        transitionScreen.remove();
-
-        showBlackFadeIn();
-
-      }, 700);
-
+      // If the transition cannot load,
+      // continue with the startup sequence.
+      showBlackFadeIn();
     });
 }
 
 
-/*
- * =========================================================
- * 5. BLACK FADE-IN
- * =========================================================
- */
+// ==================================================
+// BLACK FADE
+// ==================================================
 
 function showBlackFadeIn() {
+  const blackOverlay = document.createElement("div");
 
-  const blackScreen =
-    document.createElement("div");
+  blackOverlay.id = "startup-black-fade";
 
-  blackScreen.id =
-    "black-fade-screen";
-
-  Object.assign(blackScreen.style, {
+  Object.assign(blackOverlay.style, {
     position: "fixed",
-    inset: "0",
-    width: "100%",
-    height: "100%",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    margin: "0",
+    padding: "0",
     background: "#000",
-    zIndex: "10002",
+    zIndex: "999999",
     opacity: "1",
-    transition: "opacity 1000ms ease",
-    pointerEvents: "none"
+    display: "block"
   });
 
-  document.body.appendChild(
-    blackScreen
-  );
+  document.body.appendChild(blackOverlay);
 
+  /*
+   * Keep the screen black briefly,
+   * then reveal the GIF underneath.
+   */
   setTimeout(() => {
-
-    /*
-     * GIF appears underneath.
-     */
-
-    showGifScreen();
-
-    requestAnimationFrame(() => {
-
-      requestAnimationFrame(() => {
-
-        blackScreen.style.opacity =
-          "0";
-
-      });
-
-    });
-
-    setTimeout(() => {
-
-      blackScreen.remove();
-
-    }, 1000);
-
+    showGifScreen(blackOverlay);
   }, 250);
 }
 
 
-/*
- * =========================================================
- * 6. WINDOWS95HAPPYYAY.GIF
- * =========================================================
- */
+// ==================================================
+// EXISTING GIF STAGE
+// ==================================================
 
-function showGifScreen() {
+function showGifScreen(blackOverlay) {
+  const gifScreen = document.createElement("div");
 
-  const gifScreen =
-    document.createElement("div");
-
-  gifScreen.id =
-    "gif-startup-screen";
+  gifScreen.id = "gif-screen";
 
   Object.assign(gifScreen.style, {
     position: "fixed",
-    inset: "0",
-    width: "100%",
-    height: "100%",
+    top: "0",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    width: "100vw",
+    height: "100vh",
+    margin: "0",
+    padding: "0",
+    border: "0",
     background: "#000",
-    zIndex: "10001",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    overflow: "hidden",
+    zIndex: "999998",
+    display: "block",
     opacity: "1"
   });
 
-  const gif =
-    document.createElement("img");
+  const gif = document.createElement("img");
 
-  gif.src =
-    "/Assets/Windows95Happyyay.gif";
-
-  gif.alt =
-    "Windows startup animation";
+  gif.src = "/Assets/Windows95Happyyay.gif";
+  gif.alt = "";
 
   Object.assign(gif.style, {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    margin: "0",
+    padding: "0",
+    border: "0",
     display: "block",
-    maxWidth: "100%",
-    maxHeight: "100%",
-    width: "auto",
-    height: "auto",
-    objectFit: "contain"
+    objectFit: "cover"
   });
 
-  gifScreen.appendChild(
-    gif
-  );
-
-  document.body.appendChild(
-    gifScreen
-  );
-
+  gifScreen.appendChild(gif);
+  document.body.appendChild(gifScreen);
 
   /*
-   * Keep the GIF visible.
+   * Fade the black overlay away so the GIF appears
+   * through the black fade.
    */
-
-  setTimeout(() => {
-
-    gifScreen.style.transition =
-      "opacity 500ms ease";
-
-    gifScreen.style.opacity =
-      "0";
+  requestAnimationFrame(() => {
+    blackOverlay.style.transition = "opacity 1000ms ease";
+    blackOverlay.style.opacity = "0";
 
     setTimeout(() => {
+      blackOverlay.remove();
+    }, 1000);
+  });
 
+  /*
+   * Let the GIF play.
+   * Then fade it out and show the ORIGINAL login screen.
+   */
+  setTimeout(() => {
+    gifScreen.style.transition = "opacity 500ms ease";
+    gifScreen.style.opacity = "0";
+
+    setTimeout(() => {
       gifScreen.remove();
 
-      /*
-       * 7. EXISTING LOGIN SCREEN
-       */
-
-      const loginScreen =
-        document.getElementById(
-          "login-screen"
-        );
-
-      if (!loginScreen) {
-
-        console.error(
-          "Missing #login-screen"
-        );
-
-        return;
-      }
-
-      loginScreen.classList.remove(
-        "hidden"
-      );
+      showLoginScreen();
 
     }, 500);
 
@@ -691,723 +370,98 @@ function showGifScreen() {
 }
 
 
-/*
- * =========================================================
- * PAGE FADE
- * =========================================================
- */
+// ==================================================
+// LOGIN SCREEN
+// ==================================================
 
-window.addEventListener(
-  "DOMContentLoaded",
-  function () {
+function showLoginScreen() {
+  const loginScreen = document.getElementById("login-screen");
 
-    document.body.classList.add(
-      "fade-in-steps"
-    );
-
-  }
-);
-
-
-/*
- * =========================================================
- * SWITCH USER
- * =========================================================
- */
-
-function switchUserLogOn() {
-
-  localStorage.setItem(
-    "fromSwitchUser",
-    "1"
-  );
-
-  window.location.href =
-    "/Bureau/Bureau.html";
-}
-
-
-/*
- * =========================================================
- * LOGIN STATE
- * =========================================================
- */
-
-let hasLoggedInAsGuest = false;
-
-
-/*
- * =========================================================
- * LOGIN AS GUEST
- * =========================================================
- */
-
-function loginAsGuest() {
-
-  if (hasLoggedInAsGuest) return;
-
-  hasLoggedInAsGuest = true;
-
-  const leftSection =
-    document.getElementById(
-      "left-section"
-    );
-
-  const rightText =
-    document.getElementById(
-      "right-text"
-    );
-
-  const leftPanel =
-    document.getElementById(
-      "left-panel"
-    );
-
-  const userList =
-    document.getElementById(
-      "user-list"
-    );
-
-  const guestUser =
-    document.getElementById(
-      "guest-user"
-    );
-
-  if (
-    !leftSection ||
-    !rightText ||
-    !leftPanel ||
-    !userList ||
-    !guestUser
-  ) {
-
-    console.error(
-      "Required login elements are missing."
-    );
-
-    hasLoggedInAsGuest = false;
-
+  if (!loginScreen) {
+    console.error("Login screen not found.");
     return;
   }
 
-  const guestSpan =
-    guestUser.querySelector(
-      "span"
-    );
+  loginScreen.classList.remove("hidden");
 
-  leftPanel.innerHTML =
-    `<p>welcome</p>`;
+  loginScreen.style.opacity = "0";
+  loginScreen.style.display = "block";
 
-  leftPanel.style.paddingTop =
-    "18%";
-
-  const leftPanelP =
-    leftPanel.querySelector(
-      "p"
-    );
-
-  if (leftPanelP) {
-
-    Object.assign(
-      leftPanelP.style,
-      {
-        fontSize: "5rem",
-        fontFamily:
-          "Arial, sans-serif",
-        fontStyle: "italic",
-        fontWeight: "bold",
-        textShadow:
-          "2px 3px #3454b4"
-      }
-    );
-  }
-
-  if (guestSpan) {
-
-    guestSpan.insertAdjacentHTML(
-      "afterend",
-      `<p>Loading your personal settings...</p>`
-    );
-
-  }
-
-  userList.classList.add(
-    "is-padding-anim"
-  );
-
-  userList.style.animation =
-    "paddingTopLog 1s forwards";
-
-  setTimeout(() => {
-
-    userList.classList.remove(
-      "is-padding-anim"
-    );
-
-  }, 1000);
-
-  leftSection.style.display =
-    "none";
-
-  rightText.style.display =
-    "none";
-
-  guestUser.classList.remove(
-    "selected"
-  );
-
-  setTimeout(() => {
-
-    window.location.href =
-      "/Bureau/Bureau.html";
-
-  }, 1000);
+  requestAnimationFrame(() => {
+    loginScreen.style.transition = "opacity 500ms ease";
+    loginScreen.style.opacity = "1";
+  });
 }
 
 
-/*
- * =========================================================
- * LOGIN SCREEN CONTROLS
- * =========================================================
- */
+// ==================================================
+// LOGIN / USER SELECTION
+// ==================================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+function switchUserLogOn() {
+  const guestUser = document.getElementById("guest-user");
 
-    const userList =
-      document.getElementById(
-        "user-list"
-      );
+  if (guestUser) {
+    guestUser.click();
+  }
+}
 
-    const users =
-      document.querySelectorAll(
-        ".user"
-      );
 
-    let selectedIndex = null;
-    let hasArrowBeenUsed = false;
+function loginAsGuest() {
+  const loginScreen = document.getElementById("login-screen");
 
+  if (!loginScreen) {
+    return;
+  }
+
+  loginScreen.style.transition = "opacity 500ms ease";
+  loginScreen.style.opacity = "0";
+
+  setTimeout(() => {
+    loginScreen.classList.add("hidden");
+    loginScreen.style.display = "none";
 
     /*
-     * =====================================================
-     * UPDATE USER SELECTION
-     * =====================================================
+     * Desktop is handled by the existing Bureau system.
      */
-
-    function updateUserSelection(index) {
-
-      users.forEach(
-        (user, i) => {
-
-          user.classList.toggle(
-            "selected",
-            i === index
-          );
-
-        }
-      );
+    if (typeof showDesktop === "function") {
+      showDesktop();
     }
 
+  }, 500);
+}
 
-    updateUserSelection(
-      selectedIndex
-    );
 
+// ==================================================
+// KEYBOARD / MOUSE USER SELECTION
+// ==================================================
 
-    /*
-     * =====================================================
-     * ENTER KEY
-     * =====================================================
-     */
-
-    document.addEventListener(
-      "keydown",
-      function (e) {
-
-        const guestUser =
-          document.getElementById(
-            "guest-user"
-          );
-
-        if (!guestUser) return;
-
-        if (
-          e.key === "Enter" &&
-          guestUser.classList.contains(
-            "selected"
-          )
-        ) {
-
-          if (
-            window.location.pathname.endsWith(
-              "/Start_Menu/Log_Off/Transition/Switch_User.html"
-            )
-          ) {
-
-            switchUserLogOn();
-
-          } else {
-
-            loginAsGuest();
-
-          }
-
-        }
-
-      }
-    );
-
-
-    /*
-     * =====================================================
-     * ARROW KEY NAVIGATION
-     * =====================================================
-     */
-
-    document.addEventListener(
-      "keydown",
-      function (e) {
-
-        if (
-          e.key === "ArrowDown" ||
-          e.key === "ArrowUp"
-        ) {
-
-          if (!hasArrowBeenUsed) {
-
-            selectedIndex = 0;
-
-            updateUserSelection(
-              selectedIndex
-            );
-
-            hasArrowBeenUsed = true;
-
-            users.forEach(
-              (user, i) => {
-
-                if (
-                  i === selectedIndex
-                ) {
-
-                  user.style.opacity =
-                    "1";
-
-                  user.style.animation =
-                    "";
-
-                } else {
-
-                  user.style.opacity =
-                    "0.5";
-
-                  user.style.animation =
-                    "glitchOpacityReverse 0.4s steps(5, end)";
-
-                }
-
-              }
-            );
-
-            e.preventDefault();
-
-            return;
-          }
-
-        }
-
-        if (hasArrowBeenUsed) {
-
-          if (e.key === "ArrowDown") {
-
-            if (
-              selectedIndex <
-              users.length - 1
-            ) {
-
-              selectedIndex++;
-
-              updateUserSelection(
-                selectedIndex
-              );
-
-              users.forEach(
-                (user, i) => {
-
-                  if (
-                    i === selectedIndex
-                  ) {
-
-                    user.style.opacity =
-                      "1";
-
-                    user.style.animation =
-                      "";
-
-                  } else {
-
-                    user.style.opacity =
-                      "0.5";
-
-                    user.style.animation =
-                      "glitchOpacityReverse 0.4s steps(5, end)";
-
-                  }
-
-                }
-              );
-
-            }
-
-            e.preventDefault();
-
-          } else if (
-            e.key === "ArrowUp"
-          ) {
-
-            if (
-              selectedIndex > 0
-            ) {
-
-              selectedIndex--;
-
-              updateUserSelection(
-                selectedIndex
-              );
-
-              users.forEach(
-                (user, i) => {
-
-                  if (
-                    i === selectedIndex
-                  ) {
-
-                    user.style.opacity =
-                      "1";
-
-                    user.style.animation =
-                      "";
-
-                  } else {
-
-                    user.style.opacity =
-                      "0.5";
-
-                    user.style.animation =
-                      "glitchOpacityReverse 0.4s steps(5, end)";
-
-                  }
-
-                }
-              );
-
-            }
-
-            e.preventDefault();
-
-          }
-
-        }
-
-      }
-    );
-
-
-    /*
-     * =====================================================
-     * USER LIST CHECK
-     * =====================================================
-     */
+document.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    const loginScreen = document.getElementById("login-screen");
 
     if (
-      !userList ||
-      users.length === 0
+      loginScreen &&
+      !loginScreen.classList.contains("hidden")
     ) {
-
-      console.error(
-        "Element '#user-list' or '.user' missing!"
-      );
-
-      return;
+      switchUserLogOn();
     }
-
-
-    /*
-     * =====================================================
-     * USER LIST MOUSE ENTER
-     * =====================================================
-     */
-
-    userList.addEventListener(
-      "mouseenter",
-      function () {
-
-        const hasSelected =
-          Array.from(users).some(
-            (user) =>
-              user.classList.contains(
-                "selected"
-              )
-          );
-
-        if (hasSelected) return;
-
-        users.forEach(
-          (user) => {
-
-            user.style.opacity =
-              "0.5";
-
-            user.style.animation =
-              "glitchOpacityReverse 0.4s steps(5, end)";
-
-          }
-        );
-
-      }
-    );
-
-
-    /*
-     * =====================================================
-     * USER LIST MOUSE LEAVE
-     * =====================================================
-     */
-
-    userList.addEventListener(
-      "mouseleave",
-      function () {
-
-        const hasSelected =
-          Array.from(users).some(
-            (user) =>
-              user.classList.contains(
-                "selected"
-              )
-          );
-
-        if (hasSelected) return;
-
-        users.forEach(
-          (user) => {
-
-            user.style.opacity =
-              "1";
-
-            user.style.animation =
-              "glitchOpacity 0.4s steps(5, end)";
-
-          }
-        );
-
-      }
-    );
-
-
-    /*
-     * =====================================================
-     * INDIVIDUAL USER HOVER
-     * =====================================================
-     */
-
-    users.forEach(
-      (user) => {
-
-        user.addEventListener(
-          "mouseenter",
-          function () {
-
-            user.style.opacity =
-              "1";
-
-            user.style.animation =
-              "";
-
-          }
-        );
-
-        user.addEventListener(
-          "mouseleave",
-          function () {
-
-            if (
-              user.classList.contains(
-                "selected"
-              )
-            ) {
-
-              user.style.opacity =
-                "1";
-
-              user.style.animation =
-                "";
-
-            } else {
-
-              if (
-                userList.matches(":hover") &&
-                !userList.classList.contains(
-                  "is-padding-anim"
-                )
-              ) {
-
-                user.style.opacity =
-                  "0.5";
-
-                user.style.animation =
-                  "glitchOpacityReverse 0.4s steps(5, end)";
-
-              }
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-
-    /*
-     * =====================================================
-     * USER IMAGE BORDER
-     * =====================================================
-     */
-
-    users.forEach(
-      (user) => {
-
-        const userimg =
-          user.querySelector(
-            "img"
-          );
-
-        if (userimg) {
-
-          user.addEventListener(
-            "mouseenter",
-            function () {
-
-              userimg.style.border =
-                "2px solid #bfa304";
-
-            }
-          );
-
-          user.addEventListener(
-            "mouseleave",
-            function () {
-
-              userimg.style.border =
-                "2px solid white";
-
-            }
-          );
-
-        }
-
-      }
-    );
-
-
-    /*
-     * =====================================================
-     * MOUSE DOWN TEXT COLOR
-     * =====================================================
-     */
-
-    const guestUser =
-      document.getElementById(
-        "guest-user"
-      );
-
-    if (guestUser) {
-
-      guestUser.addEventListener(
-        "mousedown",
-        function () {
-
-          const guestP =
-            guestUser.querySelector(
-              "p"
-            );
-
-          if (guestP) {
-
-            guestP.style.color =
-              "white";
-
-          }
-
-        }
-      );
-
-    }
-
-
-    /*
-     * =====================================================
-     * MOUSE SELECTION
-     * =====================================================
-     */
-
-    users.forEach(
-      (user) => {
-
-        user.addEventListener(
-          "mousedown",
-          function () {
-
-            users.forEach(
-              (u) =>
-                u.classList.remove(
-                  "selected"
-                )
-            );
-
-            this.classList.add(
-              "selected"
-            );
-
-          }
-        );
-
-        user.addEventListener(
-          "mouseup",
-          function () {
-
-            users.forEach(
-              (u) =>
-                u.classList.remove(
-                  "selected"
-                )
-            );
-
-            this.style.opacity =
-              "1";
-
-          }
-        );
-
-        document.addEventListener(
-          "click",
-          () => {
-
-            user.classList.remove(
-              "selected"
-            );
-
-            hasArrowBeenUsed = false;
-
-            user.style.opacity =
-              "1";
-
-          }
-        );
-
-      }
-    );
-
   }
-);
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const guestUser = document.getElementById("guest-user");
+
+  if (!guestUser) {
+    return;
+  }
+
+  guestUser.addEventListener("mouseenter", () => {
+    guestUser.classList.add("selected");
+  });
+
+  guestUser.addEventListener("mouseleave", () => {
+    guestUser.classList.remove("selected");
+  });
+});
