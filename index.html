@@ -1,185 +1,204 @@
-
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>𝖂𝖔𝖜𝕷𝖔𝖆𝖉𝖎𝖓𝖌𝕭𝖎𝖔𝖘</title>
+    <title>R</title>
 
-    <link
-        rel="icon"
-        type="image/ico"
-        sizes="32x32"
-        href="/Assets/Images/Windows_XP-min.ico"
-    />
+    <link rel="icon" href="/Assets/Images/Windows_XP-min.ico">
 
-    <!-- XP CSS can load while the GIF is playing.
-         It does NOT advance anything by itself. -->
+    <!-- XP CSS -->
+    <link rel="preload"
+          href="/Start_Menu/Log_Off/Base/Log_Off.css"
+          as="style">
 
-    <link
-        rel="preload"
-        href="/Start_Menu/Log_Off/Base/Log_Off.css"
-        as="style"
-        onload="this.onload=null;this.rel='stylesheet';"
-    />
+    <link rel="stylesheet"
+          href="/Loader_Login/Loader.css">
 
-    <link rel="stylesheet" href="/Loader_Login/Loader.css" />
-    <link rel="stylesheet" href="/Loader_Login/Login_Screen.css" />
+    <link rel="stylesheet"
+          href="/Loader_Login/Login_Screen.css">
 
+    <!--
+        IMPORTANT:
+        Everything in the XP page is paused while the BIOS GIF
+        is playing.
+    -->
     <style>
-        /* ============================= */
-        /* BIOS GIF INTRO                 */
-        /* ============================= */
+        body.bios-paused *,
+        body.bios-paused::before,
+        body.bios-paused::after {
+            animation-play-state: paused !important;
+            transition: none !important;
+        }
 
-        #intro {
+        #bios-intro {
             position: fixed;
             inset: 0;
+            width: 100vw;
+            height: 100vh;
 
-            background-image: url('Assets/biosgif.gif');
-            background-size: 55% auto;
-            background-position: top left;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-color: #000000;
+            background: #000;
 
-            z-index: 999999;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+
+            overflow: hidden;
+
+            z-index: 200000;
+
+            pointer-events: all;
         }
 
-        /* XP system is completely hidden
-           until the GIF is finished */
+        #bios-intro img {
+            width: 55%;
+            height: auto;
 
-        #xp-page {
-            display: none;
+            display: block;
+
+            object-fit: contain;
+            object-position: top left;
         }
     </style>
+
+    <!--
+        Load the XP scripts normally.
+        DO NOT dynamically inject them after the BIOS screen.
+    -->
+    <script src="/Loader_Login/Loader_Login.js"></script>
+    <script src="/Bureau/Bureau.js"></script>
+
+    <!-- Vercel -->
+    <script src="/_vercel/insights/script.js" defer></script>
 </head>
 
-<body>
+<!--
+    bios-paused is present immediately.
+    This prevents all XP CSS animations from progressing
+    while the BIOS GIF is playing.
+-->
+<body class="bios-paused">
 
-    <!-- ============================= -->
-    <!-- 10 SECOND BIOS GIF             -->
-    <!-- ============================= -->
+    <!-- =========================
+         BIOS INTRO
+         ========================= -->
+    <div id="bios-intro">
+        <img src="/Assets/biosgif.gif" alt="">
+    </div>
 
-    <div id="intro"></div>
+
+    <!-- =========================
+         WINDOWS XP LOADER
+         ========================= -->
+    <div id="loader">
+
+        <img
+            id="logo"
+            src="/Loader_Login/Assets/logo.png"
+            alt=""
+        >
+
+        <div id="progress-bar">
+            <div class="progress-block"></div>
+            <div class="progress-block"></div>
+            <div class="progress-block"></div>
+        </div>
+
+        <img
+            id="Microsoft"
+            src="/Loader_Login/Assets/Microsoft.png"
+            alt=""
+        >
+
+        <img
+            id="Copyright"
+            src="/Loader_Login/Assets/Copyright.png"
+            alt=""
+        >
+
+    </div>
 
 
-    <!-- ============================= -->
-    <!-- WINDOWS XP PAGE                -->
-    <!-- ============================= -->
+    <!-- =========================
+         LOGIN SCREEN
+         ========================= -->
+    <div id="login-screen" class="hidden">
 
-    <div id="xp-page">
+        <!-- LEFT SIDE -->
+        <div id="left-panel">
 
-        <!-- ========================= -->
-        <!-- XP LOADER                  -->
-        <!-- ========================= -->
-
-        <div id="loader">
-
-            <img
-                src="/Assets/Images/Windows_XP_SP2_Boot_screen cropped.png"
-                alt="Windows XP Logo"
-                id="logo"
-            />
-
-            <div id="progress-bar">
-                <div class="progress-block"></div>
-                <div class="progress-block"></div>
-                <div class="progress-block"></div>
+            <div id="welcome">
+                Welcome
             </div>
 
-            <img
-                src="/Assets/Images/Microsoft logo démarrage.png"
-                alt="Logo Microsoft"
-                id="Copyright"
-            />
+            <div id="welcome-subtitle">
+                To begin, click your user name
+            </div>
 
-            <img
-                src="/Assets/Images/Copyright.png"
-                alt="Copyright Microsoft"
-                id="Microsoft"
-            />
+            <div id="users">
+
+                <!-- GUEST -->
+                <div
+                    id="guest-user"
+                    class="user"
+                    onclick="loginAsGuest()"
+                >
+                    <img
+                        id="guest-image"
+                        src="/Loader_Login/Assets/Guest.png"
+                        alt="Guest"
+                    >
+
+                    <div class="user-info">
+                        <div class="user-name">
+                            Guest
+                        </div>
+
+                        <div class="user-type">
+                            Guest Account
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
 
 
-        <!-- ========================= -->
-        <!-- LOGIN SCREEN               -->
-        <!-- ========================= -->
+        <!-- RIGHT SIDE -->
+        <div id="right-panel">
 
-        <div id="login-screen" class="hidden">
+            <div id="right-content">
 
-            <div id="top-bar"></div>
-
-            <div id="content">
-
-                <div id="left-panel">
-
-                    <img
-                        src="/Assets/Images/White writting Windows XP logo.png"
-                        alt="Windows XP Logo"
-                        id="xp-logo"
-                    />
-
-                    <p>To begin, click your user name</p>
-
+                <div id="right-title">
+                    Windows XP
                 </div>
 
-
-                <div id="user-list">
-
-                    <div
-                        class="user"
-                        id="guest-user"
-                        onclick="loginAsGuest()"
-                    >
-
-                        <img
-                            src="/Assets/Images/Flower PP.png"
-                            alt="Guest"
-                        />
-
-                        <div class="user-text">
-                            <span>YOUUU!!! :3 &lt;3</span>
-                        </div>
-
-                    </div>
-
+                <div id="right-text">
+                    To protect your computer,
+                    Windows XP has security features
+                    enabled by default.
                 </div>
 
             </div>
 
+        </div>
 
-            <!-- ========================= -->
-            <!-- BOTTOM BAR                 -->
-            <!-- ========================= -->
 
-            <div id="bottom-bar">
+        <!-- BOTTOM -->
+        <div id="bottom-bar">
 
-                <div id="left-section">
-
-                    <img
-                        id="Power"
-                        src="/Assets/Windows XP High Resolution Icon Pack avec MAOSX/Windows XP High Resolution Icon Pack/Windows XP Icons/Power.png"
-                        alt="Turn off computer button"
-                        onclick="turnOffComputer()"
-                    />
-
-                    <p
-                        id="shutdown-p"
-                        onclick="turnOffComputer()"
-                    >
-                        Turn off computer
-                    </p>
-
+            <div id="bottom-left">
+                <div id="turn-off">
+                    Turn off computer
                 </div>
+            </div>
 
-
-                <p id="right-text">
-                    After you log on, you can add or change accounts.<br />
-                    Just go to Control Panel and click User Accounts.
-                </p>
-
+            <div id="bottom-right">
+                <div id="logoff">
+                    Log off
+                </div>
             </div>
 
         </div>
@@ -187,88 +206,47 @@
     </div>
 
 
-    <!-- ============================= -->
-    <!-- ANIMATED BROWSER TITLE         -->
-    <!-- ============================= -->
-
+    <!-- =========================
+         BIOS TIMER
+         ========================= -->
     <script>
-        const titleText = "RAUTATIENTORI";
-        let titleIndex = 1;
+        window.addEventListener("load", function () {
 
-        function animateTitle() {
+            const biosIntro = document.getElementById("bios-intro");
 
-            document.title = titleText.substring(0, titleIndex);
-
-            titleIndex++;
-
-            if (titleIndex > titleText.length) {
-                titleIndex = 1;
+            if (!biosIntro) {
+                console.error("Missing #bios-intro");
+                return;
             }
 
-            const delay =
-                document.visibilityState === "visible"
-                    ? 100
-                    : 300;
-
-            setTimeout(animateTitle, delay);
-        }
-
-        animateTitle();
-    </script>
-
-
-    <!-- ============================= -->
-    <!-- WAIT 10 SECONDS                -->
-    <!-- THEN START XP FROM THE START   -->
-    <!-- ============================= -->
-
-    <script>
-        setTimeout(function () {
-
             /*
-             * Remove the BIOS GIF completely.
+             * Keep the BIOS screen for exactly 10 seconds.
              */
-            const intro = document.getElementById("intro");
+            setTimeout(function () {
 
-            if (intro) {
-                intro.remove();
-            }
+                /*
+                 * Remove the BIOS overlay.
+                 */
+                biosIntro.remove();
 
+                /*
+                 * Allow the XP CSS animations to start.
+                 * Because they were paused from the beginning,
+                 * they start from their initial state instead
+                 * of being 10 seconds ahead.
+                 */
+                document.body.classList.remove("bios-paused");
 
-            /*
-             * Reveal the XP page.
-             */
-            const xpPage = document.getElementById("xp-page");
+                /*
+                 * Tell Loader_Login.js that the BIOS intro
+                 * has finished.
+                 */
+                window.dispatchEvent(
+                    new Event("biosIntroFinished")
+                );
 
-            if (xpPage) {
-                xpPage.style.display = "block";
-            }
-
-
-            /*
-             * NOW load Loader_Login.js.
-             *
-             * It was NOT running during the
-             * 10-second GIF, so the XP loader
-             * starts from the beginning.
-             */
-            const loaderScript = document.createElement("script");
-
-            loaderScript.src = "/Loader_Login/Loader_Login.js";
-
-            document.body.appendChild(loaderScript);
-
-
-            /*
-             * Load Bureau.js as well.
-             */
-            const bureauScript = document.createElement("script");
-
-            bureauScript.src = "/Bureau/Bureau.js";
-
-            document.body.appendChild(bureauScript);
-
-        }, 10000);
+            }, 10000);
+        });
     </script>
 
 </body>
